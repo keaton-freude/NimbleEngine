@@ -6,6 +6,7 @@ Mesh.cpp
 opengl-wrapper/Shader.cpp
 opengl-wrapper/ShaderProgram.cpp
 opengl-wrapper/VertexShader.cpp
+opengl-wrapper/VertexBuffer.cpp
 window/Window.cpp)
 
 target_include_directories(NimbleGraphics PUBLIC ${CMAKE_SOURCE_DIR}/include)

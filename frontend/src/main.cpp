@@ -12,6 +12,8 @@
 #include "nimble/opengl-wrapper/GLContext.h"
 #include "nimble/opengl-wrapper/IndexBuffer.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
+#include "nimble/opengl-wrapper/VertexBuffer.h"
+#include "nimble/opengl-wrapper/VertexBufferFormat.h"
 #include "nimble/utility/FileUtility.h"
 #include "nimble/window/Window.h"
 
@@ -55,20 +57,15 @@ int main() {
 
 		auto mesh = MeshTools::CreateTriangle();
 
-		auto *indexBuffer = new IndexBuffer(mesh.NumIndices(), IndexBufferUsageType::Static);
+		auto *indexBuffer = new IndexBuffer(mesh.NumIndices(), BufferUsageType::Static);
 		indexBuffer->SetData(mesh.IndexData());
 
-		unsigned int VBO;
-		glGenBuffers(1, &VBO);
+		auto *vertexBuffer = new VertexBuffer<Position>(mesh.VertexData(), BufferUsageType::Static);
 
 		unsigned int VAO;
 		glGenVertexArrays(1, &VAO);
 
 		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-		glBufferData(GL_ARRAY_BUFFER, mesh.VertexByteCount(), mesh.VertexData(), GL_STATIC_DRAW);
 
 		ShaderProgram program;
 		program.AddVertexShader(FileReadAllText("resources\\shaders\\basic.vert").c_str());
@@ -86,10 +83,9 @@ int main() {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			program.Use();
-			// glBindVertexArray(VAO);
-			// glDrawArrays(GL_TRIANGLES, 0, 6);
+			vertexBuffer->Bind();
 			indexBuffer->Bind();
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 			glfwSwapBuffers(windowPointer);
 			glfwPollEvents();

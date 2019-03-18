@@ -2,9 +2,10 @@
 
 #include <vector>
 
+#include "nimble/opengl-wrapper/Buffer.h"
+
 namespace Nimble {
 
-enum class IndexBufferUsageType { Static, Dynamic };
 
 class IndexBuffer {
 public:
@@ -14,14 +15,14 @@ private:
 	// opengl EBO handle
 	uint32_t _elementBufferHandle;
 	ElementStorage _elements;
-	IndexBufferUsageType _usageType;
+	BufferUsageType _usageType;
 
 public:
 	IndexBuffer() = default;
-	IndexBuffer(size_t numElements, IndexBufferUsageType usage);
+	IndexBuffer(size_t numElements, BufferUsageType usage);
 
 	// Set the
-	void SetData(uint32_t *data);
+	void SetData(const ElementStorage &data);
 	void Bind();
 };
 
