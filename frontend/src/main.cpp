@@ -16,6 +16,9 @@
 #include "nimble/opengl-wrapper/VertexBufferFormat.h"
 #include "nimble/utility/FileUtility.h"
 #include "nimble/window/Window.h"
+#include "nimble/opengl-wrapper/VertexArrayObject.h"
+
+#include <filesystem>
 
 using std::cout;
 using std::endl;
@@ -41,6 +44,7 @@ void clean_up() {
 }
 
 int main() {
+	std::cout << std::filesystem::current_path() << std::endl;
 	try {
 		start_up();
 		// main application code here
