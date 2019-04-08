@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <stdint.h>
+#include <GL/glew.h>
 
 #include "nimble/opengl-wrapper/Buffer.h"
 
@@ -45,7 +47,7 @@ public:
 	void SetData(const ElementStorage &data) {
 		if(data.size() == _elements.size()) {
 			// no need to realloc with operator=
-			for(int i = 0; i < data.size(); ++i) {
+			for(size_t i = 0; i < data.size(); ++i) {
 				_elements[i] = data[i];
 			}
 		} else {
@@ -54,7 +56,7 @@ public:
 
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferHandle);
 		auto usageType = _usageType == BufferUsageType::Static ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-		glBufferData(GL_ARRAY_BUFFER, _elements.size() * T::SizeInBytes, &_elements[0], usageType);
+		glBufferData(GL_ARRAY_BUFFER, (long)(_elements.size() * T::SizeInBytes), &_elements[0], (GLenum)usageType);
 	}
 
 	void Bind() {

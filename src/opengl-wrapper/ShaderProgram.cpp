@@ -1,8 +1,10 @@
-#include "nimble/opengl-wrapper/ShaderProgram.h"
-#include "nimble/opengl-wrapper/FragmentShader.h"
-#include "nimble/opengl-wrapper/VertexShader.h"
-#include <glad/glad.h>
 #include <iostream>
+#include <exception>
+#include <GL/glew.h>
+
+#include "nimble/opengl-wrapper/FragmentShader.h"
+#include "nimble/opengl-wrapper/ShaderProgram.h"
+#include "nimble/opengl-wrapper/VertexShader.h"
 
 using namespace std;
 
@@ -22,7 +24,7 @@ void ShaderProgram::AddVertexShader(const char *text) {
 	shader->Load();
 	if(!shader->Compile(text)) {
 		shader->PrintErrorOutput();
-		throw std::exception("Failed to compile shader");
+		throw std::runtime_error("Failed to compile shader");
 	}
 	_shaders.push_back(std::move(shader));
 }
@@ -33,7 +35,7 @@ void ShaderProgram::AddFragmentShader(const char *text) {
 	shader->Load();
 	if(!shader->Compile(text)) {
 		shader->PrintErrorOutput();
-		throw std::exception("Failed to compile shader");
+		throw std::runtime_error("Failed to compile shader");
 	}
 	_shaders.push_back(std::move(shader));
 }

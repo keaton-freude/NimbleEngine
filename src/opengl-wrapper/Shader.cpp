@@ -1,13 +1,14 @@
-#include "nimble/opengl-wrapper/Shader.h"
 #include <cassert>
-#include <glad/glad.h>
 #include <iostream>
+#include <GL/glew.h>
 
-Shader::Shader() : _shaderHandle(0), _loaded(false) {
+#include "nimble/opengl-wrapper/Shader.h"
+
+Shader::Shader() : _loaded(false), _shaderHandle(0) {
 }
 
 void Shader::Load() {
-	_shaderHandle = glCreateShader(this->GetShaderType());
+	_shaderHandle = glCreateShader(static_cast<GLenum>(this->GetShaderType()));
 	_loaded = true;
 }
 

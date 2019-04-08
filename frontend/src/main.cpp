@@ -1,7 +1,4 @@
-// --- Dont move this, its stopping clang format from reordering includes
-// --- and glad _must_ come before glfw
-#include <glad/glad.h>
-///
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <array>
 #include <fmt/format.h>
@@ -17,8 +14,6 @@
 #include "nimble/utility/FileUtility.h"
 #include "nimble/window/Window.h"
 #include "nimble/opengl-wrapper/VertexArrayObject.h"
-
-#include <filesystem>
 
 using std::cout;
 using std::endl;
@@ -44,18 +39,18 @@ void clean_up() {
 }
 
 int main() {
-	std::cout << std::filesystem::current_path() << std::endl;
 	try {
 		start_up();
+                
 		// main application code here
 
 		Window w(Width(1920), Height(1080), "Test Title");
 
-		// Cannot initialize GLAD until we've set the context, which happens in Window
-		if(!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-			std::cout << "Failed to initialize GLAD" << endl;
-			throw std::runtime_error("Failed to initialize GLAD");
-		}
+                GLenum err = glewInit();
+                if (err != GLEW_OK) {
+                        std::cout << "Failed to initialize glew." << std::endl;
+                        std::exit(-1);
+                }
 
 		const auto windowPointer = w.GetWindow();
 
@@ -72,8 +67,8 @@ int main() {
 		glBindVertexArray(VAO);
 
 		ShaderProgram program;
-		program.AddVertexShader(FileReadAllText("resources\\shaders\\basic.vert").c_str());
-		program.AddFragmentShader(FileReadAllText("resources\\shaders\\basic.frag").c_str());
+		program.AddVertexShader(FileReadAllText("../resources/shaders/basic.vert").c_str());
+		program.AddFragmentShader(FileReadAllText("../resources/shaders/basic.frag").c_str());
 		if(!program.LinkShaders()) {
 			throw std::runtime_error("Failed to link shaders!");
 		}
