@@ -1,6 +1,6 @@
-#include <iostream>
-#include <exception>
 #include <GL/glew.h>
+#include <exception>
+#include <iostream>
 
 #include "nimble/opengl-wrapper/FragmentShader.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <stdint.h>
+#include <vector>
 
 #include "nimble/opengl-wrapper/Buffer.h"
 

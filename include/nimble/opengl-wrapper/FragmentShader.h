@@ -4,6 +4,7 @@
 class FragmentShader : public Shader {
 public:
 	FragmentShader() = default;
+
 protected:
 	virtual int GetShaderType() override;
 };

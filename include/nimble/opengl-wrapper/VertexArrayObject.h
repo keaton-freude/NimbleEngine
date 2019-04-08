@@ -7,6 +7,7 @@
 class VertexArrayObject {
 private:
 	uint32_t _vaoHandle;
+
 public:
 	VertexArrayObject() {
 		glGenVertexArrays(1, &_vaoHandle);

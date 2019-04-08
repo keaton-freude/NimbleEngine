@@ -1,6 +1,6 @@
+#include <GL/glew.h>
 #include <cassert>
 #include <iostream>
-#include <GL/glew.h>
 
 #include "nimble/opengl-wrapper/Shader.h"
 
