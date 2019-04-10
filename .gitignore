@@ -37,4 +37,8 @@ build/
 .vscode/
 
 ./compile_commands.json
+**/packagecache/*
 
+# Black list everything in subprojects
+**/subprojects/*
+!**/subprojects/*.wrap
