@@ -1,6 +1,5 @@
 #Renderer Source
-src =
-[
+src = [
 	'Mesh.cpp', 
 	'opengl-wrapper/FragmentShader.cpp', 
 	'opengl-wrapper/GLContext.cpp',

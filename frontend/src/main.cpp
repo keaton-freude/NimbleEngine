@@ -15,6 +15,7 @@
 #include "nimble/opengl-wrapper/VertexBufferFormat.h"
 #include "nimble/utility/FileUtility.h"
 #include "nimble/window/Window.h"
+#include "nimble/factory/Factory.h"
 
 using std::cout;
 using std::endl;
@@ -39,7 +40,58 @@ void clean_up() {
 	glfwTerminate();
 }
 
+struct AbstractClass {
+	virtual ~AbstractClass() = default;
+	virtual void DoSomething() = 0;
+};
+
+struct A : public AbstractClass {
+	virtual void DoSomething() override {
+		std::cout << "A::DoSomething()" << std::endl;
+	}
+};
+
+struct B : public AbstractClass {
+	virtual void DoSomething() override {
+		std::cout << "B::DoSomething()" << std::endl;
+	}
+};
+
+#include <memory>
+
+std::shared_ptr<AbstractClass> CreateA() {
+	return std::make_shared<A>();
+}
+
+std::shared_ptr<AbstractClass> CreateB() {
+	return std::make_shared<B>();
+}
+
 int main() {
+
+	Factory<AbstractClass, int> myFactory;
+
+	myFactory.Register(0, CreateA);
+	myFactory.Register(1, CreateB);
+
+	// Test getting it
+	auto myA = myFactory.CreateObject(0);
+	myA->DoSomething();
+	auto myB = myFactory.CreateObject(1);
+	myB->DoSomething();
+
+	// Get another instance to prove we are getting fresh instances each time
+	auto myA2 = myFactory.CreateObject(0);
+
+	std::cout << fmt::format("myA.Address: {0:x}, myA2.Address: {0:x}", (uint64_t)myA.get(), (uint64_t)myB.get()).c_str();
+
+	// expect an error here
+	try {
+		auto myC = myFactory.CreateObject(2);
+	} catch (const std::exception& err) {
+		std::cout << "Got an error, message: " << err.what() << std::endl;
+	}
+
 	try {
 		start_up();
 
