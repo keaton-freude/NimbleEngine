@@ -3,17 +3,18 @@
 #include <array>
 #include <fmt/format.h>
 #include <iostream>
+#include <memory>
 
 #include "nimble/Mesh.h"
 #include "nimble/MeshTools.h"
 #include "nimble/opengl-wrapper/GLContext.h"
 #include "nimble/opengl-wrapper/IndexBuffer.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
+#include "nimble/opengl-wrapper/VertexArrayObject.h"
 #include "nimble/opengl-wrapper/VertexBuffer.h"
 #include "nimble/opengl-wrapper/VertexBufferFormat.h"
 #include "nimble/utility/FileUtility.h"
 #include "nimble/window/Window.h"
-#include "nimble/opengl-wrapper/VertexArrayObject.h"
 
 using std::cout;
 using std::endl;
@@ -41,16 +42,16 @@ void clean_up() {
 int main() {
 	try {
 		start_up();
-                
+
 		// main application code here
 
 		Window w(Width(1920), Height(1080), "Test Title");
 
-                GLenum err = glewInit();
-                if (err != GLEW_OK) {
-                        std::cout << "Failed to initialize glew." << std::endl;
-                        std::exit(-1);
-                }
+		GLenum err = glewInit();
+		if(err != GLEW_OK) {
+			std::cout << "Failed to initialize glew." << std::endl;
+			std::exit(-1);
+		}
 
 		const auto windowPointer = w.GetWindow();
 
@@ -67,8 +68,8 @@ int main() {
 		glBindVertexArray(VAO);
 
 		ShaderProgram program;
-		program.AddVertexShader(FileReadAllText("../resources/shaders/basic.vert").c_str());
-		program.AddFragmentShader(FileReadAllText("../resources/shaders/basic.frag").c_str());
+		program.AddVertexShader(FileReadAllText("../../resources/shaders/basic.vert").c_str());
+		program.AddFragmentShader(FileReadAllText("../../resources/shaders/basic.frag").c_str());
 		if(!program.LinkShaders()) {
 			throw std::runtime_error("Failed to link shaders!");
 		}
