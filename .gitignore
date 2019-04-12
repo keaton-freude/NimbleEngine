@@ -42,3 +42,4 @@ build/
 # Black list everything in subprojects
 **/subprojects/*
 !**/subprojects/*.wrap
+compile_commands.json

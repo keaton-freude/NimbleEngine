@@ -1,4 +1,7 @@
 #pragma once
+
+#include <stddef.h>
+#include <initializer_list>
 #include <vector>
 
 template <typename T>

@@ -1,7 +1,11 @@
 #include <GL/glew.h>
-#include <exception>
 #include <iostream>
+#include <list>
+#include <memory>
+#include <stdexcept>
+#include <utility>
 
+#include "nimble/opengl-wrapper/Shader.h"
 #include "nimble/opengl-wrapper/FragmentShader.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/opengl-wrapper/VertexShader.h"

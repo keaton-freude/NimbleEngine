@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
+#include <bits/stdint-uintn.h>
+#include <stddef.h>
 #include <vector>
-
 #include "nimble/opengl-wrapper/Buffer.h"
 
 namespace Nimble {

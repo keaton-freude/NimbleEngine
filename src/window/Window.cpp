@@ -1,8 +1,12 @@
-#include "nimble/window/Window.h"
-#include "fmt/format.h"
+#include <stdexcept>
+#include <GLFW/glfw3.h>
+#include <string>
+#include <fmt/format.h>
+
 #include "nimble/opengl-wrapper/GLContext.h"
 #include "nimble/utility/UnusedMacro.h"
-#include <stdexcept>
+#include "nimble/window/Window.h"
+#include "nimble/utility/StrongTypes.h"
 
 void _HandleResize2(GLFWwindow *window, int width, int height) {
 	UNUSED(window);
