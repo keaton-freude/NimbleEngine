@@ -5,16 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(Windows) Launch",
-      "type": "cppvsdbg",
+      "name": "Launch Nimble",
+      "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/frontend/Nimble.exe",
+      "program": "${workspaceFolder}/build/frontend/NimbleFrontend",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
-      "externalConsole": true,
-      "symbolSearchPath": "https://msdl.microsoft.com/download/symbols"
+      "externalConsole": false
     }
   ]
 }

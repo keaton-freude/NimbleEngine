@@ -9,7 +9,8 @@ src = [
 	'opengl-wrapper/VertexBuffer.cpp', 
 	'opengl-wrapper/VertexShader.cpp', 
 	'window/Window.cpp', 
-	'resource-manager/ResourceManager.cpp'
+	'resource-manager/ResourceManager.cpp',
+	'BasicShader.cpp'
 ] 
 
 include_dir = include_directories('../include')

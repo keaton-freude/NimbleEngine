@@ -17,6 +17,7 @@
 #include "nimble/opengl-wrapper/VertexBufferFormat.h"
 #include "nimble/utility/FileUtility.h"
 #include "nimble/window/Window.h"
+#include "nimble/resource-manager/ResourceManager.h"
 
 using std::cout;
 using std::endl;
@@ -54,6 +55,8 @@ int main() {
 			std::cout << "Failed to initialize glew." << std::endl;
 			std::exit(-1);
 		}
+
+		ResourceManager::Get();
 
 		const auto windowPointer = w.GetWindow();
 
