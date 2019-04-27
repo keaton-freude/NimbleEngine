@@ -15,8 +15,10 @@
 #include <memory>
 #include <filesystem>
 #include <iostream>
+#include <cassert>
 
 #include "nimble/opengl-wrapper/Shader.h"
+#include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/utility/Singleton.h"
 
 namespace Nimble {
@@ -38,14 +40,22 @@ private:
         // In the future, we may make this possible to set (either through some settings)
         // file, or via CLI or something similar.
         const std::string& GetResourceRoot() {
-                const static std::string RESOURCE_ROOT = std::filesystem::current_path().string();
+                // We assume the executable is somewhere below: build/frontend/<executable>
+                // Our RESOURCE_ROOT is relative toe the build folder, so go 1 folder up 
+                const static std::string RESOURCE_ROOT = (std::filesystem::current_path().parent_path() / "resources").string();
+                assert(RESOURCE_ROOT.length() != 0 && "RESOURCE_ROOT is an empty string!");
+
+                // NOTE: We are making a hard assumption about the path of the executable
+                // but all components which need paths ought use this (extract to class if that
+                // usage ever leaves the ResourceManager), it'll be easy to change
+
                 return RESOURCE_ROOT;
         }
 public:
 
         // Give me a shader with @name, which is a path relative to the 'shaders'
         // folder within the resources folder
-        std::shared_ptr<Shader> GetShader(const std::string &name); 
+        std::shared_ptr<ShaderProgram> GetShader(const std::string &name); 
 
         // Other options?
         // Return a mesh by filename

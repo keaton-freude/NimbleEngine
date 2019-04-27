@@ -56,8 +56,6 @@ int main() {
 			std::exit(-1);
 		}
 
-		ResourceManager::Get();
-
 		const auto windowPointer = w.GetWindow();
 
 		auto mesh = MeshTools::CreateTriangle();
@@ -72,12 +70,7 @@ int main() {
 
 		glBindVertexArray(VAO);
 
-		ShaderProgram program;
-		program.AddVertexShader(FileReadAllText("../../resources/shaders/basic.vert").c_str());
-		program.AddFragmentShader(FileReadAllText("../../resources/shaders/basic.frag").c_str());
-		if(!program.LinkShaders()) {
-			throw std::runtime_error("Failed to link shaders!");
-		}
+		auto shader = ResourceManager::Get().GetShader("basic");
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 		glEnableVertexAttribArray(0);
@@ -87,7 +80,7 @@ int main() {
 			glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			program.Use();
+			shader->Use();
 			vertexBuffer->Bind();
 			indexBuffer->Bind();
 			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
