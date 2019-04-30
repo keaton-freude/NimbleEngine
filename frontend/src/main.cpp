@@ -19,84 +19,38 @@
 #include "nimble/window/Window.h"
 #include "nimble/resource-manager/ResourceManager.h"
 
+#include "nimble/RenderLoop.h"
+#include "nimble/GlfwRenderLoop.h"
+
 using std::cout;
 using std::endl;
 
 using namespace Nimble;
 
-void glfw_error_callback(int error, const char *description) {
-	std::cout << fmt::format("GLFW Error # {}: {}", error, description).c_str() << endl;
-}
-
-// Do all required startup operations like library initialization
-// early debug info, etc.
-// Any failures result in a debug output + exit
-void start_up() {
-	if(!glfwInit()) {
-		std::cout << "Failed to initialize GLFW" << endl;
-		exit(-1);
-	}
-}
-
-void clean_up() {
-	glfwTerminate();
-}
-
 int main() {
 	try {
-		start_up();
-
 		// main application code here
+		if (!glfwInit()) {
+			throw std::runtime_error("Could not initialize GLFW");
+		}
 
 		Window w(Width(1920), Height(1080), "Test Title");
-
 		GLenum err = glewInit();
 		if(err != GLEW_OK) {
 			std::cout << "Failed to initialize glew." << std::endl;
 			std::exit(-1);
 		}
 
+		auto engine = std::make_shared<Engine>();
+
 		const auto windowPointer = w.GetWindow();
 
-		auto mesh = MeshTools::CreateTriangle();
+		GlfwRenderLoop renderLoop(engine, windowPointer);
+		renderLoop.Run();
 
-		auto *indexBuffer = new IndexBuffer(mesh.NumIndices(), BufferUsageType::Static);
-		indexBuffer->SetData(mesh.IndexData());
-
-		auto *vertexBuffer = new VertexBuffer<Position>(mesh.VertexData(), BufferUsageType::Static);
-
-		unsigned int VAO;
-		glGenVertexArrays(1, &VAO);
-
-		glBindVertexArray(VAO);
-
-		auto shader = ResourceManager::Get().GetShader("basic");
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-		glEnableVertexAttribArray(0);
-
-		// render loop
-		while(!glfwWindowShouldClose(windowPointer)) {
-			glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			shader->Use();
-			vertexBuffer->Bind();
-			indexBuffer->Bind();
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-
-			glfwSwapBuffers(windowPointer);
-			glfwPollEvents();
-		}
 	} catch(std::exception &ex) {
 		std::cout << "Unhandled exception with message: " << ex.what() << std::endl;
-		clean_up();
-		char blah;
-		std::cin >> blah;
-		return -1;
 	}
-
-	clean_up();
 
 	return 0;
 }

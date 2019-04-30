@@ -17,6 +17,7 @@ ShaderProgram::ShaderProgram() {
 }
 
 ShaderProgram::~ShaderProgram() {
+	std::cout << "~ShaderProgram()" << std::endl;
 	for(const auto &shader : _shaders) {
 		glDeleteShader(shader->GetHandle());
 	}
