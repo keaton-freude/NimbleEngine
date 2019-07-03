@@ -13,7 +13,8 @@ src = [
 	'BasicShader.cpp',
 	'RenderLoop.cpp',
 	'engine/Engine.cpp',
-	'GlfwRenderLoop.cpp'
+	'GlfwRenderLoop.cpp',
+	'input/InputManager.cpp'
 ] 
 
 include_dir = include_directories('../include')
@@ -23,9 +24,10 @@ OpenGLDepend = dependency('GL', required: true)
 fmtLibDepend = subproject('fmt').get_variable('fmt_dep') 
 GLEWDepend = dependency('glew', required : true) 
 GLFWDepend = dependency('glfw3', required: true)
+SpdLogDepend = subproject('spdlog').get_variable('spdlog_dep')
 
 ng = shared_library('NimbleGraphics', sources: src, include_directories : include_dir, 
 					version: '0.0.1', soversion: '0', 
-					dependencies : [OpenGLDepend, GLEWDepend, GLFWDepend, fmtLibDepend])
+					dependencies : [OpenGLDepend, GLEWDepend, GLFWDepend, fmtLibDepend, SpdLogDepend])
 
 NimbleGraphicsDepend = declare_dependency(link_with: ng, include_directories: include_dir)

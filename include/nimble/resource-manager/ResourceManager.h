@@ -17,6 +17,8 @@
 #include <iostream>
 #include <cassert>
 
+#include "spdlog/spdlog.h"
+
 #include "nimble/opengl-wrapper/Shader.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/utility/Singleton.h"
@@ -27,7 +29,7 @@ class ResourceManager : public Singleton<ResourceManager> {
 public:
         // Singleton
         ResourceManager() {
-                std::cout << "Resource Root: " << GetResourceRoot() << "\n";
+                spdlog::info("Resource Root: {}", GetResourceRoot());
         }
 
 private:

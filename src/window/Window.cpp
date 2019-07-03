@@ -1,12 +1,12 @@
-#include <stdexcept>
 #include <GLFW/glfw3.h>
-#include <string>
 #include <fmt/format.h>
+#include <stdexcept>
+#include <string>
 
 #include "nimble/opengl-wrapper/GLContext.h"
+#include "nimble/utility/StrongTypes.h"
 #include "nimble/utility/UnusedMacro.h"
 #include "nimble/window/Window.h"
-#include "nimble/utility/StrongTypes.h"
 
 void _HandleResize2(GLFWwindow *window, int width, int height) {
 	UNUSED(window);
@@ -33,6 +33,9 @@ Window::Window(Width width, Height height, const char *title)
 	}
 
 	glfwMakeContextCurrent(_window);
+
+	// uncomment below line to disable vsync
+	// glfwSwapInterval(0);
 
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);

@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <utility>
 
+#include "spdlog/spdlog.h"
+
 #include "nimble/opengl-wrapper/Shader.h"
 #include "nimble/opengl-wrapper/FragmentShader.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
@@ -17,7 +19,6 @@ ShaderProgram::ShaderProgram() {
 }
 
 ShaderProgram::~ShaderProgram() {
-	std::cout << "~ShaderProgram()" << std::endl;
 	for(const auto &shader : _shaders) {
 		glDeleteShader(shader->GetHandle());
 	}
@@ -59,7 +60,7 @@ bool ShaderProgram::LinkShaders() const {
 		char buffer[1024];
 		glGetProgramInfoLog(_programHandle, 1024, nullptr, buffer);
 
-		std::cout << "Linker Error: " << buffer << std::endl;
+		spdlog::error("Failed to link shader, message: {}", buffer);
 	}
 
 	return success != 0;

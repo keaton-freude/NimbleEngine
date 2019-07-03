@@ -6,7 +6,6 @@ using namespace Nimble;
 
 IndexBuffer::IndexBuffer(size_t numElements, BufferUsageType usage)
 : _elements(numElements), _usageType(usage) {
-	std::cout << "hello!" << std::endl;
 	glGenBuffers(1, &_elementBufferHandle);
 }
 

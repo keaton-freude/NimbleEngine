@@ -3,6 +3,8 @@
 #include <fmt/format.h>
 #include "nimble/utility/FileUtility.h"
 
+#include "spdlog/spdlog.h"
+
 using namespace Nimble;
 
 std::shared_ptr<ShaderProgram> ResourceManager::GetShader(const std::string &name) {
@@ -17,8 +19,8 @@ std::shared_ptr<ShaderProgram> ResourceManager::GetShader(const std::string &nam
     std::filesystem::path vertexShaderSource = shadersDir / fmt::format("{}.vert", name.c_str());
     std::filesystem::path fragmentShaderSource = shadersDir / fmt::format("{}.frag", name.c_str());
 
-    std::cout << "Vertex: " << vertexShaderSource.string() << "\n";
-    std::cout << "Frag: " << fragmentShaderSource.string() << "\n";
+    spdlog::debug("Vertex: {}", vertexShaderSource.string());
+    spdlog::debug("Frag: {}", fragmentShaderSource.string());
 
     if (!std::filesystem::exists(vertexShaderSource)) {
         throw std::runtime_error(fmt::format("Failed to find vertex shader at: {}", vertexShaderSource.string()));

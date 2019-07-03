@@ -2,6 +2,8 @@
 #include <cassert>
 #include <iostream>
 
+#include "spdlog/spdlog.h"
+
 #include "nimble/opengl-wrapper/Shader.h"
 
 Shader::Shader() : _loaded(false), _shaderHandle(0) {
@@ -28,5 +30,5 @@ void Shader::PrintErrorOutput() const {
 	char infoLog[1024];
 	glGetShaderInfoLog(_shaderHandle, 1024, nullptr, infoLog);
 
-	std::cout << "[ERR]: Compiling Shader failed. Message: " << infoLog << std::endl;
+	spdlog::error("Failed to compile shader. Message: {}", infoLog);
 }
