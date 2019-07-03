@@ -25,4 +25,8 @@ public:
 
 	// Bind the shader program to the pipeline
 	void Use() const;
+
+	const unsigned int ShaderHandle() const {
+		return _programHandle;
+	}
 };

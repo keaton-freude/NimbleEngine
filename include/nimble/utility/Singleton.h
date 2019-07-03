@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Generic Singleton type
  *
@@ -8,13 +9,15 @@ template <typename T>
 class Singleton {
 public:
 	virtual ~Singleton() = default;
-	static T& Get() {
+	static T &Get() {
 		static T _instance;
 		return _instance;
 	}
+
 protected:
 	Singleton() = default;
+
 private:
 	Singleton(Singleton const &) = delete;
-	Singleton& operator=(Singleton const &) = delete;
+	Singleton &operator=(Singleton const &) = delete;
 };

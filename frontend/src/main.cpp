@@ -8,6 +8,7 @@
 #include "spdlog/spdlog.h"
 
 #include "nimble/GlfwRenderLoop.h"
+#include "nimble/font-rendering/TextRenderer.h"
 #include "nimble/input/InputManager.h"
 #include "nimble/utility/StrongTypes.h"
 #include "nimble/window/Window.h"

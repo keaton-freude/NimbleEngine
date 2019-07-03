@@ -26,7 +26,6 @@ void Input::RegisterKeyCodeMapping(string identifier, int scanCode) {
 bool Input::IsKeyPressed(string identifier) {
 	auto entry = _scanCodeState.find(identifier);
 	if(entry != _scanCodeState.end()) {
-		spdlog::debug("Is {} pressed? Returning: {}", identifier, entry->second.pressed);
 		return entry->second.pressed;
 	}
 
