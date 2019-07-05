@@ -15,4 +15,19 @@ public:
 									  },
 									  { { 0, 1, 2 } });
 	}
+
+	// Remove me eventually, just for testing color shader
+	static Mesh<Nimble::PositionColor> CreateColoredTriangle() {
+		// Same as the demo triangle, but with some colors
+		glm::vec3 vert1Pos = glm::vec3({ 0.0f, 0.5f, 0.0f });
+		glm::vec3 vert2Pos = glm::vec3({ -.5f, -.5f, 0.0f });
+		glm::vec3 vert3Pos = glm::vec3({ 0.5f, -.5f, 0.0f });
+
+		glm::vec4 vert1Color = glm::vec4({ 1.0f, 0, 0, 1.0f });
+		glm::vec4 vert2Color = glm::vec4({ 0, 1.0f, 0, 1.0f });
+		glm::vec4 vert3Color = glm::vec4({ 0, 0, 1.0f, 1.0f });
+
+		return Mesh<Nimble::PositionColor>({ { vert1Pos, vert1Color }, { vert2Pos, vert2Color }, { vert3Pos, vert3Color } },
+										   { { 0, 1, 2 } });
+	}
 };

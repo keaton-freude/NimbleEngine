@@ -36,7 +36,7 @@ public:
 			spdlog::error("Failed to load FiraCode-Regular.tff");
 		}
 
-		FT_Set_Pixel_Sizes(face, 0, 48);
+		FT_Set_Pixel_Sizes(face, 0, 18);
 
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		for(GLubyte c = 0; c < 128; c++) {
