@@ -54,7 +54,7 @@ void Engine::RenderFrame() {
 
 	for(int j = 0; j < 1; ++j) {
 		for(int i = 0; i < 2; ++i) {
-			_textRenderer->RenderText("TestText", 100.0f * j, 20.0f * i, 1.0f, glm::vec3({ .7f, .7f, .7f }));
+			_textRenderer->RenderText("TestText", 100.0f * j, 20.0f * i, 1.0f, glm::vec3({ 1.f, 1.f, 1.f }));
 		}
 	}
 }

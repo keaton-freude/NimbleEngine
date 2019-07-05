@@ -6,3 +6,6 @@ subdir('src')
 
 # Frontend
 subdir('frontend')
+
+run_target('install-resources',
+command : ['scripts/install-resources.py', './resources', './build/resources'], )
