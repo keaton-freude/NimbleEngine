@@ -23,20 +23,23 @@ class Time {
 	// Last calculated FPS value
 	float _lastCalculatedFps;
 
+	// Delta time between renders
+	std::chrono::nanoseconds _frameTime;
+
 
 public:
 	Time()
 	: _currentTime(std::chrono::steady_clock::now()), _totalFramesCounted(0), _totalTime(0),
-	  _framesCounted(0), _fpsTime(0), _lastCalculatedFps(0.0f) {
+	  _framesCounted(0), _fpsTime(0), _lastCalculatedFps(0.0f), _frameTime(0) {
 	}
 
 	// call this as soon as a frame starts
 	void Begin() {
 		auto newTime = std::chrono::steady_clock::now();
-		auto frameTime = newTime - _currentTime;
+		_frameTime = newTime - _currentTime;
 		_currentTime = newTime;
-		_totalTime += frameTime;
-		_fpsTime += frameTime;
+		_totalTime += _frameTime;
+		_fpsTime += _frameTime;
 		if(_fpsTime.count() > 1000000000) {
 			_fpsTime -= std::chrono::nanoseconds(1000000000);
 			// How many frames did we generate before passing the 1 second mark?
@@ -54,6 +57,10 @@ public:
 
 	float GetFPS() const {
 		return _lastCalculatedFps;
+	}
+
+	float dt() const {
+		return std::chrono::duration_cast<std::chrono::duration<float>>(_frameTime).count();
 	}
 };
 } // namespace Nimble

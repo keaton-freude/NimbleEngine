@@ -53,6 +53,8 @@ void Engine::RenderFrame(const Time &time) {
 
 	// Draw the FPS in the top-left corner
 	_textRenderer->RenderText(fmt::format("FPS: {}", time.GetFPS()), 0.0f, 0.0f, 1.0f, { 1.0f, 1.0f, 1.0f });
+
+	spdlog::info("DT: {}", time.dt());
 }
 
 void Engine::SetLatestFPS(float FPS) {
