@@ -2,8 +2,8 @@
 #include <chrono>
 #include <memory>
 
-#include "nimble/RenderLoop.h"
 #include "nimble/engine/Engine.h"
+#include "nimble/engine/RenderLoop.h"
 #include "nimble/opengl-wrapper/GLContext.h"
 
 #include "spdlog/spdlog.h"

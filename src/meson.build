@@ -10,7 +10,6 @@ src = [
 	'opengl-wrapper/VertexShader.cpp', 
 	'window/Window.cpp', 
 	'resource-manager/ResourceManager.cpp',
-	'BasicShader.cpp',
 	'RenderLoop.cpp',
 	'engine/Engine.cpp',
 	'GlfwRenderLoop.cpp',

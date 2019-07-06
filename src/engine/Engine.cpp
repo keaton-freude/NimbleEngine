@@ -29,10 +29,10 @@ Engine::Engine() {
 
 	// NOTES: Stride requires you to count yourself + all other interleaved data
 	// 3 floats of position per vertex, along with 4 floats of color
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, PositionColor::SizeInBytes, (void *)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)12);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, PositionColor::SizeInBytes, (void *)12);
 	glEnableVertexAttribArray(1);
 
 
@@ -41,7 +41,6 @@ Engine::Engine() {
 }
 
 void Engine::RenderFrame() {
-	spdlog::info("Ping");
 	glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -51,10 +50,4 @@ void Engine::RenderFrame() {
 
 	glBindVertexArray(_vao);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-
-	for(int j = 0; j < 1; ++j) {
-		for(int i = 0; i < 2; ++i) {
-			_textRenderer->RenderText("TestText", 100.0f * j, 20.0f * i, 1.0f, glm::vec3({ 1.f, 1.f, 1.f }));
-		}
-	}
 }

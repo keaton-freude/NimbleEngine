@@ -1,5 +1,5 @@
 
-#include "nimble/GlfwRenderLoop.h"
+#include "nimble/engine/GlfwRenderLoop.h"
 #include "nimble/input/InputManager.h"
 #include <GLFW/glfw3.h>
 
