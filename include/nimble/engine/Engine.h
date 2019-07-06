@@ -19,12 +19,17 @@ public:
 	Engine();
 	void RenderFrame();
 
+	// Tell the engine what its latest FPS is, so it can render it
+	void SetLatestFPS(float FPS);
+
 private:
 	std::unique_ptr<VertexBuffer<PositionColor>> _vb;
 	std::unique_ptr<IndexBuffer> _ib;
 	std::shared_ptr<ShaderProgram> _shader;
 	unsigned int _vao;
 	std::unique_ptr<TextRenderer> _textRenderer;
+
+	float _fps;
 };
 
 } // namespace Nimble

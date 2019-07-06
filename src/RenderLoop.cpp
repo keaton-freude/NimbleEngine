@@ -4,6 +4,7 @@
 
 #include "nimble/engine/Engine.h"
 #include "nimble/engine/RenderLoop.h"
+#include "nimble/engine/Time.h"
 #include "nimble/opengl-wrapper/GLContext.h"
 
 #include "spdlog/spdlog.h"
@@ -16,15 +17,19 @@ RenderLoop::RenderLoop(std::shared_ptr<Engine> engine, ExitCondition exitConditi
 
 void RenderLoop::Run() {
 	while(!_exitCondition()) {
-		// Poll for Input
+		_time.Begin();
 
+		// Poll for Input
 		PollForEvents();
+
 		// Render Frame
 		RenderFrame();
 
 		SwapBuffers();
 
-		_lastFrameTime = std::chrono::high_resolution_clock::now();
+		_time.End();
+
+		_engine->SetLatestFPS(_time.GetFPS());
 	}
 }
 

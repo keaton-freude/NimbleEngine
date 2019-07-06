@@ -50,4 +50,11 @@ void Engine::RenderFrame() {
 
 	glBindVertexArray(_vao);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+	// Draw the FPS in the top-left corner
+	_textRenderer->RenderText(fmt::format("FPS: {}", _fps), 0.0f, 0.0f, 1.0f, { 1.0f, 1.0f, 1.0f });
+}
+
+void Engine::SetLatestFPS(float FPS) {
+	_fps = FPS;
 }
