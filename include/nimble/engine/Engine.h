@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "nimble/engine/Time.h"
 #include "nimble/font-rendering/TextRenderer.h"
 #include "nimble/opengl-wrapper/IndexBuffer.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
@@ -17,7 +18,7 @@ namespace Nimble {
 class Engine {
 public:
 	Engine();
-	void RenderFrame();
+	void RenderFrame(const Time &time);
 
 	// Tell the engine what its latest FPS is, so it can render it
 	void SetLatestFPS(float FPS);

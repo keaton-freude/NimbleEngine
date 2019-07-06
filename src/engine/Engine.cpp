@@ -40,7 +40,7 @@ Engine::Engine() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Engine::RenderFrame() {
+void Engine::RenderFrame(const Time &time) {
 	glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -52,7 +52,7 @@ void Engine::RenderFrame() {
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 	// Draw the FPS in the top-left corner
-	_textRenderer->RenderText(fmt::format("FPS: {}", _fps), 0.0f, 0.0f, 1.0f, { 1.0f, 1.0f, 1.0f });
+	_textRenderer->RenderText(fmt::format("FPS: {}", time.GetFPS()), 0.0f, 0.0f, 1.0f, { 1.0f, 1.0f, 1.0f });
 }
 
 void Engine::SetLatestFPS(float FPS) {

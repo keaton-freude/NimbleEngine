@@ -32,7 +32,7 @@ protected:
 	// Require user to tell us how to swap buffers, as this differs based on platform/system
 	virtual void SwapBuffers() = 0;
 
-	void RenderFrame();
+	void RenderFrame(const Time &time);
 
 
 private:

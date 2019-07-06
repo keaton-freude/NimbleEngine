@@ -23,16 +23,14 @@ void RenderLoop::Run() {
 		PollForEvents();
 
 		// Render Frame
-		RenderFrame();
+		RenderFrame(_time);
 
 		SwapBuffers();
 
 		_time.End();
-
-		_engine->SetLatestFPS(_time.GetFPS());
 	}
 }
 
-void RenderLoop::RenderFrame() {
-	_engine->RenderFrame();
+void RenderLoop::RenderFrame(const Time &time) {
+	_engine->RenderFrame(time);
 }
