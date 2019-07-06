@@ -12,6 +12,8 @@
 #include "nimble/resource-manager/ResourceManager.h"
 #include "spdlog/spdlog.h"
 
+#include "nimble/font-rendering/FontAtlas.h"
+
 // Renders fonts to the screen!
 namespace Nimble {
 class TextRenderer {
@@ -23,10 +25,11 @@ private:
 	glm::mat4 _projection;
 	std::shared_ptr<ShaderProgram> _fontShader;
 	GLuint VAO, VBO;
+	FontAtlas _atlas;
 
 public:
 	TextRenderer() {
-		FT_Library ft;
+		/*FT_Library ft;
 		if(FT_Init_FreeType(&ft)) {
 			spdlog::error("Failed to init free type");
 		}
@@ -46,15 +49,15 @@ public:
 			}
 
 			GLuint texture;
-			glGenTextures(1, &texture);
-			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows,
-						 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+			// glGenTextures(1, &texture);
+			// glBindTexture(GL_TEXTURE_2D, texture);
+			// glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width,
+			// face->glyph->bitmap.rows, 			 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			Character character;
 			character._textureId = texture;
 			character.size = glm::ivec2({ face->glyph->bitmap.width, face->glyph->bitmap.rows });
@@ -78,7 +81,7 @@ public:
 		glBindVertexArray(0);
 
 		_fontShader = ResourceManager::Get().GetShader("font");
-
+		*/
 		spdlog::debug("Finished creating font textures");
 	}
 
@@ -88,7 +91,8 @@ public:
 	}
 
 	void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) {
-		_fontShader->Use();
+		_atlas.Test();
+		/*/_fontShader->Use();
 		glUniform3f(glGetUniformLocation(_fontShader->ShaderHandle(), "textColor"), color.x,
 					color.y, color.z);
 		glUniformMatrix4fv(glGetUniformLocation(_fontShader->ShaderHandle(), "projection"), 1,
@@ -124,6 +128,7 @@ public:
 		}
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+		*/
 	}
 };
 } // namespace Nimble
