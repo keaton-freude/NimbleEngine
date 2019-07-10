@@ -8,6 +8,8 @@ uniform vec3 textColor;
 
 void main()
 {
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);
+    vec2 flippedTexCoords = TexCoords;
+    flippedTexCoords.y = 1.0 - flippedTexCoords.y;
+    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, flippedTexCoords).r);
     color = vec4(textColor, 1.0) * sampled;
 }

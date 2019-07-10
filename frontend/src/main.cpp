@@ -8,10 +8,10 @@
 #include "spdlog/spdlog.h"
 
 #include "nimble/engine/GlfwRenderLoop.h"
-#include "nimble/font-rendering/TextRenderer.h"
 #include "nimble/input/InputManager.h"
 #include "nimble/utility/StrongTypes.h"
 #include "nimble/window/Window.h"
+
 
 using namespace Nimble;
 
@@ -30,11 +30,12 @@ int main() {
 			std::exit(-1);
 		}
 
-		auto engine = std::make_shared<Engine>();
 		const auto windowPointer = w.GetWindow();
+		auto engine = std::make_shared<Engine>(&w);
 		Input::Get().SetGlfwWindow(windowPointer);
 		// Register some basic keybindings
 		Input::Get().RegisterKeyCodeMapping("exit", GLFW_KEY_ESCAPE);
+
 
 		GlfwRenderLoop renderLoop(engine, windowPointer);
 		renderLoop.Run();

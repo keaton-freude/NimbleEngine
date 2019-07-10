@@ -25,9 +25,13 @@ void RenderLoop::Run() {
 		// Render Frame
 		RenderFrame(_time);
 
+		// Render GUI?
+
 		SwapBuffers();
 
 		_time.End();
+
+		_engine->SetLatestFPS(_time.GetFPS());
 	}
 }
 

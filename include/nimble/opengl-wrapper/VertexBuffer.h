@@ -57,7 +57,8 @@ public:
 
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferHandle);
 		auto usageType = _usageType == BufferUsageType::Static ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-		glBufferData(GL_ARRAY_BUFFER, (long)(_elements.size() * T::SizeInBytes), &_elements[0], (GLenum)usageType);
+		glBufferData(GL_ARRAY_BUFFER, (long)(_elements.size() * T::SizeInBytes()), &_elements[0],
+					 (GLenum)usageType);
 	}
 
 	void Bind() {
