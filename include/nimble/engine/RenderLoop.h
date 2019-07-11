@@ -9,6 +9,7 @@
 
 #include "nimble/engine/Engine.h"
 #include "nimble/engine/Time.h"
+#include "nimble/gui/DebugWindow.h"
 
 namespace Nimble {
 
@@ -40,6 +41,10 @@ private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> _lastFrameTime;
 	std::shared_ptr<Engine> _engine;
 	Time _time;
+
+	// Probably the wrong spot for this, but for now, keep the debug window instance
+	// here
+	std::unique_ptr<DebugWindow> _debugWindow;
 };
 
 } // namespace Nimble

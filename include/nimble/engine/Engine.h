@@ -25,6 +25,10 @@ public:
 	// Tell the engine what its latest FPS is, so it can render it
 	void SetLatestFPS(float FPS);
 
+	float GetFPS() const {
+		return _fps;
+	}
+
 private:
 	std::unique_ptr<VertexBuffer<PositionColor>> _vb;
 	std::unique_ptr<IndexBuffer> _ib;

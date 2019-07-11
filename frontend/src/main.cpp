@@ -5,6 +5,9 @@
 #include <stdexcept>
 #include <string>
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 #include "spdlog/spdlog.h"
 
 #include "nimble/engine/GlfwRenderLoop.h"
@@ -35,6 +38,15 @@ int main() {
 		Input::Get().SetGlfwWindow(windowPointer);
 		// Register some basic keybindings
 		Input::Get().RegisterKeyCodeMapping("exit", GLFW_KEY_ESCAPE);
+		// Enable Dear ImGui
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO &io = ImGui::GetIO();
+		(void)io;
+
+		ImGui::StyleColorsDark();
+		ImGui_ImplGlfw_InitForOpenGL(windowPointer, true);
+		ImGui_ImplOpenGL3_Init("#version 150");
 
 
 		GlfwRenderLoop renderLoop(engine, windowPointer);

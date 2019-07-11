@@ -14,6 +14,7 @@ src = [
 	'engine/Engine.cpp',
 	'GlfwRenderLoop.cpp',
 	'input/InputManager.cpp',
+	'gui/DebugWindow.cpp',
 
 	# imgui
 	'thirdparty/imgui/src/imgui_demo.cpp',
