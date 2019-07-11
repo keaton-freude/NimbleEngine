@@ -7,6 +7,13 @@
 using namespace Nimble;
 
 std::shared_ptr<ShaderProgram> ResourceManager::GetShader(const std::string &name) {
+	// See if it exists in the cache
+	for(const auto &[key, value] : _shaderCache) {
+		if(key == name) {
+			return value;
+		}
+	}
+
 	// User provides some name like
 	// Basic, we need to find the .frag and .vert components, create a shader
 	// program, link and check it. If all is good, return the ShaderProgram to user
@@ -38,5 +45,32 @@ std::shared_ptr<ShaderProgram> ResourceManager::GetShader(const std::string &nam
 		throw std::runtime_error("Failed to link shaders of name " + name);
 	}
 
-	return std::shared_ptr<ShaderProgram>(program);
+	std::shared_ptr<ShaderProgram> programToReturn(program);
+
+	_shaderCache[name] = programToReturn;
+
+	return programToReturn;
+}
+
+std::shared_ptr<Material> ResourceManager::GetMaterial(const std::string &name) {
+	// Check if it exists in the cache, if not throw.
+	// All materials are pre-created and registered for lookup
+	for(const auto &[key, value] : _materialCache) {
+		if(key == name) {
+			return value;
+		}
+	}
+
+	throw std::runtime_error(fmt::format("Failed to find material with name \"{}\"", name).c_str());
+}
+
+void ResourceManager::AddMaterial(const std::string &name, Material *material) {
+	// If it already exists, blowup
+	for(const auto &[key, value] : _materialCache) {
+		if(key == name) {
+			throw std::runtime_error(fmt::format("Material with name \"{}\" already registered", name));
+		}
+	}
+
+	_materialCache[name] = std::shared_ptr<Material>(material);
 }

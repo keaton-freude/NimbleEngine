@@ -12,6 +12,7 @@
 
 #include "nimble/engine/GlfwRenderLoop.h"
 #include "nimble/input/InputManager.h"
+#include "nimble/material/Material.h"
 #include "nimble/utility/StrongTypes.h"
 #include "nimble/window/Window.h"
 
@@ -48,6 +49,8 @@ int main() {
 		ImGui_ImplGlfw_InitForOpenGL(windowPointer, true);
 		ImGui_ImplOpenGL3_Init("#version 150");
 
+		// Register Materials manually for now
+		new Material("test", "color");
 
 		GlfwRenderLoop renderLoop(engine, windowPointer);
 		renderLoop.Run();

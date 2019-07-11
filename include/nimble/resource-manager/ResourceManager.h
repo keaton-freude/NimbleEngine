@@ -16,9 +16,11 @@
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 
 #include "spdlog/spdlog.h"
 
+#include "nimble/material/Material.h"
 #include "nimble/opengl-wrapper/Shader.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/utility/Singleton.h"
@@ -26,6 +28,11 @@
 namespace Nimble {
 
 class ResourceManager : public Singleton<ResourceManager> {
+private:
+	// Keep a cache of each of our resource types
+	std::unordered_map<std::string, std::shared_ptr<ShaderProgram>> _shaderCache;
+	std::unordered_map<std::string, std::shared_ptr<Material>> _materialCache;
+
 public:
 	// Singleton
 	ResourceManager() {
@@ -58,6 +65,9 @@ public:
 	// Give me a shader with @name, which is a path relative to the 'shaders'
 	// folder within the resources folder
 	std::shared_ptr<ShaderProgram> GetShader(const std::string &name);
+	std::shared_ptr<Material> GetMaterial(const std::string &name);
+
+	void AddMaterial(const std::string &name, Material *material);
 
 	// Other options?
 	// Return a mesh by filename

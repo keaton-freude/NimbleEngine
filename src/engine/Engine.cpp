@@ -16,7 +16,6 @@ Engine::Engine(Window *window) : _window(window) {
 	glGenVertexArrays(1, &_vao);
 	glBindVertexArray(_vao);
 
-	this->_shader = ResourceManager::Get().GetShader("color");
 	auto mesh = MeshTools::CreateColoredTriangle();
 
 	_ib = std::make_unique<IndexBuffer>(mesh.NumIndices(), BufferUsageType::Static);
@@ -33,7 +32,7 @@ void Engine::RenderFrame(const Time &time) {
 	glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	this->_shader->Use();
+	ResourceManager::Get().GetMaterial("test")->Bind();
 	_vb->Bind();
 	_ib->Bind();
 

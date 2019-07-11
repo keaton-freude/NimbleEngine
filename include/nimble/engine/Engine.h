@@ -32,7 +32,6 @@ public:
 private:
 	std::unique_ptr<VertexBuffer<PositionColor>> _vb;
 	std::unique_ptr<IndexBuffer> _ib;
-	std::shared_ptr<ShaderProgram> _shader;
 	unsigned int _vao;
 
 	float _fps;
