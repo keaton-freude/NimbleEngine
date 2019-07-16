@@ -27,7 +27,7 @@ int main() {
 			throw std::runtime_error("Could not initialize GLFW");
 		}
 
-		Window w(Width(1920), Height(1080), "Test Title");
+		Window w(Width(2560), Height(1440), "Test Title");
 		GLenum err = glewInit();
 		if(err != GLEW_OK) {
 			spdlog::critical("Failed to initialize glew.");
@@ -51,6 +51,7 @@ int main() {
 
 		// Register Materials manually for now
 		new Material("test", "color");
+		new Material("basic", "basic");
 
 		GlfwRenderLoop renderLoop(engine, windowPointer);
 		renderLoop.Run();

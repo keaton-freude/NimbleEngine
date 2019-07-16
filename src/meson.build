@@ -35,9 +35,10 @@ GLEWDepend = dependency('glew', required : true)
 GLFWDepend = dependency('glfw3', required: true)
 SpdLogDepend = subproject('spdlog').get_variable('spdlog_dep')
 GlmDepend = dependency('glm', required: true)
+AssimpDepend = dependency('assimp', required: true)
 
 ng = shared_library('NimbleGraphics', sources: src, include_directories : include_dir, 
 					version: '0.0.1', soversion: '0', 
-					dependencies : [OpenGLDepend, GLEWDepend, GLFWDepend, fmtLibDepend, SpdLogDepend, GlmDepend])
+					dependencies : [OpenGLDepend, GLEWDepend, GLFWDepend, fmtLibDepend, SpdLogDepend, GlmDepend, AssimpDepend])
 
 NimbleGraphicsDepend = declare_dependency(link_with: ng, include_directories: include_dir)

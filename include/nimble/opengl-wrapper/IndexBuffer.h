@@ -1,9 +1,9 @@
 #pragma once
 
+#include "nimble/opengl-wrapper/Buffer.h"
 #include <bits/stdint-uintn.h>
 #include <stddef.h>
 #include <vector>
-#include "nimble/opengl-wrapper/Buffer.h"
 
 namespace Nimble {
 
@@ -25,6 +25,10 @@ public:
 	// Set the
 	void SetData(const ElementStorage &data);
 	void Bind();
+
+	size_t GetNumIndices() {
+		return _elements.size();
+	}
 };
 
 } // namespace Nimble

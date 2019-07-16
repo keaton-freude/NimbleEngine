@@ -5,10 +5,17 @@
 
 namespace Nimble {
 struct Position {
-	enum { SizeInBytes = sizeof(float) * 3 };
+	static constexpr size_t SizeInBytes() {
+		return sizeof(float) * 3;
+	}
 	float x;
 	float y;
 	float z;
+
+	static void SetVertexAttribPointers() {
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)Position::SizeInBytes(), (void *)0);
+	}
 
 	Position() = default;
 	Position(float x, float y, float z) : x(x), y(y), z(z) {

@@ -20,6 +20,7 @@ Window::Window(Width width, Height height, const char *title)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 
 	_window = glfwCreateWindow(static_cast<int>(width.get()), static_cast<int>(height.get()), title,
 							   nullptr, nullptr);

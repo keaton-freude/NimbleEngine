@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stddef.h>
 #include <initializer_list>
+#include <stddef.h>
 #include <vector>
 
 template <typename T>
@@ -21,6 +21,9 @@ public:
 	Mesh(std::initializer_list<float> vertices, std::initializer_list<unsigned int> indices)
 	: _vertices(vertices), _indices(indices) {
 	}
+
+	// Factory
+
 
 	const VertexStorage &VertexData() {
 		return _vertices;
