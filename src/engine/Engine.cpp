@@ -41,25 +41,11 @@ Engine::Engine(Window *window) : _window(window) {
 	glGenVertexArrays(1, &_vao);
 	glBindVertexArray(_vao);
 
-	std::vector<Position> verts;
-	for(int i = 0; i < _scene->mMeshes[0]->mNumVertices; ++i) {
-		Position p;
-		p.x = _scene->mMeshes[0]->mVertices[i].x;
-		p.y = _scene->mMeshes[0]->mVertices[i].y;
-		p.z = _scene->mMeshes[0]->mVertices[i].z;
-		verts.push_back(p);
-	}
-	_vb = std::make_unique<VertexBuffer<Position>>(verts, BufferUsageType::Static);
+	auto mesh = ResourceManager::Get().GetMesh("suzanne.blend");
 
-	std::vector<unsigned int> indices;
-	for(int i = 0; i < _scene->mMeshes[0]->mNumFaces; ++i) {
-		for(int j = 0; j < _scene->mMeshes[0]->mFaces[i].mNumIndices; ++j) {
-			indices.push_back(_scene->mMeshes[0]->mFaces[i].mIndices[j]);
-		}
-	}
 
-	_ib = std::make_unique<IndexBuffer>(indices.size(), BufferUsageType::Static);
-	_ib->SetData(indices);
+	_vb = std::make_unique<VertexBuffer>(mesh.get(), BufferUsageType::Static);
+	_ib = std::make_unique<IndexBuffer>(mesh.get(), BufferUsageType::Static);
 
 	Position::SetVertexAttribPointers();
 }
@@ -73,7 +59,7 @@ void Engine::RenderFrame(const Time &time) {
 	_ib->Bind();
 
 	glBindVertexArray(_vao);
-	glDrawElements(GL_TRIANGLES, _ib->GetNumIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, _ib->GetNumFaces(), GL_UNSIGNED_INT, 0);
 
 	int width, height;
 	glfwGetFramebufferSize(_window->GetWindow(), &width, &height);

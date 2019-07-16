@@ -20,10 +20,16 @@
 
 #include "spdlog/spdlog.h"
 
+#include "nimble/IMesh.h"
+#include "nimble/Mesh.h"
 #include "nimble/material/Material.h"
 #include "nimble/opengl-wrapper/Shader.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/utility/Singleton.h"
+
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 namespace Nimble {
 
@@ -41,7 +47,16 @@ public:
 
 private:
 	// Returns a fully-qualified path, based on the passed in name
-	const std::string GetPathFromName();
+	const std::string GetPathFromName(const std::string &resourceType, const std::string &name) {
+		// resourceType is the name of a folder in the resource folder
+		spdlog::debug("GetPathFromName resourceType: {}, name: {}", resourceType, name);
+		std::filesystem::path subDir = std::filesystem::path(GetResourceRoot()) / resourceType;
+		spdlog::debug("Resource subDir: {}", subDir.c_str());
+		std::filesystem::path fullPath = subDir / name;
+		spdlog::debug("Full path: {}", fullPath.c_str());
+
+		return fullPath.c_str();
+	}
 
 	// Resource Root is set via configuration.. for now it'll be set via a const
 	// string which points relative to the build folder
@@ -68,6 +83,24 @@ public:
 	std::shared_ptr<Material> GetMaterial(const std::string &name);
 
 	void AddMaterial(const std::string &name, Material *material);
+
+	// Mesh
+	std::shared_ptr<IMesh> GetMesh(const std::string &name) {
+		Assimp::Importer importer;
+		auto path = GetPathFromName("models", name);
+		const auto _scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+		if(!_scene) {
+			spdlog::error("Failed to load model from path: {}", path);
+			return nullptr;
+		}
+
+		// For now.. just make sure we have a Mesh and just load the first one
+		if(!_scene->HasMeshes()) {
+			spdlog::error("No meshes found for the model: {}", path);
+			return nullptr;
+		}
+		return MeshFactory::FromFile(_scene->mMeshes[0]);
+	}
 
 	// Other options?
 	// Return a mesh by filename

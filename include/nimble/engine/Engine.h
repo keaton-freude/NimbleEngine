@@ -34,7 +34,7 @@ public:
 	}
 
 private:
-	std::unique_ptr<VertexBuffer<Position>> _vb;
+	std::unique_ptr<VertexBuffer> _vb;
 	std::unique_ptr<IndexBuffer> _ib;
 	unsigned int _vao;
 	const aiScene *_scene;
