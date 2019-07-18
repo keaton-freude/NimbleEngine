@@ -28,7 +28,7 @@ Engine::Engine(Window *window) : _window(window) {
 	_projectionMatrix = glm::perspective(glm::radians(90.0f), (float)width / (float)height, 0.1f, 1000.f);
 
 	_camera = new Camera();
-	_camera->SetPosition(glm::vec3(0.f, 0.f, -3.f));
+	_camera->SetDistance(3.f);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -63,10 +63,10 @@ void Engine::RenderFrame(const Time &time) {
 	glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	_camera->Update(time);
+
 	ResourceManager::Get().GetMaterial("basic")->Bind();
 	glm::mat4 MVP = _projectionMatrix * _camera->GetView() * glm::mat4(1.0f);
-	// glm::mat4 lookat = glm::lookAt(glm::vec3(4, 3, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	// glm::mat4 MVP = _projectionMatrix * lookat *
 	GLuint MatrixID =
 	glGetUniformLocation(ResourceManager::Get().GetMaterial("basic")->GetShader()->ShaderHandle(), "MVP");
 

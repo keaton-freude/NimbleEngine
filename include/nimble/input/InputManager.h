@@ -7,6 +7,9 @@
 
 #include "nimble/utility/Singleton.h"
 #include "spdlog/spdlog.h"
+#include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
 
 namespace Nimble {
 
@@ -25,6 +28,9 @@ private:
 	ScanCodeStorageTy _scanCodeState;
 	GLFWwindow *_windowPtr;
 
+	glm::vec2 prevMouse;
+	glm::vec2 mouse;
+
 public:
 	Input() {
 		spdlog::info("Input Manager created!");
@@ -33,6 +39,8 @@ public:
 	void SetGlfwWindow(GLFWwindow *windowPtr) {
 		assert(windowPtr);
 		_windowPtr = windowPtr;
+
+		glfwSetInputMode(windowPtr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	// Call this method to query the system for new input state
@@ -42,5 +50,9 @@ public:
 	void RegisterKeyCodeMapping(std::string identifier, int glfwKeyCode);
 
 	bool IsKeyPressed(std::string identifier);
+
+	glm::vec2 GetMouseMovement() {
+		return mouse;
+	}
 };
 } // namespace Nimble

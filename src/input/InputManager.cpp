@@ -7,12 +7,35 @@ using std::string;
 using std::unordered_map;
 
 void Input::Update() {
+	// Calculate the mouse delta
+	static bool firstRun = true;
+	if(firstRun) {
+		firstRun = false;
+		return;
+	}
+
+	double x, y;
+	glfwGetCursorPos(_windowPtr, &x, &y);
+	glm::vec2 newMouse = glm::vec2(x, y);
+
+	// spdlog::info("New Mouse: {},{} Prev Mouse: {},{}", newMouse.x, newMouse.y, prevMouse.x,
+	//			 prevMouse.y);
+
+	if(newMouse == prevMouse) {
+		mouse = glm::vec2(0.0f);
+	} else {
+		mouse = glm::normalize(newMouse - prevMouse);
+	}
+
 	assert(_windowPtr && "Can't check keyboard state if no GLFW window was given!");
 	for(auto &[key, value] : _scanCodeState) {
 		// Query GLFW for the state of this key and set it
 		auto state = glfwGetKey(_windowPtr, value.scanCode);
 		value.pressed = state == GLFW_PRESS ? true : false;
 	}
+
+	// Query off the mouse state and save it
+	prevMouse = newMouse;
 }
 
 void Input::RegisterKeyCodeMapping(string identifier, int scanCode) {
