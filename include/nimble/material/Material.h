@@ -51,6 +51,10 @@ public:
 	// Bind this materials state to the pipeline
 	void Bind();
 
+	std::shared_ptr<ShaderProgram> GetShader() {
+		return _shader;
+	}
+
 private:
 	// returns true if this material name is already registered within
 	// the resource manager

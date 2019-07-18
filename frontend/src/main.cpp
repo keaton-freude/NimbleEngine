@@ -27,7 +27,7 @@ int main() {
 			throw std::runtime_error("Could not initialize GLFW");
 		}
 
-		Window w(Width(2560), Height(1440), "Test Title");
+		Window w(Width(800), Height(600), "Test Title");
 		GLenum err = glewInit();
 		if(err != GLEW_OK) {
 			spdlog::critical("Failed to initialize glew.");

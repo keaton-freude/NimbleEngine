@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "glm/glm.hpp"
+#include "nimble/camera/Camera.h"
 #include "nimble/engine/Time.h"
 #include "nimble/opengl-wrapper/IndexBuffer.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
@@ -40,6 +41,9 @@ private:
 	const aiScene *_scene;
 	float _fps;
 	Window *_window;
+	Camera *_camera;
+
+	glm::mat4 _projectionMatrix;
 };
 
 } // namespace Nimble

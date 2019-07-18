@@ -16,6 +16,7 @@ src = [
 	'input/InputManager.cpp',
 	'gui/DebugWindow.cpp',
 	'material/Material.cpp',
+	'camera/Camera.cpp',
 
 	# imgui
 	'thirdparty/imgui/src/imgui_demo.cpp',
