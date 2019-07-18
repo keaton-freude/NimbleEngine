@@ -27,24 +27,19 @@ class Camera {
 	// and y is the rotation around the Y axis (left -> right, or right -> left movement)
 	glm::vec2 _rotation;
 
-	//// The position, in world-space of our camera
-	// glm::vec3 _position;
-	float _distance;
-	glm::mat4 _position;
+	glm::vec3 _position;
 
 public:
 	// assume FocusPoint is at 0, 0, 0
 	Camera();
 	Camera(glm::vec3 focusPoint);
 
-	glm::mat4 GetView() const;
+	glm::mat4 GetView();
 
-	void SetDistance(float distance) {
-		_distance = distance;
+	void Rotate(glm::vec2 delta);
+	void SetPosition(glm::vec3 position) {
+		_position = position;
 	}
-
-	void Rotate(float amount, glm::vec3 axis);
-
 	void Update(const Time &time);
 
 private:

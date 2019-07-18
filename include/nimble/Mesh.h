@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <assimp/scene.h>
+#include <spdlog/spdlog.h>
 
 #include "nimble/IMesh.h"
 #include "nimble/opengl-wrapper/VertexBufferFormat.h"
@@ -80,6 +81,7 @@ public:
 
 private:
 	static std::shared_ptr<Mesh<Position>> BuildMesh_Position(const aiMesh *mesh) {
+		spdlog::info("Building mesh with {} verts and {} faces", mesh->mNumVertices, mesh->mNumFaces);
 		// Return a mesh where we only read off Positions & Index data
 		std::vector<Position> verts(mesh->mNumVertices);
 
