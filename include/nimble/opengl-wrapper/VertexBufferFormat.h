@@ -45,6 +45,27 @@ struct PositionColor {
 	}
 };
 
+struct PositionNormal {
+	static constexpr size_t SizeInBytes() {
+		return sizeof(glm::vec3) + sizeof(glm::vec3);
+	}
+
+	static void SetVertexAttribPointers() {
+		// Position
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)PositionNormal::SizeInBytes(), (void *)0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (int)PositionNormal::SizeInBytes(), (void *)12);
+	}
+
+	glm::vec3 position;
+	glm::vec3 normal;
+	PositionNormal() = default;
+	PositionNormal(glm::vec3 position, glm::vec3 normal) : position(position), normal(normal) {
+	}
+};
+
 struct Position2DTexture2D {
 	static constexpr size_t SizeInBytes() {
 		return sizeof(glm::vec2) + sizeof(glm::vec2);

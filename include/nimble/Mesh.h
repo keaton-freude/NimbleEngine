@@ -81,7 +81,8 @@ public:
 
 private:
 	static std::shared_ptr<Mesh<Position>> BuildMesh_Position(const aiMesh *mesh) {
-		spdlog::info("Building mesh with {} verts and {} faces", mesh->mNumVertices, mesh->mNumFaces);
+		spdlog::info("[Position]: Building mesh with {} verts and {} faces", mesh->mNumVertices,
+					 mesh->mNumFaces);
 		// Return a mesh where we only read off Positions & Index data
 		std::vector<Position> verts(mesh->mNumVertices);
 
@@ -102,6 +103,29 @@ private:
 
 		return std::make_shared<Mesh<Position>>(verts, indices, mesh->mNumFaces);
 	}
+
+	static std::shared_ptr<Mesh<PositionNormal>> BuildMesh_PositionNormal(const aiMesh *mesh) {
+		spdlog::info("[PositionNormal]: Building mesh with {} verts and {} faces",
+					 mesh->mNumVertices, mesh->mNumFaces);
+		// Return a mesh where we only read off Positions & Index data
+		std::vector<PositionNormal> verts(mesh->mNumVertices);
+
+		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
+			PositionNormal p;
+			p.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+			p.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+			verts[i] = p;
+		}
+
+		std::vector<unsigned int> indices;
+		for(size_t i = 0; i < mesh->mNumFaces; ++i) {
+			for(size_t j = 0; j < mesh->mFaces[i].mNumIndices; ++j) {
+				indices.push_back(mesh->mFaces[i].mIndices[j]);
+			}
+		}
+
+		return std::make_shared<Mesh<PositionNormal>>(verts, indices, mesh->mNumFaces);
+	}
 };
 
 class MeshFactory {
@@ -114,9 +138,13 @@ public:
 		// We _always_ have Position data, along with Index data
 
 		// We need to check for: normals, texture coords
-		// TODO: Add more attributes as we need them
 
-		return Mesh<Position>::BuildMesh_Position(mesh);
+		// TODO: Add more attributes as we need them
+		if(mesh->HasNormals()) {
+			return Mesh<PositionNormal>::BuildMesh_PositionNormal(mesh);
+		} else {
+			return Mesh<Position>::BuildMesh_Position(mesh);
+		}
 	}
 };
 

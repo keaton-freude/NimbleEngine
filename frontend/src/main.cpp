@@ -52,6 +52,7 @@ int main() {
 		// Register Materials manually for now
 		new Material("test", "color");
 		new Material("basic", "basic");
+		new Material("phong", "phong");
 
 		GlfwRenderLoop renderLoop(engine, windowPointer);
 		renderLoop.Run();

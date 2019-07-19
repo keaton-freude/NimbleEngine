@@ -88,7 +88,8 @@ public:
 	std::shared_ptr<IMesh> GetMesh(const std::string &name) {
 		Assimp::Importer importer;
 		auto path = GetPathFromName("models", name);
-		const auto _scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+		const auto _scene =
+		importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals);
 		if(!_scene) {
 			spdlog::error("Failed to load model from path: {}", path);
 			return nullptr;

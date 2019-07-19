@@ -36,10 +36,12 @@ Window::Window(Width width, Height height, const char *title)
 	glfwMakeContextCurrent(_window);
 
 	// uncomment below line to disable vsync
-	// glfwSwapInterval(0);
+	glfwSwapInterval(0);
 
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Window::Initialize() const {
