@@ -85,7 +85,7 @@ private:
 		// Return a mesh where we only read off Positions & Index data
 		std::vector<Position> verts(mesh->mNumVertices);
 
-		for(int i = 0; i < mesh->mNumVertices; ++i) {
+		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
 			Position p;
 			p.x = mesh->mVertices[i].x;
 			p.y = mesh->mVertices[i].y;
@@ -94,8 +94,8 @@ private:
 		}
 
 		std::vector<unsigned int> indices;
-		for(int i = 0; i < mesh->mNumFaces; ++i) {
-			for(int j = 0; j < mesh->mFaces[i].mNumIndices; ++j) {
+		for(size_t i = 0; i < mesh->mNumFaces; ++i) {
+			for(size_t j = 0; j < mesh->mFaces[i].mNumIndices; ++j) {
 				indices.push_back(mesh->mFaces[i].mIndices[j]);
 			}
 		}

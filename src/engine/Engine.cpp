@@ -14,21 +14,12 @@
 using namespace Nimble;
 
 Engine::Engine(Window *window) : _window(window) {
-	// replace this, just for quick testing
-	/*auto mesh = MeshTools::CreateColoredTriangle();
-
-	_ib = std::make_unique<IndexBuffer>(mesh.NumIndices(), BufferUsageType::Static);
-	_ib->SetData(mesh.IndexData());
-	_vb = std::make_unique<VertexBuffer<PositionColor>>(mesh.VertexData(), BufferUsageType::Static);
-
-	PositionColor::SetVertexAttribPointers();*/
-
 	int width, height;
 	glfwGetFramebufferSize(_window->GetWindow(), &width, &height);
 
 	_projectionMatrix = glm::perspective(glm::radians(90.0f), (float)width / (float)height, 0.1f, 1000.f);
 
-	_camera = new Camera();
+	_camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), 5.0f);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -36,8 +27,7 @@ Engine::Engine(Window *window) : _window(window) {
 	glGenVertexArrays(1, &_vao);
 	glBindVertexArray(_vao);
 
-	auto mesh = ResourceManager::Get().GetMesh("test.blend");
-	// auto mesh = MeshTools::CreateTriangle();
+	auto mesh = ResourceManager::Get().GetMesh("suzanne.blend");
 
 	_vb = std::make_unique<VertexBuffer>(mesh.get(), BufferUsageType::Static);
 	_ib = std::make_unique<IndexBuffer>(mesh.get(), BufferUsageType::Static);
@@ -51,8 +41,6 @@ void Engine::RenderFrame(const Time &time) {
 
 	auto mouse = Input::Get().GetMouseMovement();
 	_camera->Rotate(mouse * time.dt());
-
-	//_camera->Update(time);
 
 	ResourceManager::Get().GetMaterial("basic")->Bind();
 	glm::mat4 MVP = _projectionMatrix * _camera->GetView() * glm::mat4(1.0f);

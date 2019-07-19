@@ -16,6 +16,3 @@ Material::Material(string name, shared_ptr<ShaderProgram> shader) : _name(name),
 void Material::Bind() {
 	_shader->Use();
 }
-
-bool Material::IsRegistered() {
-}

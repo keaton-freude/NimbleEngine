@@ -56,8 +56,5 @@ public:
 	}
 
 private:
-	// returns true if this material name is already registered within
-	// the resource manager
-	bool IsRegistered();
 };
 } // namespace Nimble

@@ -18,9 +18,6 @@ void Input::Update() {
 	glfwGetCursorPos(_windowPtr, &x, &y);
 	glm::vec2 newMouse = glm::vec2(x, y);
 
-	// spdlog::info("New Mouse: {},{} Prev Mouse: {},{}", newMouse.x, newMouse.y, prevMouse.x,
-	//			 prevMouse.y);
-
 	if(newMouse == prevMouse) {
 		mouse = glm::vec2(0.0f);
 	} else {

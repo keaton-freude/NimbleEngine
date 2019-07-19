@@ -40,7 +40,7 @@ public:
 		assert(windowPtr);
 		_windowPtr = windowPtr;
 
-		glfwSetInputMode(windowPtr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		// glfwSetInputMode(windowPtr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	// Call this method to query the system for new input state

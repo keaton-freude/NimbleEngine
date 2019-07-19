@@ -28,11 +28,12 @@ class Camera {
 	glm::vec2 _rotation;
 
 	glm::vec3 _position;
+	float _rotateSpeed;
 
 public:
 	// assume FocusPoint is at 0, 0, 0
 	Camera();
-	Camera(glm::vec3 focusPoint);
+	Camera(glm::vec3 focusPoint, float rotateSpeed);
 
 	glm::mat4 GetView();
 
@@ -41,6 +42,9 @@ public:
 		_position = position;
 	}
 	void Update(const Time &time);
+
+	glm::vec3 Right() const;
+	glm::vec3 Up() const;
 
 private:
 };
