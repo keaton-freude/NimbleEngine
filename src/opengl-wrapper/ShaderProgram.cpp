@@ -108,7 +108,7 @@ void ShaderProgram::QueryUniformsAndAttributes() {
 		glGetActiveUniform(_programHandle, (GLuint)uniform, bufSize, &length, &size, &type, &nameData[0]);
 		std::string name((char *)&nameData[0], length);
 
-		Uniform uniformStruct(name, type, GLenumToString(type));
+		Uniform uniformStruct(name, type, GLenumToString(type), uniform);
 		_shaderInfo.uniforms.push_back(uniformStruct);
 	}
 

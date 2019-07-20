@@ -7,6 +7,7 @@
 #pragma once
 
 #include "GL/glew.h"
+#include <exception>
 #include <fmt/format.h>
 
 #include <sstream>
@@ -22,9 +23,10 @@ struct Uniform {
 	// Shape of the data, like vec2f, mat4x4, etc
 	GLenum type;
 	std::string typeName;
+	GLuint location;
 
-	Uniform(const std::string &name, GLenum type, const std::string &typeName)
-	: name(name), type(type), typeName(typeName) {
+	Uniform(const std::string &name, GLenum type, const std::string &typeName, GLuint location)
+	: name(name), type(type), typeName(typeName), location(location) {
 	}
 
 	std::string ToString() const {
@@ -68,6 +70,16 @@ struct ShaderInfo {
 		}
 
 		return ss.str();
+	}
+
+	GLuint GetUniformPosition(const std::string &name) {
+		for(const auto &uniform : uniforms) {
+			if(uniform.name == name) {
+				return uniform.location;
+			}
+		}
+
+		throw std::runtime_error(fmt::format("Failed to find uniform with name {}", name));
 	}
 };
 } // namespace Nimble

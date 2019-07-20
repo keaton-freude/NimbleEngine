@@ -46,33 +46,22 @@ void Engine::RenderFrame(const Time &time) {
 	_camera->Rotate(mouse * time.dt());
 
 	ResourceManager::Get().GetMaterial("phong")->Bind();
-	glm::mat4 MVP = _projectionMatrix * _camera->GetView() * glm::mat4(1.0f);
-	GLuint ModelID =
-	glGetUniformLocation(ResourceManager::Get().GetMaterial("phong")->GetShader()->ShaderHandle(), "Model");
-	GLuint ViewID =
-	glGetUniformLocation(ResourceManager::Get().GetMaterial("phong")->GetShader()->ShaderHandle(), "View");
-	GLuint ProjectionID =
-	glGetUniformLocation(ResourceManager::Get().GetMaterial("phong")->GetShader()->ShaderHandle(), "Projection");
-	GLuint lightPosId =
-	glGetUniformLocation(ResourceManager::Get().GetMaterial("phong")->GetShader()->ShaderHandle(), "lightPos");
-	GLuint lightColorId =
-	glGetUniformLocation(ResourceManager::Get().GetMaterial("phong")->GetShader()->ShaderHandle(), "lightColor");
+	auto shader = ResourceManager::Get().GetMaterial("phong")->GetShader();
 
 	glm::vec3 lightPos = glm::vec3(0.0f, -5.0f, -10.0f);
 	glm::vec3 lightColor = glm::vec3(.3f, .3f, .3f);
-
 	glm::mat4 model(1.0f);
 	auto rotationX = glm::rotate(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	auto rotationz = glm::rotate(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	model = model * rotationz * rotationX;
 
+	shader->SetUniform("Model", model);
+	shader->SetUniform("View", _camera->GetView());
+	shader->SetUniform("Projection", _projectionMatrix);
+	shader->SetUniform("lightPos", lightPos);
+	shader->SetUniform("lightColor", lightColor);
 
-	glUniformMatrix4fv(ModelID, 1, GL_FALSE, &model[0][0]);
-	glUniformMatrix4fv(ViewID, 1, GL_FALSE, &_camera->GetView()[0][0]);
-	glUniformMatrix4fv(ProjectionID, 1, GL_FALSE, &_projectionMatrix[0][0]);
-	glUniform3fv(lightPosId, 1, &lightPos[0]);
-	glUniform3fv(lightColorId, 1, &lightColor[0]);
 	_vb->Bind();
 	_ib->Bind();
 

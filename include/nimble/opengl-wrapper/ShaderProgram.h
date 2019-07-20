@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include <glm/glm.hpp>
+
 #include "nimble/opengl-wrapper/ShaderInfo.h"
 
 // Shader program is some combination of shaders
@@ -36,8 +38,87 @@ public:
 		return _programHandle;
 	}
 
+	template <typename T>
+	void SetUniform(const std::string &name, const T &t) {
+	}
+
+
 private:
 	// Support for querying the uniforms and attributes for the linked shaders
 	void QueryUniformsAndAttributes();
 };
+
+// Partial specializations
+template <>
+inline void ShaderProgram::SetUniform<glm::vec3>(const std::string &name, const glm::vec3 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniform3fv(location, 1, &t[0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::vec2>(const std::string &name, const glm::vec2 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniform2fv(location, 1, &t[0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::vec4>(const std::string &name, const glm::vec4 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniform4fv(location, 1, &t[0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::mat4>(const std::string &name, const glm::mat4 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniformMatrix4fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::mat4x2>(const std::string &name, const glm::mat4x2 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniformMatrix4x2fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::mat4x3>(const std::string &name, const glm::mat4x3 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniformMatrix4x3fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::mat3>(const std::string &name, const glm::mat3 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniformMatrix3fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::mat3x2>(const std::string &name, const glm::mat3x2 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniformMatrix3x2fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::mat3x4>(const std::string &name, const glm::mat3x4 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniformMatrix3x4fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::mat2>(const std::string &name, const glm::mat2 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniformMatrix2fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::mat2x3>(const std::string &name, const glm::mat2x3 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniformMatrix2x3fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<glm::mat2x4>(const std::string &name, const glm::mat2x4 &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniformMatrix2x4fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
 } // namespace Nimble
