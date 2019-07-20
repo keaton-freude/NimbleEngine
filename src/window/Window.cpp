@@ -21,6 +21,7 @@ Window::Window(Width width, Height height, const char *title)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	_window = glfwCreateWindow(static_cast<int>(width.get()), static_cast<int>(height.get()), title,
 							   nullptr, nullptr);
@@ -42,6 +43,7 @@ Window::Window(Width width, Height height, const char *title)
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);
 }
 
 void Window::Initialize() const {

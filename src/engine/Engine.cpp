@@ -22,7 +22,7 @@ Engine::Engine(Window *window) : _window(window) {
 
 	_projectionMatrix = glm::perspective(glm::radians(90.0f), (float)width / (float)height, 0.1f, 1000.f);
 
-	_camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), 5.0f);
+	_camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), 25.0f);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -30,7 +30,7 @@ Engine::Engine(Window *window) : _window(window) {
 	glGenVertexArrays(1, &_vao);
 	glBindVertexArray(_vao);
 
-	auto mesh = ResourceManager::Get().GetMesh("test.blend");
+	auto mesh = ResourceManager::Get().GetMesh("suzanne.blend");
 
 	_vb = std::make_unique<VertexBuffer>(mesh.get(), BufferUsageType::Static);
 	_ib = std::make_unique<IndexBuffer>(mesh.get(), BufferUsageType::Static);
