@@ -42,8 +42,7 @@ void Engine::RenderFrame(const Time &time) {
 	glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	auto mouse = Input::Get().GetMouseMovement();
-	_camera->Rotate(mouse * time.dt());
+	_camera->Update(time);
 
 	ResourceManager::Get().GetMaterial("phong")->Bind();
 	auto shader = ResourceManager::Get().GetMaterial("phong")->GetShader();

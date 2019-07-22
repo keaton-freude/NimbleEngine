@@ -28,6 +28,7 @@ class Camera {
 	glm::vec2 _rotation;
 
 	glm::vec3 _position;
+	glm::vec3 _rotatedPosition;
 	float _rotateSpeed;
 
 public:
@@ -37,7 +38,6 @@ public:
 
 	glm::mat4 GetView();
 
-	void Rotate(glm::vec2 delta);
 	void SetPosition(glm::vec3 position) {
 		_position = position;
 	}

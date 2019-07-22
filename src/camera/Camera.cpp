@@ -19,7 +19,7 @@ Camera::Camera(glm::vec3 focusPoint, float rotateSpeed)
 }
 
 glm::mat4 Camera::GetView() {
-	return glm::lookAt(_position, _focusPoint, Up());
+	return glm::lookAt(_rotatedPosition, _focusPoint, Up());
 }
 
 glm::vec3 Camera::Right() const {
@@ -35,17 +35,23 @@ glm::vec3 Camera::Up() const {
 	return glm::normalize(glm::cross(direction, right));
 }
 
-void Camera::Rotate(glm::vec2 delta) {
-	delta *= _rotateSpeed;
-	if(_rotation.y + delta.y > 0.9f || _rotation.y + delta.y < -1.8f) {
+void Camera::Update(const Time &time) {
+	// Normalized vector with movement
+	auto mouse = Input::Get().GetMouseMovement();
+
+	mouse = mouse * time.dt() * _rotateSpeed;
+
+	if(_rotation.y + mouse.y > 0.7f || _rotation.y + mouse.y < -1.8f) {
 		return;
 	}
-	_rotation += delta;
+
+	_rotation += mouse;
+
 	auto camFocusVector = _position - _focusPoint;
 
 	// Create rotations around our up and right vectors
-	glm::mat4 upRotation = glm::rotate(-delta.x, Up());
-	glm::mat4 rightRotation = glm::rotate(-delta.y, Right());
+	glm::mat4 upRotation = glm::rotate(-_rotation.x, Up());
+	glm::mat4 rightRotation = glm::rotate(-_rotation.y, Right());
 
 	// Convert the matrices to quaternions
 	glm::quat upQuat = glm::quat_cast(upRotation);
@@ -56,13 +62,5 @@ void Camera::Rotate(glm::vec2 delta) {
 	camFocusVector = rightQuat * camFocusVector;
 
 	// Officially set the position
-	_position = camFocusVector + _focusPoint;
-}
-
-void Camera::Update(const Time &time) {
-	// Normalized vector with movement
-	auto mouse = Input::Get().GetMouseMovement();
-
-	_rotation.y += mouse.y * time.dt() * _rotateSpeed;
-	_rotation.x += mouse.x * time.dt() * _rotateSpeed;
+	_rotatedPosition = camFocusVector + _focusPoint;
 }
