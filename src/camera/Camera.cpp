@@ -6,6 +6,8 @@
 
 #include "nimble/input/InputManager.h"
 
+#include "imgui.h"
+
 using namespace Nimble;
 
 Camera::Camera()
@@ -16,10 +18,15 @@ Camera::Camera()
 
 Camera::Camera(glm::vec3 focusPoint, float rotateSpeed)
 : _focusPoint(focusPoint), _rotation(0.f, 0.f), _position(0.0f, 0.0f, -3.0f), _rotateSpeed(rotateSpeed) {
+	_quatRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
 glm::mat4 Camera::GetView() {
-	return glm::lookAt(_rotatedPosition, _focusPoint, Up());
+	// return glm::lookAt(_rotatedPosition, _focusPoint, Up());
+
+	// auto offset = _position - _focusPoint;
+
+	return glm::translate(glm::mat4_cast(_quatRotation), _rotatedPosition);
 }
 
 glm::vec3 Camera::Right() const {
@@ -36,31 +43,51 @@ glm::vec3 Camera::Up() const {
 }
 
 void Camera::Update(const Time &time) {
-	// Normalized vector with movement
-	auto mouse = Input::Get().GetMouseMovement();
+	// Only update our rotation if the right mouse button is being held
+	if(Input::Get().IsMouseRightDown()) {
+		// Normalized vector with movement
+		auto mouse = Input::Get().GetMouseMovement();
 
-	mouse = mouse * time.dt() * _rotateSpeed;
+		mouse = mouse * _rotateSpeed;
 
-	if(_rotation.y + mouse.y > 0.7f || _rotation.y + mouse.y < -1.8f) {
-		return;
+		glm::quat key_quat = glm::quat(glm::vec3(mouse.y, mouse.x, 0.0f));
+
+		_quatRotation = key_quat * _quatRotation;
+		_quatRotation = glm::normalize(_quatRotation);
 	}
 
-	_rotation += mouse;
+	if(Input::Get().IsScrollForward()) {
+		const float ZoomSpeed = 0.5f;
+		// Move toward the focus point, always maintain a minimum distance
+		auto direction = glm::normalize(_focusPoint - _position);
+
+		_position += (direction * ZoomSpeed);
+
+		if(_position.z > -1.0f) {
+			_position.z = -1.0f;
+		}
+	}
+
+	if(Input::Get().IsScrollBackward()) {
+		const float ZoomSpeed = 0.5f;
+		// Move toward the focus point, always maintain a minimum distance
+		auto direction = glm::normalize(_focusPoint - _position);
+
+		_position -= (direction * ZoomSpeed);
+	}
+
+	// Zoom in by moving our position away from the focus point, or toward it
+	// With a minimum required distance (to avoid clipping through)
+
 
 	auto camFocusVector = _position - _focusPoint;
 
-	// Create rotations around our up and right vectors
-	glm::mat4 upRotation = glm::rotate(-_rotation.x, Up());
-	glm::mat4 rightRotation = glm::rotate(-_rotation.y, Right());
+	ImGui::Text("Camera Rotation: %f, %f, %f, %f", _quatRotation.w, _quatRotation.x,
+				_quatRotation.y, _quatRotation.z);
 
-	// Convert the matrices to quaternions
-	glm::quat upQuat = glm::quat_cast(upRotation);
-	glm::quat rightQuat = glm::quat_cast(rightRotation);
+	// Apply rotation
+	camFocusVector = camFocusVector * _quatRotation;
 
-	// Apply the rotations to our camera
-	camFocusVector = upQuat * camFocusVector;
-	camFocusVector = rightQuat * camFocusVector;
-
-	// Officially set the position
+	// Move camera back
 	_rotatedPosition = camFocusVector + _focusPoint;
 }

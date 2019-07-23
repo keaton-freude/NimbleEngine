@@ -14,7 +14,6 @@ src = [
 	'engine/Engine.cpp',
 	'GlfwRenderLoop.cpp',
 	'input/InputManager.cpp',
-	'gui/DebugWindow.cpp',
 	'material/Material.cpp',
 	'camera/Camera.cpp',
 

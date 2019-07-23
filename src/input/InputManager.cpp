@@ -24,6 +24,9 @@ void Input::Update() {
 		mouse = glm::normalize(newMouse - prevMouse);
 	}
 
+	leftMouseButtonState = glfwGetMouseButton(_windowPtr, GLFW_MOUSE_BUTTON_LEFT);
+	rightMouseButtonState = glfwGetMouseButton(_windowPtr, GLFW_MOUSE_BUTTON_RIGHT);
+
 	assert(_windowPtr && "Can't check keyboard state if no GLFW window was given!");
 	for(auto &[key, value] : _scanCodeState) {
 		// Query GLFW for the state of this key and set it

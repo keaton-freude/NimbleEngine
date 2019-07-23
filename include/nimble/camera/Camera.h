@@ -14,6 +14,8 @@
 
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
 #include "nimble/engine/Time.h"
@@ -30,6 +32,8 @@ class Camera {
 	glm::vec3 _position;
 	glm::vec3 _rotatedPosition;
 	float _rotateSpeed;
+
+	glm::quat _quatRotation;
 
 public:
 	// assume FocusPoint is at 0, 0, 0

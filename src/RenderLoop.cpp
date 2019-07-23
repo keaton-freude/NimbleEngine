@@ -5,6 +5,7 @@
 #include "nimble/engine/Engine.h"
 #include "nimble/engine/RenderLoop.h"
 #include "nimble/engine/Time.h"
+#include "nimble/input/InputManager.h"
 #include "nimble/opengl-wrapper/GLContext.h"
 
 #include "imgui.h"
@@ -12,15 +13,29 @@
 #include "imgui_impl_opengl3.h"
 #include "spdlog/spdlog.h"
 
+#include "fmt/format.h"
+
 using namespace Nimble;
 
 RenderLoop::RenderLoop(std::shared_ptr<Engine> engine, ExitCondition exitCondition)
-: _exitCondition(exitCondition), _engine(engine), _debugWindow(std::make_unique<DebugWindow>(engine)) {
+: _exitCondition(exitCondition), _engine(engine) {
 }
 
 void RenderLoop::Run() {
 	while(!_exitCondition()) {
 		_time.Begin();
+
+		spdlog::info("DT: {}", _time.dt());
+
+		// Start the ImGui Frame, from here on, any component in our game loop
+		// can add to the debug window
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		ImGui::Begin("Nimble Debug");
+
+		// Draw the latest FPS measurement
+		ImGui::Text(fmt::format("FPS: {}", _time.GetFPS()).c_str());
 
 		// Poll for Input
 		PollForEvents();
@@ -28,15 +43,10 @@ void RenderLoop::Run() {
 		// Render Frame
 		RenderFrame(_time);
 
-		// Start the ImGui Frame
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		Input::Get().ClearState();
 
-		// Draw our Debug Window
-		// NOTE: Expand this to be more generic
-		// Maybe keep a list of all Windows we want to draw..?
-		_debugWindow->Draw();
+		ImGui::End();
+
 
 		// Collect all ImGui generated renderables and draw
 		ImGui::Render();

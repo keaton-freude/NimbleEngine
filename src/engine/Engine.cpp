@@ -22,7 +22,7 @@ Engine::Engine(Window *window) : _window(window) {
 
 	_projectionMatrix = glm::perspective(glm::radians(90.0f), (float)width / (float)height, 0.1f, 1000.f);
 
-	_camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), 25.0f);
+	_camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), .05f);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
