@@ -25,8 +25,6 @@ void RenderLoop::Run() {
 	while(!_exitCondition()) {
 		_time.Begin();
 
-		spdlog::info("DT: {}", _time.dt());
-
 		// Start the ImGui Frame, from here on, any component in our game loop
 		// can add to the debug window
 		ImGui_ImplOpenGL3_NewFrame();

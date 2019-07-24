@@ -18,7 +18,7 @@ Camera::Camera()
 
 Camera::Camera(glm::vec3 focusPoint, float rotateSpeed)
 : _focusPoint(focusPoint), _rotation(0.f, 0.f), _position(0.0f, 0.0f, -3.0f), _rotateSpeed(rotateSpeed) {
-	_quatRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+	_quatRotation = glm::quat(0.0f, 0.0f, 1.0f, 0.0f);
 }
 
 glm::mat4 Camera::GetView() {

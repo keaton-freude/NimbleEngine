@@ -13,6 +13,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/compatibility.hpp>
 
 using namespace Nimble;
 
@@ -39,6 +40,9 @@ Engine::Engine(Window *window) : _window(window) {
 }
 
 void Engine::RenderFrame(const Time &time) {
+
+	static float t = 0.0f;
+	t += time.dt();
 	glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -50,10 +54,39 @@ void Engine::RenderFrame(const Time &time) {
 	glm::vec3 lightPos = glm::vec3(0.0f, -5.0f, -10.0f);
 	glm::vec3 lightColor = glm::vec3(.3f, .3f, .3f);
 	glm::mat4 model(1.0f);
-	auto rotationX = glm::rotate(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	auto rotationz = glm::rotate(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	// auto rotationX = glm::rotate(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	// auto rotationz = glm::rotate(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-	model = model * rotationz * rotationX;
+	auto rotation1 = glm::angleAxis(glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	auto rotation2 = glm::angleAxis(glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+
+	auto position1 = glm::vec3(-2.0f, 0.0f, 0.0f);
+	auto position2 = glm::vec3(2.0f, 0.0f, 0.0f);
+
+	auto position3 = glm::vec3(0.0f, 2.0f, 0.0f);
+	auto position4 = glm::vec3(0.0f, -2.0f, 0.0f);
+
+	/*
+		auto rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+		rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)) * rotation;
+
+		rotation = glm::angleAxis(glm::radians((float)sin(t / 1.0f) * 325.f), glm::vec3(0.0f, 1.0f, 0.0f)) * rotation;
+	*/
+
+	auto currentRotation = glm::slerp(rotation1, rotation2, (float)((sin(t) + 1) / 2.f)) *
+						   glm::angleAxis(glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	auto currentPosition = glm::lerp(position1, position2, (float)((sin(t) + 1) / 2.f)) +
+						   glm::lerp(position3, position4, (float)((cos(t) + 1) / 2.f));
+
+	// rotation.w += sin(t);
+
+
+	glm::vec4 test = glm::vec4(currentPosition.x, currentPosition.y, currentPosition.z, 1.0f);
+
+	model = model * glm::translate(currentPosition) * glm::mat4_cast(currentRotation);
 
 	shader->SetUniform("Model", model);
 	shader->SetUniform("View", _camera->GetView());
