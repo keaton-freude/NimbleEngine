@@ -16,6 +16,8 @@ src = [
 	'input/InputManager.cpp',
 	'material/Material.cpp',
 	'camera/Camera.cpp',
+    'scene-graph/SceneNode.cpp',
+    'scene-graph/SceneGraph.cpp',
 
 	# imgui
 	'thirdparty/imgui/src/imgui_demo.cpp',

@@ -55,4 +55,66 @@ TEST_CASE("SceneNode Add Children", "[scenenode]") {
 	REQUIRE(state.ids[1] == 2);
 }
 
-TEST_CASE("SceneGraph Root Traversal")
+TEST_CASE("Traversal", "[scenegraph]") {
+	// Test that Traversal works correctly. The SceneGraph supports Pre-order
+	// traversal, which means that we will visit nodes in the following order:
+	// <root>,<left>,<right>
+	/*
+				View of Test Graph
+						1
+					   / \
+					  2   3
+					 /\     \
+					4  5     6
+							  \
+							   7
+							  / \
+							 8   9
+
+		The expected output is:
+		1,2,4,5,3,6,7,8,9
+
+		We may end up adding more traversal methods, or changing this one. For now
+		we will see how far we can get with just pre-order traversal */
+
+	TestState state{};
+
+	// Raw pointers because lazy
+	SceneNode *root = new TestSceneNode(1, &state);
+
+
+	SceneNode *node2 = new TestSceneNode(2, &state);
+	SceneNode *node3 = new TestSceneNode(3, &state);
+	SceneNode *node4 = new TestSceneNode(4, &state);
+	SceneNode *node5 = new TestSceneNode(5, &state);
+	SceneNode *node6 = new TestSceneNode(6, &state);
+	SceneNode *node7 = new TestSceneNode(7, &state);
+	SceneNode *node8 = new TestSceneNode(8, &state);
+	SceneNode *node9 = new TestSceneNode(9, &state);
+
+	// Wire up the children
+	root->AddChild(node2);
+	root->AddChild(node3);
+
+	node2->AddChild(node4);
+	node2->AddChild(node5);
+
+	node3->AddChild(node6);
+	node6->AddChild(node7);
+
+	node7->AddChild(node8);
+	node7->AddChild(node9);
+
+	root->Visit();
+
+	REQUIRE(state.ids.size() == 9);
+	REQUIRE(state.ids[0] == 1);
+	REQUIRE(state.ids[1] == 2);
+	REQUIRE(state.ids[2] == 4);
+	REQUIRE(state.ids[3] == 5);
+	REQUIRE(state.ids[4] == 3);
+	REQUIRE(state.ids[5] == 6);
+	REQUIRE(state.ids[6] == 7);
+	REQUIRE(state.ids[7] == 8);
+	REQUIRE(state.ids[8] == 9);
+}

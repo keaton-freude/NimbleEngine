@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 
 /*
 	NOTE: All of this subject to change
@@ -24,10 +24,19 @@
 
 */
 
+#include "nimble/scene-graph/SceneNode.h"
+
 namespace Nimble {
 
 class SceneGraph {
+private:
+	// Probably convert this to some specific RootSceneNode
+	// Maybe something which supports a variety of what will end up being
+	// global transformations for the entire scene
+	std::unique_ptr<SceneNode> _rootNode;
+
 public:
+	SceneGraph();
 };
 
 }; // namespace Nimble

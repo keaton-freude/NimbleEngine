@@ -2,6 +2,7 @@
 
 #include <list>
 #include <memory>
+#include <spdlog/spdlog.h>
 
 /*
 	SceneNode is the abstract base class for all SceneNodes
@@ -22,13 +23,15 @@ public:
 	// Apply this SceneNodes specific transformation or action
 	virtual void Apply() = 0;
 
-	void AddChild(std::unique_ptr<SceneNode> node) {
-		_children.push_back(std::forward<std::unique_ptr<SceneNode>>(node));
-	}
+	void AddChild(std::unique_ptr<SceneNode> node);
+	// Maybe dont allow this as it can confuse the caller, as SceneNode takes ownership
+	void AddChild(SceneNode *node);
 
 	template <typename T, typename... Args>
-	void AddChild(Args &&... args) {
+	inline void AddChild(Args &&... args) {
 		_children.push_back(std::make_unique<T>(std::forward<Args>(args)...));
 	}
+
+	void Visit();
 };
 } // namespace Nimble

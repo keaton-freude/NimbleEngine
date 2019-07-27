@@ -13,7 +13,32 @@
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/build/frontend",
       "environment": [],
-      "externalConsole": false
+      "externalConsole": false,
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "Launch Tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/meson-out/nimbleTests",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/frontend",
+      "environment": [],
+      "externalConsole": false,
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
     }
   ]
 }
