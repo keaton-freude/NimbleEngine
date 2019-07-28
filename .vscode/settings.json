@@ -3,7 +3,8 @@
     "files.associations": {
         "ostream": "cpp",
         "memory": "cpp",
-        "stdexcept": "cpp"
+        "stdexcept": "cpp",
+        "optional": "cpp"
     },
     "C_Cpp.intelliSenseEngineFallback": "Disabled"
 }

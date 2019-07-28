@@ -3,12 +3,13 @@
 
 #include <vector>
 
+#include "nimble/scene-graph/SceneGraph.h"
 #include "nimble/scene-graph/SceneNode.h"
 
 using namespace Nimble;
 
 struct TestState {
-	std::vector<int> ids;
+	std::vector<int> values;
 };
 
 class TestSceneNode : public SceneNode {
@@ -16,15 +17,15 @@ private:
 	// For our test, our scene node has an int value
 	// As we validate tree functionality, we'll use this value to uniquely
 	// identify a scene node
-	int _id;
+	int _value;
 	TestState *_state;
 
 public:
-	TestSceneNode(int id, TestState *state) : _id(id), _state(state) {
+	TestSceneNode(int value, TestState *state) : _value(value), _state(state) {
 	}
 
 	void Apply() override {
-		_state->ids.push_back(_id);
+		_state->values.push_back(_value);
 	}
 };
 
@@ -35,8 +36,8 @@ public:
 			1
 		   / \
 		  2   3
-	ids can be validated that:
-	ids[0] == 1, ids[1] == 2, ids[2] == 3
+	values can be validated that:
+	values[0] == 1, values[1] == 2, values[2] == 3
 */
 
 TEST_CASE("SceneNode Add Children", "[scenenode]") {
@@ -45,17 +46,35 @@ TEST_CASE("SceneNode Add Children", "[scenenode]") {
 	SceneNode *node1 = new TestSceneNode(2, &state);
 
 	// Add via existing pointer
-	rootNode->AddChild(std::unique_ptr<SceneNode>(node1));
+	rootNode->AddChild(node1);
 
 	rootNode->Apply();
 	node1->Apply();
 
-	REQUIRE(state.ids.size() == 2);
-	REQUIRE(state.ids[0] == 1);
-	REQUIRE(state.ids[1] == 2);
+	REQUIRE(state.values.size() == 2);
+	REQUIRE(state.values[0] == 1);
+	REQUIRE(state.values[1] == 2);
 }
 
-TEST_CASE("Traversal", "[scenegraph]") {
+TEST_CASE("Get SceneNode ID", "[scenenode]") {
+	// Scene nodes have an ID which is unique across all created Scene Nodes
+
+	// Need some derived SceneNode, even though not using state tracker, will just use the
+	// class for convenience
+	TestState state;
+	auto node = std::make_unique<TestSceneNode>(1, &state);
+	auto node2 = std::make_unique<TestSceneNode>(1, &state);
+
+
+	auto id = node->GetID();
+
+	// TODO: I know, because I wrote the impl that the first ID returned is going to be 0
+	// How can I change this test to be more resilient? Or is this fine..
+
+	REQUIRE(node2->GetID() == id + 1);
+}
+
+TEST_CASE("Traversal", "[scenenode]") {
 	// Test that Traversal works correctly. The SceneGraph supports Pre-order
 	// traversal, which means that we will visit nodes in the following order:
 	// <root>,<left>,<right>
@@ -107,14 +126,120 @@ TEST_CASE("Traversal", "[scenegraph]") {
 
 	root->Visit();
 
-	REQUIRE(state.ids.size() == 9);
-	REQUIRE(state.ids[0] == 1);
-	REQUIRE(state.ids[1] == 2);
-	REQUIRE(state.ids[2] == 4);
-	REQUIRE(state.ids[3] == 5);
-	REQUIRE(state.ids[4] == 3);
-	REQUIRE(state.ids[5] == 6);
-	REQUIRE(state.ids[6] == 7);
-	REQUIRE(state.ids[7] == 8);
-	REQUIRE(state.ids[8] == 9);
+	REQUIRE(state.values.size() == 9);
+	REQUIRE(state.values[0] == 1);
+	REQUIRE(state.values[1] == 2);
+	REQUIRE(state.values[2] == 4);
+	REQUIRE(state.values[3] == 5);
+	REQUIRE(state.values[4] == 3);
+	REQUIRE(state.values[5] == 6);
+	REQUIRE(state.values[6] == 7);
+	REQUIRE(state.values[7] == 8);
+	REQUIRE(state.values[8] == 9);
+}
+
+TEST_CASE("Find nodes", "[scenenode]") {
+	TestState state{};
+	SceneNode *root = new TestSceneNode(1, &state);
+
+	SceneNode *node1 = new TestSceneNode(1, &state);
+	SceneNode *node2 = new TestSceneNode(1, &state);
+	SceneNode *node3 = new TestSceneNode(1, &state);
+	SceneNode *node4 = new TestSceneNode(1, &state);
+	SceneNode *node5 = new TestSceneNode(1, &state);
+
+	auto rootId = root->GetID();
+	auto node1Id = node1->GetID();
+	auto node2Id = node2->GetID();
+	auto node3Id = node3->GetID();
+	auto node4Id = node4->GetID();
+	auto node5Id = node5->GetID();
+
+	root->AddChild(node1);
+	root->AddChild(node2);
+
+	node1->AddChild(node3);
+	node2->AddChild(node4);
+	node4->AddChild(node5);
+
+	auto &found1 = root->Find(node1Id);
+	REQUIRE(found1.has_value());
+	REQUIRE(found1.value()->GetID() == node1Id);
+
+	auto &found2 = root->Find(node5Id);
+
+	REQUIRE(found2.has_value());
+	REQUIRE(found2.value()->GetID() == node5Id);
+}
+
+// Somewhat different in that we will create a scene graph with a few nodes, construct two different
+// node hierarchys. Then we will add these node hierarchies to 2 different points based on IDs
+/*
+
+						View of Test Graph
+						------------------
+
+								0
+							   / \
+							  1   2
+							 /   /
+							3   7
+						   / \   \
+						  4   5   8
+							   \   \
+								6   9
+
+	So we start by adding node 1 & 2 as children to the graphs root node
+	Then, we construct 2 new parent nodes (in our user code), attaching nodes 4, 5, 6 to one, and
+	7,8,9 to the other
+
+	Then we will add these 2 parent nodes directly to node #1 & node #2, creating the above structure.
+*/
+TEST_CASE("Add Nodes to SceneGraph", "[scenegraph]") {
+	TestState state{};
+	SceneNode *rootNode = new TestSceneNode(0, &state);
+	SceneGraph graph(rootNode);
+
+	// Root node is automatically created by the SceneGraph
+	SceneNode *node1 = new TestSceneNode(1, &state);
+	SceneNode *node2 = new TestSceneNode(2, &state);
+
+	// Add some new root children, which is a special operation in the scene graph which
+	// inserts nodes agaginst the root node in the graph
+	auto node1Id = graph.AddChildToRoot(node1);
+	auto node2Id = graph.AddChildToRoot(node2);
+
+	SceneNode *node3 = new TestSceneNode(3, &state);
+	SceneNode *node4 = new TestSceneNode(4, &state);
+	SceneNode *node5 = new TestSceneNode(5, &state);
+	SceneNode *node6 = new TestSceneNode(6, &state);
+
+	node3->AddChild(node4);
+	node3->AddChild(node5);
+	node5->AddChild(node6);
+
+	SceneNode *node7 = new TestSceneNode(7, &state);
+	SceneNode *node8 = new TestSceneNode(8, &state);
+	SceneNode *node9 = new TestSceneNode(9, &state);
+
+	node7->AddChild(node8);
+	node8->AddChild(node9);
+
+	// Now we can add our constructed sub-graphs into the overall graph
+	graph.AddChild(node3, node1Id);
+	graph.AddChild(node7, node2Id);
+
+	rootNode->Visit();
+
+	REQUIRE(state.values.size() == 10);
+	REQUIRE(state.values[0] == 0);
+	REQUIRE(state.values[1] == 1);
+	REQUIRE(state.values[2] == 3);
+	REQUIRE(state.values[3] == 4);
+	REQUIRE(state.values[4] == 5);
+	REQUIRE(state.values[5] == 6);
+	REQUIRE(state.values[6] == 2);
+	REQUIRE(state.values[7] == 7);
+	REQUIRE(state.values[8] == 8);
+	REQUIRE(state.values[9] == 9);
 }

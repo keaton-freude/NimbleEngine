@@ -36,7 +36,26 @@ private:
 	std::unique_ptr<SceneNode> _rootNode;
 
 public:
+	// Use the default root node type (All-axis transform)
 	SceneGraph();
+
+	// Otherwise use specified one
+	SceneGraph(SceneNode *node);
+
+	// Apply the graph. Walk every node, applying the node
+	// This can result in transformations, meshes being drawn, etc
+	void Apply();
+
+	// Take ownership of a raw pointer, similar to the
+	// SceneNode::AddChild
+	size_t AddChildToRoot(SceneNode *node);
+
+	size_t AddChild(SceneNode *node, size_t id);
+	size_t AddChild(std::unique_ptr<SceneNode> &&node, size_t id);
+
+private:
+	// Look through all nodes in the graph for `id`
+	const std::optional<SceneNode *const> Find(size_t id);
 };
 
 }; // namespace Nimble
