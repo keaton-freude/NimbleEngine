@@ -6,6 +6,7 @@
 #include "nimble/engine/Engine.h"
 #include "nimble/input/InputManager.h"
 #include "nimble/resource-manager/ResourceManager.h"
+#include "nimble/scene-graph/Transformation.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -53,7 +54,7 @@ void Engine::RenderFrame(const Time &time) {
 
 	glm::vec3 lightPos = glm::vec3(0.0f, -5.0f, -10.0f);
 	glm::vec3 lightColor = glm::vec3(.3f, .3f, .3f);
-	glm::mat4 model(1.0f);
+	// glm::mat4 model(1.0f);
 	// auto rotationX = glm::rotate(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	// auto rotationz = glm::rotate(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -67,13 +68,22 @@ void Engine::RenderFrame(const Time &time) {
 	auto position3 = glm::vec3(0.0f, 2.0f, 0.0f);
 	auto position4 = glm::vec3(0.0f, -2.0f, 0.0f);
 
-	/*
-		auto rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-		rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)) * rotation;
+	auto rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-		rotation = glm::angleAxis(glm::radians((float)sin(t / 1.0f) * 325.f), glm::vec3(0.0f, 1.0f, 0.0f)) * rotation;
-	*/
+	rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)) * rotation;
+
+	// rotation = glm::angleAxis(glm::radians((float)sin(t / 1.0f) * .2f), glm::vec3(0.0f, 1.0f, 0.0f)) * rotation;
+
+
+	static Transformation transform;
+
+	float scaleAmount = glm::mix(0.3f, 0.8f, (float)sin(t) + 1.0f);
+	ImGui::Text("Scale: {%f}, Time: {%f}", scaleAmount, t);
+	transform.SetScale(glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+
+	// transform.SetRotation(glm::vec3(rotation.x, rotation.y, rotation.z), rotation.w);
+	transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians((time.dt() * 2.f)));
 
 	auto currentRotation = glm::slerp(rotation1, rotation2, (float)((sin(t) + 1) / 2.f)) *
 						   glm::angleAxis(glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -86,9 +96,9 @@ void Engine::RenderFrame(const Time &time) {
 
 	glm::vec4 test = glm::vec4(currentPosition.x, currentPosition.y, currentPosition.z, 1.0f);
 
-	model = model * glm::translate(currentPosition) * glm::mat4_cast(currentRotation);
+	// model = model * glm::translate(currentPosition) * glm::mat4_cast(currentRotation);
 
-	shader->SetUniform("Model", model);
+	shader->SetUniform("Model", transform.GetWorldMatrix());
 	shader->SetUniform("View", _camera->GetView());
 	shader->SetUniform("Projection", _projectionMatrix);
 	shader->SetUniform("lightPos", lightPos);
