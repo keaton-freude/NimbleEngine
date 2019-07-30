@@ -18,6 +18,7 @@ src = [
 	'camera/Camera.cpp',
     'scene-graph/SceneNode.cpp',
     'scene-graph/SceneGraph.cpp',
+    'scene-graph/RootSceneNode.cpp',
 
 	# imgui
 	'thirdparty/imgui/src/imgui_demo.cpp',

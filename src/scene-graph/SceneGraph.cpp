@@ -8,6 +8,10 @@ SceneGraph::SceneGraph() {
 SceneGraph::SceneGraph(SceneNode *node) : _rootNode(node) {
 }
 
+void SceneGraph::Render() {
+	_rootNode->Visit();
+}
+
 size_t SceneGraph::AddChildToRoot(SceneNode *node) {
 	return _rootNode->AddChild(node);
 }

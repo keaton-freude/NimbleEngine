@@ -229,7 +229,7 @@ TEST_CASE("Add Nodes to SceneGraph", "[scenegraph]") {
 	graph.AddChild(node3, node1Id);
 	graph.AddChild(node7, node2Id);
 
-	rootNode->Visit();
+	graph.Render();
 
 	REQUIRE(state.values.size() == 10);
 	REQUIRE(state.values[0] == 0);

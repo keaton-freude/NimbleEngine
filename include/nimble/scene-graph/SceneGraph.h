@@ -44,7 +44,7 @@ public:
 
 	// Apply the graph. Walk every node, applying the node
 	// This can result in transformations, meshes being drawn, etc
-	void Apply();
+	void Render();
 
 	// Take ownership of a raw pointer, similar to the
 	// SceneNode::AddChild
