@@ -76,15 +76,6 @@ void Engine::RenderFrame(const Time &time) {
 	// rotation = glm::angleAxis(glm::radians((float)sin(t / 1.0f) * .2f), glm::vec3(0.0f, 1.0f, 0.0f)) * rotation;
 
 
-	static Transformation transform;
-
-	float scaleAmount = glm::mix(0.3f, 0.8f, (float)sin(t) + 1.0f);
-	ImGui::Text("Scale: {%f}, Time: {%f}", scaleAmount, t);
-	transform.SetScale(glm::vec3(scaleAmount, scaleAmount, scaleAmount));
-
-	// transform.SetRotation(glm::vec3(rotation.x, rotation.y, rotation.z), rotation.w);
-	transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians((time.dt() * 2.f)));
-
 	auto currentRotation = glm::slerp(rotation1, rotation2, (float)((sin(t) + 1) / 2.f)) *
 						   glm::angleAxis(glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -98,7 +89,7 @@ void Engine::RenderFrame(const Time &time) {
 
 	// model = model * glm::translate(currentPosition) * glm::mat4_cast(currentRotation);
 
-	shader->SetUniform("Model", transform.GetWorldMatrix());
+	//shader->SetUniform("Model", model);
 	shader->SetUniform("View", _camera->GetView());
 	shader->SetUniform("Projection", _projectionMatrix);
 	shader->SetUniform("lightPos", lightPos);

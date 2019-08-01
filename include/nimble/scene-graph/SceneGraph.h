@@ -24,6 +24,7 @@
 
 */
 
+#include "nimble/scene-graph/RootSceneNode.h"
 #include "nimble/scene-graph/SceneNode.h"
 
 namespace Nimble {
@@ -33,14 +34,14 @@ private:
 	// Probably convert this to some specific RootSceneNode
 	// Maybe something which supports a variety of what will end up being
 	// global transformations for the entire scene
-	std::unique_ptr<SceneNode> _rootNode;
+	std::unique_ptr<RootSceneNode> _rootNode;
 
 public:
 	// Use the default root node type (All-axis transform)
 	SceneGraph();
 
 	// Otherwise use specified one
-	SceneGraph(SceneNode *node);
+	SceneGraph(RootSceneNode *node);
 
 	// Apply the graph. Walk every node, applying the node
 	// This can result in transformations, meshes being drawn, etc

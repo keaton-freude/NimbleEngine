@@ -5,11 +5,11 @@ using namespace Nimble;
 SceneGraph::SceneGraph() {
 }
 
-SceneGraph::SceneGraph(SceneNode *node) : _rootNode(node) {
+SceneGraph::SceneGraph(RootSceneNode *node) : _rootNode(node) {
 }
 
 void SceneGraph::Render() {
-	_rootNode->Visit();
+	_rootNode->Render();
 }
 
 size_t SceneGraph::AddChildToRoot(SceneNode *node) {

@@ -8,24 +8,33 @@
 	Users who want compound customization for their nodes can define their own
 	or just apply multiple nodes in the graph
 
-	RootSceneNode supports, thus far:
-	- Translation
-	- Rotation
-	- Scaling
+	RootSceneNode contains a base transformation, some global translation
+	rotation and scale.
 
 	-- ??? Add more as they make sense to apply for a root node
 */
 
 #include "nimble/scene-graph/SceneNode.h"
+#include "nimble/scene-graph/Transformation.h"
 
 namespace Nimble {
 
 class RootSceneNode : public SceneNode {
 private:
+	// This is the root, global transformation
+	Transformation _transformation;
+
 public:
 	RootSceneNode();
 
-	void Apply() override {
+	// Special to the RootSceneNode, this will kick off the entire process
+	// of traversing nodes and applying them
+	void Render() {
+		this->Visit(_transformation);
+	}
+
+	void Apply(Transformation &transformation) override {
+		// Does nothing, because this is the root node
 	}
 };
 

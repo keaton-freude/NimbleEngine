@@ -1,10 +1,15 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
+#define NIMBLE_TESTING
+
 #include <vector>
+
+#include <glm/gtc/epsilon.hpp>
 
 #include "nimble/scene-graph/SceneGraph.h"
 #include "nimble/scene-graph/SceneNode.h"
+#include "nimble/scene-graph/Transformation.h"
 
 using namespace Nimble;
 
@@ -24,7 +29,7 @@ public:
 	TestSceneNode(int value, TestState *state) : _value(value), _state(state) {
 	}
 
-	void Apply() override {
+	void Apply(Transformation &transformation) override {
 		_state->values.push_back(_value);
 	}
 };
@@ -44,12 +49,13 @@ TEST_CASE("SceneNode Add Children", "[scenenode]") {
 	TestState state;
 	std::unique_ptr<SceneNode> rootNode = std::make_unique<TestSceneNode>(1, &state);
 	SceneNode *node1 = new TestSceneNode(2, &state);
+	Transformation fakeTransformation;
 
 	// Add via existing pointer
 	rootNode->AddChild(node1);
 
-	rootNode->Apply();
-	node1->Apply();
+	rootNode->Apply(fakeTransformation);
+	node1->Apply(fakeTransformation);
 
 	REQUIRE(state.values.size() == 2);
 	REQUIRE(state.values[0] == 1);
@@ -97,6 +103,7 @@ TEST_CASE("Traversal", "[scenenode]") {
 		we will see how far we can get with just pre-order traversal */
 
 	TestState state{};
+	Transformation fakeTransform;
 
 	// Raw pointers because lazy
 	SceneNode *root = new TestSceneNode(1, &state);
@@ -124,7 +131,7 @@ TEST_CASE("Traversal", "[scenenode]") {
 	node7->AddChild(node8);
 	node7->AddChild(node9);
 
-	root->Visit();
+	root->Visit(fakeTransform);
 
 	REQUIRE(state.values.size() == 9);
 	REQUIRE(state.values[0] == 1);
@@ -197,7 +204,7 @@ TEST_CASE("Find nodes", "[scenenode]") {
 */
 TEST_CASE("Add Nodes to SceneGraph", "[scenegraph]") {
 	TestState state{};
-	SceneNode *rootNode = new TestSceneNode(0, &state);
+	RootSceneNode *rootNode = new RootSceneNode();
 	SceneGraph graph(rootNode);
 
 	// Root node is automatically created by the SceneGraph
@@ -231,15 +238,33 @@ TEST_CASE("Add Nodes to SceneGraph", "[scenegraph]") {
 
 	graph.Render();
 
-	REQUIRE(state.values.size() == 10);
-	REQUIRE(state.values[0] == 0);
-	REQUIRE(state.values[1] == 1);
-	REQUIRE(state.values[2] == 3);
-	REQUIRE(state.values[3] == 4);
-	REQUIRE(state.values[4] == 5);
-	REQUIRE(state.values[5] == 6);
-	REQUIRE(state.values[6] == 2);
-	REQUIRE(state.values[7] == 7);
-	REQUIRE(state.values[8] == 8);
-	REQUIRE(state.values[9] == 9);
+	REQUIRE(state.values.size() == 9);
+	REQUIRE(state.values[0] == 1);
+	REQUIRE(state.values[1] == 3);
+	REQUIRE(state.values[2] == 4);
+	REQUIRE(state.values[3] == 5);
+	REQUIRE(state.values[4] == 6);
+	REQUIRE(state.values[5] == 2);
+	REQUIRE(state.values[6] == 7);
+	REQUIRE(state.values[7] == 8);
+	REQUIRE(state.values[8] == 9);
+}
+
+TEST_CASE("Apply Transformations", "[transform]") {
+	// Ensure we can multiple Transforms together in order to apply their attributes
+
+	Transformation transform1;
+	Transformation transform2;
+
+	// Rotate along the x-axis 90 degrees...
+	transform1.SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), glm::radians(90.0f));
+
+	// Rotate the other along the y-axis 90 degrees..
+	transform2.SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(90.0f));
+
+	// Create a new transform from the result of applying transform2 to transform1
+	// Which should result in a rotation which is 90 degrees around the x-axis, and 90 degrees around the y-axis
+	Transformation combinedTransform = transform1 * transform2;
+
+	REQUIRE(glm::epsilonEqual(combinedTransform.GetRotation().w, 0.5f, glm::epsilon<float>()));
 }

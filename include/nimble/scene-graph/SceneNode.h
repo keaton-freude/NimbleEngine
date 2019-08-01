@@ -5,6 +5,8 @@
 #include <spdlog/spdlog.h>
 #include <vector>
 
+#include "nimble/scene-graph/Transformation.h"
+
 /*
 	SceneNode is the abstract base class for all SceneNodes
 	It presents an API from which SceneGraph can do its work, including
@@ -28,10 +30,13 @@ public:
 	virtual ~SceneNode() = default;
 
 	// Apply this SceneNodes specific transformation or action
-	virtual void Apply() = 0;
+	// This function may modify the transformation, such that all child
+	// nodes will be affected, but parent nodes won't
+	// Because `Visit` is going to create copies, so they won't propogate back up
+	virtual void Apply(Transformation &transformation) = 0;
 
 	// Traverse. First ourself, then our children. Only supporting pre-order traversal for now
-	void Visit();
+	void Visit(Transformation transformation);
 
 	// Take ownership of some existing raw SceneNode pointer
 	size_t AddChild(SceneNode *node);
