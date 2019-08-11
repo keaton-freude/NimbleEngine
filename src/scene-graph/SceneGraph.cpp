@@ -2,10 +2,8 @@
 
 using namespace Nimble;
 
-SceneGraph::SceneGraph() {
-}
-
-SceneGraph::SceneGraph(RootSceneNode *node) : _rootNode(node) {
+SceneGraph::SceneGraph(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<Camera> camera)
+: _rootNode(std::make_unique<RootSceneNode>(projectionMatrix, camera)) {
 }
 
 void SceneGraph::Render() {

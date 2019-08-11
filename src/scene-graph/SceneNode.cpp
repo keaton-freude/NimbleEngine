@@ -21,14 +21,14 @@ size_t SceneNode::AddChild(std::unique_ptr<SceneNode> &&node) {
 	return _children.back()->GetID();
 }
 
-void SceneNode::Visit(Transformation transformation) {
+void SceneNode::Visit(SceneState sceneState) {
 	// Visit ourself first, passing ref
-	this->Apply(transformation);
+	this->Apply(sceneState);
 
 	// Visit each of our children
 	for(auto &child : _children) {
 		// pass copies
-		child->Visit(transformation);
+		child->Visit(sceneState);
 	}
 }
 

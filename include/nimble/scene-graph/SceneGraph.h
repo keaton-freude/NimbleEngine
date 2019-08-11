@@ -24,8 +24,11 @@
 
 */
 
+#include "nimble/camera/Camera.h"
 #include "nimble/scene-graph/RootSceneNode.h"
 #include "nimble/scene-graph/SceneNode.h"
+#include <glm/glm.hpp>
+#include <memory>
 
 namespace Nimble {
 
@@ -38,10 +41,9 @@ private:
 
 public:
 	// Use the default root node type (All-axis transform)
-	SceneGraph();
+	SceneGraph() = delete;
 
-	// Otherwise use specified one
-	SceneGraph(RootSceneNode *node);
+	SceneGraph(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<Camera> camera);
 
 	// Apply the graph. Walk every node, applying the node
 	// This can result in transformations, meshes being drawn, etc

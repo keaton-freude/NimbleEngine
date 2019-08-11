@@ -29,7 +29,7 @@ public:
 	TestSceneNode(int value, TestState *state) : _value(value), _state(state) {
 	}
 
-	void Apply(Transformation &transformation) override {
+	void Apply(SceneState &sceneState) override {
 		_state->values.push_back(_value);
 	}
 };
@@ -49,13 +49,13 @@ TEST_CASE("SceneNode Add Children", "[scenenode]") {
 	TestState state;
 	std::unique_ptr<SceneNode> rootNode = std::make_unique<TestSceneNode>(1, &state);
 	SceneNode *node1 = new TestSceneNode(2, &state);
-	Transformation fakeTransformation;
+	SceneState fakeState(nullptr, nullptr);
 
 	// Add via existing pointer
 	rootNode->AddChild(node1);
 
-	rootNode->Apply(fakeTransformation);
-	node1->Apply(fakeTransformation);
+	rootNode->Apply(fakeState);
+	node1->Apply(fakeState);
 
 	REQUIRE(state.values.size() == 2);
 	REQUIRE(state.values[0] == 1);
@@ -103,7 +103,7 @@ TEST_CASE("Traversal", "[scenenode]") {
 		we will see how far we can get with just pre-order traversal */
 
 	TestState state{};
-	Transformation fakeTransform;
+	SceneState fakeState(nullptr, nullptr);
 
 	// Raw pointers because lazy
 	SceneNode *root = new TestSceneNode(1, &state);
@@ -131,7 +131,7 @@ TEST_CASE("Traversal", "[scenenode]") {
 	node7->AddChild(node8);
 	node7->AddChild(node9);
 
-	root->Visit(fakeTransform);
+	root->Visit(fakeState);
 
 	REQUIRE(state.values.size() == 9);
 	REQUIRE(state.values[0] == 1);
@@ -155,11 +155,7 @@ TEST_CASE("Find nodes", "[scenenode]") {
 	SceneNode *node4 = new TestSceneNode(1, &state);
 	SceneNode *node5 = new TestSceneNode(1, &state);
 
-	auto rootId = root->GetID();
 	auto node1Id = node1->GetID();
-	auto node2Id = node2->GetID();
-	auto node3Id = node3->GetID();
-	auto node4Id = node4->GetID();
 	auto node5Id = node5->GetID();
 
 	root->AddChild(node1);
@@ -204,8 +200,7 @@ TEST_CASE("Find nodes", "[scenenode]") {
 */
 TEST_CASE("Add Nodes to SceneGraph", "[scenegraph]") {
 	TestState state{};
-	RootSceneNode *rootNode = new RootSceneNode();
-	SceneGraph graph(rootNode);
+	SceneGraph graph(nullptr, nullptr);
 
 	// Root node is automatically created by the SceneGraph
 	SceneNode *node1 = new TestSceneNode(1, &state);

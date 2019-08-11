@@ -35,6 +35,10 @@ int main() {
 		}
 
 		const auto windowPointer = w.GetWindow();
+		// Register Materials manually for now
+		new Material("test", "color");
+		new Material("basic", "basic");
+		new Material("phong", "phong");
 		auto engine = std::make_shared<Engine>(&w);
 		Input::Get().SetGlfwWindow(windowPointer);
 		// Register some basic keybindings
@@ -48,11 +52,6 @@ int main() {
 		ImGui::StyleColorsDark();
 		ImGui_ImplGlfw_InitForOpenGL(windowPointer, true);
 		ImGui_ImplOpenGL3_Init("#version 150");
-
-		// Register Materials manually for now
-		new Material("test", "color");
-		new Material("basic", "basic");
-		new Material("phong", "phong");
 
 		GlfwRenderLoop renderLoop(engine, windowPointer);
 		renderLoop.Run();
