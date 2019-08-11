@@ -75,8 +75,7 @@ public:
 		Transformation newTransform = *this;
 		newTransform._rotation = newTransform._rotation * transformation._rotation;
 		newTransform._position = transformation._position + newTransform._position;
-		// I don't know yet if we should just be adding scaling values together
-		newTransform._scale = transformation._scale + newTransform._scale;
+		newTransform._scale = transformation._scale * newTransform._scale;
 
 		return newTransform;
 	}

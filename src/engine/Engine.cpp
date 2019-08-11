@@ -6,6 +6,7 @@
 #include "nimble/engine/Engine.h"
 #include "nimble/input/InputManager.h"
 #include "nimble/resource-manager/ResourceManager.h"
+#include "nimble/scene-graph/DirectionalLightNode.h"
 #include "nimble/scene-graph/DrawableNode.h"
 #include "nimble/scene-graph/Transformation.h"
 
@@ -31,7 +32,16 @@ Engine::Engine(Window *window) : _window(window) {
 
 	_sceneGraph = std::make_unique<SceneGraph>(_projectionMatrix, _camera);
 
-	_sceneGraph->AddChildToRoot(new DrawableNode<PositionNormal>("suzanne.blend", "phong"));
+	// Add a directional light to the scene
+	auto lightNode = _sceneGraph->AddChildToRoot(
+	new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, 0.0f), glm::vec3(.3f, .3f, .3f))));
+
+	// Add some suzannes
+	for(size_t i = 0; i < 10; ++i) {
+		Transformation transform;
+		transform.Translate(glm::vec3(i * 2.0f, 0.0f, 0.0f));
+		_sceneGraph->AddChild(new DrawableNode<PositionNormal>("suzanne.blend", "phong", transform), lightNode);
+	}
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

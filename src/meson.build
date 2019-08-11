@@ -20,6 +20,7 @@ src = [
     'scene-graph/SceneGraph.cpp',
     'scene-graph/RootSceneNode.cpp',
     'scene-graph/Transformation.cpp',
+    'scene-graph/DirectionalLightNode.cpp',
 
 	# imgui
 	'thirdparty/imgui/src/imgui_demo.cpp',

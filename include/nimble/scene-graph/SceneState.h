@@ -16,6 +16,7 @@
 #include <memory>
 
 #include "nimble/camera/Camera.h"
+#include "nimble/light/DirectionalLight.h"
 #include "nimble/scene-graph/Transformation.h"
 
 namespace Nimble {
@@ -24,6 +25,7 @@ private:
 	std::shared_ptr<glm::mat4> _projectionMatrix;
 	std::shared_ptr<Camera> _camera;
 	Transformation _transform;
+	DirectionalLight _directionalLight;
 
 public:
 	// This class doesn't really make sense without our internal state, lets see
@@ -31,7 +33,7 @@ public:
 	SceneState() = delete;
 
 	SceneState(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<Camera> camera)
-	: _projectionMatrix(projectionMatrix), _camera(camera), _transform() {
+	: _projectionMatrix(projectionMatrix), _camera(camera), _transform(), _directionalLight() {
 	}
 
 	inline glm::mat4 *GetProjectionMatrix() const {
@@ -46,6 +48,16 @@ public:
 	// reference return value for efficient modification
 	inline Transformation &GetTransform() {
 		return _transform;
+	}
+
+	inline DirectionalLight &GetDirectionalLight() {
+		return _directionalLight;
+	}
+
+	void SetDirectionalLight(const DirectionalLight &light) {
+		_directionalLight = light;
+		// Make sure we normalize, as our shaders expect it
+		_directionalLight.direction = glm::normalize(_directionalLight.direction);
 	}
 };
 } // namespace Nimble

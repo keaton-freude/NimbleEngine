@@ -13,6 +13,7 @@
 #include "nimble/opengl-wrapper/VertexBuffer.h"
 #include "nimble/resource-manager/ResourceManager.h"
 #include "nimble/scene-graph/SceneNode.h"
+#include "nimble/scene-graph/Transformation.h"
 
 #include <memory>
 
@@ -31,22 +32,28 @@ private:
 	// Material slot, required
 	std::shared_ptr<Material> _material;
 
+	// An additional local transform to apply to the global transform
+	// before rendering
+	Transformation _localTransform;
+
 public:
 	// Drawable node from pre-existing resources
 	DrawableNode(const IMesh *mesh, std::shared_ptr<Material> material)
-	: _vb(mesh), _ib(mesh), _material(material) {
+	: _vb(mesh), _ib(mesh), _material(material), _localTransform() {
+		InitVao();
 	}
 
-	// Drawabl enode with resource names
-	DrawableNode(const std::string &meshName, const std::string &materialName) {
-		auto mesh = ResourceManager::Get().GetMesh(meshName);
-		_vb = VertexBuffer(mesh.get(), BufferUsageType::Static);
-		_ib = IndexBuffer(mesh.get(), BufferUsageType::Static);
+	// Drawable node with resource names
+	DrawableNode(const std::string &meshName, const std::string &materialName) : _localTransform() {
+		InitFromFilenames(meshName, materialName);
+		InitVao();
+	}
 
-		_material = ResourceManager::Get().GetMaterial(materialName);
-		glGenVertexArrays(1, &_vao);
-		glBindVertexArray(_vao);
-		T::SetVertexAttribPointers();
+	// Drawable node, resource names & passed in transform
+	DrawableNode(const std::string &meshName, const std::string &materialName, const Transformation &transform)
+	: _localTransform(transform) {
+		InitFromFilenames(meshName, materialName);
+		InitVao();
 	}
 
 	void Apply(SceneState &sceneState) override {
@@ -57,11 +64,32 @@ public:
 		_ib.Bind();
 		_material->Bind();
 		auto shader = _material->GetShader();
-		shader->SetUniform("Model", sceneState.GetTransform().GetWorldMatrix());
+		auto overallTransform = sceneState.GetTransform() * _localTransform;
+		shader->SetUniform("Model", overallTransform.GetWorldMatrix());
 		shader->SetUniform("View", sceneState.GetCamera()->GetView());
 		shader->SetUniform("Projection", *(sceneState.GetProjectionMatrix()));
 
+		if(sceneState.GetDirectionalLight().enabled) {
+			shader->SetUniform("lightDirection", sceneState.GetDirectionalLight().direction);
+			shader->SetUniform("lightColor", sceneState.GetDirectionalLight().color);
+		}
+
 		glDrawElements(GL_TRIANGLES, _ib.GetNumFaces() * 3, GL_UNSIGNED_INT, 0);
+	}
+
+private:
+	void InitFromFilenames(const std::string &meshName, const std::string &materialName) {
+		auto mesh = ResourceManager::Get().GetMesh(meshName);
+		_vb = VertexBuffer(mesh.get(), BufferUsageType::Static);
+		_ib = IndexBuffer(mesh.get(), BufferUsageType::Static);
+
+		_material = ResourceManager::Get().GetMaterial(materialName);
+	}
+
+	void InitVao() {
+		glGenVertexArrays(1, &_vao);
+		glBindVertexArray(_vao);
+		T::SetVertexAttribPointers();
 	}
 };
 } // namespace Nimble
