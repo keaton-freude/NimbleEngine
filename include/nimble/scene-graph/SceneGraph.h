@@ -56,7 +56,10 @@ public:
 	size_t AddChild(SceneNode *node, size_t id);
 	size_t AddChild(std::unique_ptr<SceneNode> &&node, size_t id);
 
-private:
+	RootSceneNode *GetRootNode() const {
+		return _rootNode.get();
+	}
+
 	// Look through all nodes in the graph for `id`
 	const std::optional<SceneNode *const> Find(size_t id);
 };

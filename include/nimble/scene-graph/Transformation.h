@@ -36,7 +36,7 @@ public:
 		ImGui::Text("Scale: %f, %f, %f", _scale.x, _scale.y, _scale.z);
 #endif
 		// calculate the world matrix based on the current state
-		return glm::translate(_position) * glm::mat4_cast(_rotation) * glm::scale(_scale);
+		return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
 	}
 
 	void Rotate(glm::vec3 axis, float radians) {

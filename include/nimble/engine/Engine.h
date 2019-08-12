@@ -45,6 +45,7 @@ private:
 	std::shared_ptr<Camera> _camera;
 	std::shared_ptr<glm::mat4> _projectionMatrix;
 	std::unique_ptr<SceneGraph> _sceneGraph;
+	size_t _rootTransformNode;
 };
 
 } // namespace Nimble

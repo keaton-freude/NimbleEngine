@@ -22,8 +22,14 @@ public:
 	// TransformNode::FromTranslationRotation(vec3 translate, axis, degrees)
 	// Etc
 
-	virtual void Apply(Transformation &transformation) override {
-		_transform.
+	virtual void Apply(SceneState &sceneState) override {
+		auto &currentTransform = sceneState.GetTransform();
+		currentTransform = currentTransform * _transform;
+	}
+
+	// Let users freely modify the wrapped transform
+	Transformation &GetTransform() {
+		return _transform;
 	}
 };
 } // namespace Nimble

@@ -38,6 +38,7 @@ private:
 	// Keep a cache of each of our resource types
 	std::unordered_map<std::string, std::shared_ptr<ShaderProgram>> _shaderCache;
 	std::unordered_map<std::string, std::shared_ptr<Material>> _materialCache;
+	std::unordered_map<std::string, std::shared_ptr<IMesh>> _meshCache;
 
 public:
 	// Singleton
@@ -88,6 +89,12 @@ public:
 	std::shared_ptr<IMesh> GetMesh(const std::string &name) {
 		Assimp::Importer importer;
 		auto path = GetPathFromName("models", name);
+
+		auto cachedMesh = _meshCache.find(path);
+		if(cachedMesh != _meshCache.end()) {
+			return cachedMesh->second;
+		}
+
 		const auto _scene =
 		importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals);
 		if(!_scene) {
@@ -100,7 +107,9 @@ public:
 			spdlog::error("No meshes found for the model: {}", path);
 			return nullptr;
 		}
-		return MeshFactory::FromFile(_scene->mMeshes[0]);
+		auto mesh = MeshFactory::FromFile(_scene->mMeshes[0]);
+		_meshCache[path] = mesh;
+		return mesh;
 	}
 
 	// Other options?
