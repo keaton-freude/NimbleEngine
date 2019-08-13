@@ -10,7 +10,7 @@ void SceneGraph::Render() {
 	_rootNode->Render();
 }
 
-size_t SceneGraph::AddChildToRoot(SceneNode *node) {
+SceneNode::NodeIdRet SceneGraph::AddChildToRoot(SceneNode *node) {
 	return _rootNode->AddChild(node);
 }
 
@@ -21,7 +21,7 @@ size_t SceneGraph::AddChild(SceneNode *node, size_t id) {
 		throw std::runtime_error(fmt::format("Failed to find parent node for ID {}", id));
 	}
 
-	return parent.value()->AddChild(node);
+	return parent.value()->AddChild(node).second;
 }
 
 size_t SceneGraph::AddChild(std::unique_ptr<SceneNode> &&node, size_t id) {
@@ -30,7 +30,7 @@ size_t SceneGraph::AddChild(std::unique_ptr<SceneNode> &&node, size_t id) {
 		throw std::runtime_error(fmt::format("Failed to find parent node for ID {}", id));
 	}
 
-	return parent.value()->AddChild(std::move(node));
+	return parent.value()->AddChild(std::move(node)).second;
 }
 
 const std::optional<SceneNode *const> SceneGraph::Find(size_t id) {

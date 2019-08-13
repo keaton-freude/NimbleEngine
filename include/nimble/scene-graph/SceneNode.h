@@ -3,6 +3,7 @@
 #include <memory>
 #include <optional>
 #include <spdlog/spdlog.h>
+#include <utility>
 #include <vector>
 
 #include "nimble/scene-graph/SceneState.h"
@@ -29,6 +30,10 @@ public:
 	SceneNode();
 	virtual ~SceneNode() = default;
 
+	// The storage type of the Node's ID
+	using NodeIdTy = size_t;
+	using NodeIdRet = std::pair<SceneNode *, NodeIdTy>;
+
 	// Apply this SceneNodes specific transformation or action
 	// This function may modify the transformation, such that all child
 	// nodes will be affected, but parent nodes won't
@@ -38,17 +43,15 @@ public:
 	// Traverse. First ourself, then our children. Only supporting pre-order traversal for now
 	void Visit(SceneState sceneState);
 
-	// Take ownership of some existing raw SceneNode pointer
-	size_t AddChild(SceneNode *node);
+	// Fluent API, return a reference to the inserted child after doing the insert
+	// Also include the ID, in the pair
+	NodeIdRet AddChild(SceneNode *node);
+	NodeIdRet AddChild(NodeTy &&node);
 
-	// Take ownership of some existing SceneNode unique_ptr
-	size_t AddChild(std::unique_ptr<SceneNode> &&node);
-
-	// Construct a new child, forwarding the type T's args directly in
 	template <typename T, typename... Args>
-	inline size_t AddChild(Args &&... args) {
+	inline NodeIdRet AddChild(Args &&... args) {
 		_children.push_back(new T(args...));
-		return _children.back()->GetID();
+		return std::make_pair(_children.back().get(), _children.back()->GetID());
 	}
 
 	// Users should call GetID() on important nodes before they are giving over to the scene graph

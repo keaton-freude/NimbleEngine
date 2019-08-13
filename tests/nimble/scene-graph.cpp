@@ -208,8 +208,8 @@ TEST_CASE("Add Nodes to SceneGraph", "[scenegraph]") {
 
 	// Add some new root children, which is a special operation in the scene graph which
 	// inserts nodes agaginst the root node in the graph
-	auto node1Id = graph.AddChildToRoot(node1);
-	auto node2Id = graph.AddChildToRoot(node2);
+	auto node1Id = graph.AddChildToRoot(node1).second;
+	auto node2Id = graph.AddChildToRoot(node2).second;
 
 	SceneNode *node3 = new TestSceneNode(3, &state);
 	SceneNode *node4 = new TestSceneNode(4, &state);

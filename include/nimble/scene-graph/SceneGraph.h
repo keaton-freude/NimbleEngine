@@ -51,7 +51,7 @@ public:
 
 	// Take ownership of a raw pointer, similar to the
 	// SceneNode::AddChild
-	size_t AddChildToRoot(SceneNode *node);
+	SceneNode::NodeIdRet AddChildToRoot(SceneNode *node);
 
 	size_t AddChild(SceneNode *node, size_t id);
 	size_t AddChild(std::unique_ptr<SceneNode> &&node, size_t id);

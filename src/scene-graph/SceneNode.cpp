@@ -9,16 +9,16 @@ SceneNode::SceneNode() {
 	_id = SceneNode::GenerateID();
 }
 
-size_t SceneNode::AddChild(SceneNode *node) {
+SceneNode::NodeIdRet SceneNode::AddChild(SceneNode *node) {
 	spdlog::debug("Adding node as child to scene graph");
 	_children.push_back(std::unique_ptr<SceneNode>(node));
-	return _children.back()->GetID();
+	return std::make_pair(_children.back().get(), _children.back()->GetID());
 }
 
-size_t SceneNode::AddChild(std::unique_ptr<SceneNode> &&node) {
+SceneNode::NodeIdRet SceneNode::AddChild(std::unique_ptr<SceneNode> &&node) {
 	spdlog::debug("Adding node as child to scene graph");
 	_children.push_back(std::move(node));
-	return _children.back()->GetID();
+	return std::make_pair(_children.back().get(), _children.back()->GetID());
 }
 
 void SceneNode::Visit(SceneState sceneState) {

@@ -34,11 +34,11 @@ Engine::Engine(Window *window) : _window(window) {
 	_sceneGraph = std::make_unique<SceneGraph>(_projectionMatrix, _camera);
 
 	// Add a directional light to the scene
-	auto lightNode = _sceneGraph->AddChildToRoot(
-	new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))));
-
-	// Add a root transform node for our monkeys, so we can demo the scene graph
-	_rootTransformNode = _sceneGraph->AddChild(new TransformNode(Transformation()), lightNode);
+	_rootTransformNode = _sceneGraph
+						 ->AddChildToRoot(new DirectionalLightNode(
+						 DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
+						 .first->AddChild(new TransformNode(Transformation()))
+						 .second;
 
 	// Add some suzannes
 	for(size_t j = 0; j < 10; ++j) {
