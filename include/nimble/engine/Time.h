@@ -40,8 +40,8 @@ public:
 		_currentTime = newTime;
 		_totalTime += _frameTime;
 		_fpsTime += _frameTime;
-		if(_fpsTime.count() > 1000000000) {
-			_fpsTime -= std::chrono::nanoseconds(1000000000);
+		if(_fpsTime.count() > 100'0000'000) {
+			_fpsTime -= std::chrono::nanoseconds(100'0000'000);
 			// How many frames did we generate before passing the 1 second mark?
 			_lastCalculatedFps = (_framesCounted / 1.0f);
 			_framesCounted = 0;

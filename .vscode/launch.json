@@ -8,10 +8,10 @@
       "name": "Launch Nimble",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/meson-out/NimbleFrontend",
+      "program": "${workspaceFolder}/build/frontend/NimbleFrontend",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/frontend",
+      "cwd": "${workspaceFolder}/build",
       "environment": [],
       "externalConsole": false,
       "setupCommands": [

@@ -30,10 +30,12 @@ public:
 
 	glm::mat4 GetWorldMatrix() const {
 #ifndef NIMBLE_TESTING
+#if 0
 		ImGui::Text("Transform");
 		ImGui::Text("Position: %f, %f, %f", _position.x, _position.y, _position.z);
 		ImGui::Text("Rotation: %f, %f, %f %f", _rotation.w, _rotation.x, _rotation.y, _rotation.z);
 		ImGui::Text("Scale: %f, %f, %f", _scale.x, _scale.y, _scale.z);
+#endif
 #endif
 		// calculate the world matrix based on the current state
 		return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
