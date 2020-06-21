@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <chrono>
 #include <memory>
+#include <utility>
 
 #include "nimble/engine/Engine.h"
 #include "nimble/engine/RenderLoop.h"
@@ -18,7 +19,7 @@
 using namespace Nimble;
 
 RenderLoop::RenderLoop(std::shared_ptr<Engine> engine, ExitCondition exitCondition)
-: _exitCondition(exitCondition), _engine(engine) {
+: _exitCondition(std::move(exitCondition)), _engine(std::move(engine)) {
 }
 
 void RenderLoop::Run() {
@@ -33,7 +34,7 @@ void RenderLoop::Run() {
 		ImGui::Begin("Nimble Debug");
 
 		// Draw the latest FPS measurement
-		ImGui::Text(fmt::format("FPS: {}", _time.GetFPS()).c_str());
+		ImGui::Text("%s", fmt::format("FPS: {}", _time.GetFPS()).c_str());
 
 		// Poll for Input
 		PollForEvents();

@@ -48,7 +48,7 @@ public:
 
 private:
 	// Returns a fully-qualified path, based on the passed in name
-	const std::string GetPathFromName(const std::string &resourceType, const std::string &name) {
+	std::string GetPathFromName(const std::string &resourceType, const std::string &name) {
 		// resourceType is the name of a folder in the resource folder
 		spdlog::debug("GetPathFromName resourceType: {}, name: {}", resourceType, name);
 		std::filesystem::path subDir = std::filesystem::path(GetResourceRoot()) / resourceType;
@@ -64,11 +64,10 @@ private:
 	// string which points relative to the build folder
 	// In the future, we may make this possible to set (either through some settings)
 	// file, or via CLI or something similar.
-	const std::string &GetResourceRoot() {
-		// We assume the executable is somewhere below: build/frontend/<executable>
-		// Our RESOURCE_ROOT is relative toe the build folder, so go 1 folder up
+	static const std::string &GetResourceRoot() {
+		// We assume the resource directory is next to the executable
 		const static std::string RESOURCE_ROOT =
-		(std::filesystem::current_path().parent_path() / "resources").string();
+		(std::filesystem::current_path() / "resources").string();
 		assert(RESOURCE_ROOT.length() != 0 && "RESOURCE_ROOT is an empty string!");
 
 		// NOTE: We are making a hard assumption about the path of the executable

@@ -56,4 +56,6 @@ bool Input::IsKeyPressed(string identifier) {
 	// this if it becomes a pita
 	spdlog::debug("InputManager: Identifier {} not registered", identifier);
 	assert(false);
+
+	return false;
 }

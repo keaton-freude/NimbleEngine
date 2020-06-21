@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.11)
 
 project(NimbleEngine VERSION 0.0.1 LANGUAGES CXX)
 
+set(MSVC_COMPILE_FLAGS "/MP")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}" )
+
 # Find all of our dependencies up front
 # NOTE: If you are on windows, install vcpkg and install your libaries first
 # and use the build script or remember to add the vcpkg to your cmake cmd line
