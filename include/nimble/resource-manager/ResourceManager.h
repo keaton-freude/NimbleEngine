@@ -52,11 +52,12 @@ private:
 		// resourceType is the name of a folder in the resource folder
 		spdlog::debug("GetPathFromName resourceType: {}, name: {}", resourceType, name);
 		std::filesystem::path subDir = std::filesystem::path(GetResourceRoot()) / resourceType;
-		spdlog::debug("Resource subDir: {}", subDir.c_str());
+		spdlog::debug("Resource subDir: {}", subDir.string());
 		std::filesystem::path fullPath = subDir / name;
-		spdlog::debug("Full path: {}", fullPath.c_str());
+		spdlog::debug("Full path: {}", fullPath.string());
 
-		return fullPath.c_str();
+		//return std::string(fullPath.c_str());
+		return fullPath.string();
 	}
 
 	// Resource Root is set via configuration.. for now it'll be set via a const

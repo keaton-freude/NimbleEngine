@@ -1,0 +1,4 @@
+add_executable(NimbleEngineFrontend src/main.cpp)
+target_compile_features(NimbleEngineFrontend PUBLIC cxx_std_17)
+set_target_properties(NimbleEngineFrontend PROPERTIES CXX_EXTENSIONS OFF)
+target_link_libraries(NimbleEngineFrontend PRIVATE NimbleEngine)

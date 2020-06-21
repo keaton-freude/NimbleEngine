@@ -2,7 +2,7 @@
 
 #include "nimble/IMesh.h"
 #include "nimble/opengl-wrapper/Buffer.h"
-#include <bits/stdint-uintn.h>
+#include <stdint.h>
 #include <stddef.h>
 #include <vector>
 

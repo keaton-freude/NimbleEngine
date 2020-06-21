@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <bits/stdint-uintn.h>
+#include <stdint.h>
 #include <stddef.h>
 #include <vector>
 

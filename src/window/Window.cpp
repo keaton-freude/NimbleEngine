@@ -43,7 +43,8 @@ Window::Window(Width width, Height height, const char *title)
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_MULTISAMPLE);
+	// Fix below for windows
+	//glEnable(GL_MULTISAMPLE_ARB);
 }
 
 void Window::Initialize() const {

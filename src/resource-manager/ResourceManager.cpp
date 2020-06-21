@@ -38,8 +38,8 @@ std::shared_ptr<ShaderProgram> ResourceManager::GetShader(const std::string &nam
 		fmt::format("Failed to find fragment shader at: {}", vertexShaderSource.string()));
 	}
 
-	program->AddVertexShader(FileReadAllText(vertexShaderSource).c_str());
-	program->AddFragmentShader(FileReadAllText(fragmentShaderSource).c_str());
+	program->AddVertexShader(FileReadAllText(vertexShaderSource.string()).c_str());
+	program->AddFragmentShader(FileReadAllText(fragmentShaderSource.string()).c_str());
 
 	if(!program->LinkShaders()) {
 		throw std::runtime_error("Failed to link shaders of name " + name);
