@@ -4,20 +4,13 @@
 #include "nimble/MeshTools.h"
 #include "nimble/camera/Camera.h"
 #include "nimble/engine/Engine.h"
-#include "nimble/input/InputManager.h"
 #include "nimble/resource-manager/ResourceManager.h"
 #include "nimble/scene-graph/DirectionalLightNode.h"
 #include "nimble/scene-graph/DrawableNode.h"
 #include "nimble/scene-graph/TransformNode.h"
-#include "nimble/scene-graph/Transformation.h"
 
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/compatibility.hpp>
 
 using namespace Nimble;
 

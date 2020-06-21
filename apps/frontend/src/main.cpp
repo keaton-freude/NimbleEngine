@@ -2,7 +2,6 @@
 #include <GLFW/glfw3.h>
 #include <cstdlib>
 #include <stdexcept>
-#include <string>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -12,8 +11,6 @@
 #include "nimble/engine/GlfwRenderLoop.h"
 #include "nimble/input/InputManager.h"
 #include "nimble/material/Material.h"
-#include "nimble/utility/StrongTypes.h"
-#include "nimble/window/Window.h"
 
 
 using namespace Nimble;

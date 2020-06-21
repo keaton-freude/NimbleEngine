@@ -1,20 +1,18 @@
 // This default policy simply throws an exception with the missing ID
 
 #include <exception>
-#include <memory>
 #include <fmt/format.h>
+#include <memory>
 
 template <class IdentifierType, class ProductType>
-class DefaultFactoryError
-{
+class DefaultFactoryError {
 public:
 	class Exception : public std::exception {
 	public:
-		Exception(const IdentifierType &unknownId)
-			: _unknownId(unknownId) { 
+		Exception(const IdentifierType &unknownId) : _unknownId(unknownId) {
 		}
 
-		virtual const char* what() {
+		virtual const char *what() {
 			return fmt::format("Unknown object type passed to factory with id: {}", _unknownId).c_str();
 		}
 
@@ -25,9 +23,10 @@ public:
 	private:
 		IdentifierType _unknownId;
 	};
+
 protected:
 	std::shared_ptr<ProductType> OnUnknownType(const IdentifierType &id) {
-		// In this case, no intervention is performed.	
+		// In this case, no intervention is performed.
 		throw Exception(id);
 	}
 };

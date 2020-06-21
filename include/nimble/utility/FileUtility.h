@@ -11,7 +11,7 @@ std::string FileReadAllText(const char *path) {
 	return buffer.str();
 }
 
-std::string FileReadAllText(const std::string& path) {
+std::string FileReadAllText(const std::string &path) {
 	std::ifstream f(path.c_str());
 	std::stringstream buffer;
 	buffer << f.rdbuf();

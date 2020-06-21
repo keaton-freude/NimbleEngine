@@ -56,7 +56,7 @@ private:
 		std::filesystem::path fullPath = subDir / name;
 		spdlog::debug("Full path: {}", fullPath.string());
 
-		//return std::string(fullPath.c_str());
+		// return std::string(fullPath.c_str());
 		return fullPath.string();
 	}
 
@@ -66,8 +66,7 @@ private:
 	// file, or via CLI or something similar.
 	static const std::string &GetResourceRoot() {
 		// We assume the resource directory is next to the executable
-		const static std::string RESOURCE_ROOT =
-		(std::filesystem::current_path() / "resources").string();
+		const static std::string RESOURCE_ROOT = (std::filesystem::current_path() / "resources").string();
 		assert(RESOURCE_ROOT.length() != 0 && "RESOURCE_ROOT is an empty string!");
 
 		// NOTE: We are making a hard assumption about the path of the executable

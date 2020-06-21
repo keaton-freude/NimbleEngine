@@ -2,5 +2,5 @@
 
 class ShaderFactory {
 public:
- //       using CreateMethodTy = IShaderProgram*(*)();
+	//       using CreateMethodTy = IShaderProgram*(*)();
 };

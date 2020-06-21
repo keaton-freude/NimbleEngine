@@ -1,8 +1,8 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <vector>
 
 #include "nimble/IMesh.h"

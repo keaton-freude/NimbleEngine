@@ -44,9 +44,9 @@ private:
 public:
 	Material() = default;
 	// Create material with name, do a lookup for shader
-	Material(std::string name, std::string shaderName);
+	Material(const std::string &name, const std::string &shaderName);
 	// Create material with name, provide a shared_ptr to specified ShaderProgram
-	Material(std::string name, std::shared_ptr<ShaderProgram> shader);
+	Material(const std::string &name, std::shared_ptr<ShaderProgram> shader);
 
 	// Bind this materials state to the pipeline
 	void Bind();

@@ -1,12 +1,7 @@
-#include "nimble/camera/Camera.h"
-
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/transform.hpp>
-
-#include "nimble/input/InputManager.h"
-
 #include "imgui.h"
+
+#include "nimble/camera/Camera.h"
+#include "nimble/input/InputManager.h"
 
 using namespace Nimble;
 
@@ -22,10 +17,6 @@ Camera::Camera(glm::vec3 focusPoint, float rotateSpeed)
 }
 
 glm::mat4 Camera::GetView() {
-	// return glm::lookAt(_rotatedPosition, _focusPoint, Up());
-
-	// auto offset = _position - _focusPoint;
-
 	return glm::translate(glm::mat4_cast(_quatRotation), _rotatedPosition);
 }
 

@@ -26,10 +26,10 @@ class Input : public Singleton<Input> {
 
 private:
 	ScanCodeStorageTy _scanCodeState;
-	GLFWwindow *_windowPtr;
+	GLFWwindow *_windowPtr{};
 
-	glm::vec2 prevMouse;
-	glm::vec2 mouse;
+	glm::vec2 prevMouse{};
+	glm::vec2 mouse{};
 
 	int rightMouseButtonState = 0;
 	int leftMouseButtonState = 0;
@@ -46,9 +46,7 @@ private:
 	}
 
 public:
-	Input() {
-		spdlog::info("Input Manager created!");
-	}
+	Input() = default;
 
 	void SetGlfwWindow(GLFWwindow *windowPtr) {
 		assert(windowPtr);
@@ -58,11 +56,9 @@ public:
 		glfwSetWindowUserPointer(_windowPtr, (void *)this);
 
 		glfwSetScrollCallback(_windowPtr, [](GLFWwindow *windowPtr, double x, double y) {
-			Input *self = static_cast<Input *>(glfwGetWindowUserPointer(windowPtr));
+			auto *self = static_cast<Input *>(glfwGetWindowUserPointer(windowPtr));
 			self->scroll_callback(windowPtr, x, y);
 		});
-
-		// glfwSetInputMode(windowPtr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	// Call this method to query the system for new input state
@@ -78,27 +74,27 @@ public:
 		scrollWheelYState = 0;
 	}
 
-	void RegisterKeyCodeMapping(std::string identifier, int glfwKeyCode);
+	void RegisterKeyCodeMapping(const std::string &identifier, int glfwKeyCode);
 
-	bool IsKeyPressed(std::string identifier);
+	bool IsKeyPressed(const std::string &identifier);
 
 	glm::vec2 GetMouseMovement() {
 		return mouse;
 	}
 
-	bool IsMouseRightDown() {
+	bool IsMouseRightDown() const {
 		return rightMouseButtonState == GLFW_PRESS;
 	}
 
-	bool IsMouseLeftDown() {
+	bool IsMouseLeftDown() const {
 		return leftMouseButtonState == GLFW_PRESS;
 	}
 
-	bool IsScrollForward() {
+	bool IsScrollForward() const {
 		return scrollWheelYState > 0;
 	}
 
-	bool IsScrollBackward() {
+	bool IsScrollBackward() const {
 		return scrollWheelYState < 0;
 	}
 };

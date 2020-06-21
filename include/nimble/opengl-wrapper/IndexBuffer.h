@@ -2,8 +2,8 @@
 
 #include "nimble/IMesh.h"
 #include "nimble/opengl-wrapper/Buffer.h"
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <vector>
 
 namespace Nimble {

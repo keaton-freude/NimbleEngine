@@ -31,14 +31,14 @@ void Input::Update() {
 	for(auto &[key, value] : _scanCodeState) {
 		// Query GLFW for the state of this key and set it
 		auto state = glfwGetKey(_windowPtr, value.scanCode);
-		value.pressed = state == GLFW_PRESS ? true : false;
+		value.pressed = state == GLFW_PRESS;
 	}
 
 	// Query off the mouse state and save it
 	prevMouse = newMouse;
 }
 
-void Input::RegisterKeyCodeMapping(string identifier, int scanCode) {
+void Input::RegisterKeyCodeMapping(const string &identifier, int scanCode) {
 	auto scanCodeState = ScanCodeState();
 	scanCodeState.pressed = false;
 	scanCodeState.scanCode = scanCode;
@@ -46,7 +46,7 @@ void Input::RegisterKeyCodeMapping(string identifier, int scanCode) {
 	_scanCodeState[identifier] = scanCodeState;
 }
 
-bool Input::IsKeyPressed(string identifier) {
+bool Input::IsKeyPressed(const string &identifier) {
 	auto entry = _scanCodeState.find(identifier);
 	if(entry != _scanCodeState.end()) {
 		return entry->second.pressed;

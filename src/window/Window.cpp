@@ -44,7 +44,7 @@ Window::Window(Width width, Height height, const char *title)
 
 	glEnable(GL_DEPTH_TEST);
 	// Fix below for windows
-	//glEnable(GL_MULTISAMPLE_ARB);
+	// glEnable(GL_MULTISAMPLE_ARB);
 }
 
 void Window::Initialize() const {
