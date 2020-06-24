@@ -1,5 +1,4 @@
 #include "nimble/opengl-wrapper/GLContext.h"
-#include "nimble/utility/StrongTypes.h"
 #include <GL/glew.h>
 
 void GLContext::SetViewportDimensions(Width width, Height height) {

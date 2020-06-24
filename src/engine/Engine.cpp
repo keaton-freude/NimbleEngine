@@ -9,9 +9,6 @@
 #include "nimble/scene-graph/DrawableNode.h"
 #include "nimble/scene-graph/TransformNode.h"
 
-#include "imgui.h"
-
-
 using namespace Nimble;
 
 Engine::Engine(Window *window) : _window(window) {
@@ -27,37 +24,17 @@ Engine::Engine(Window *window) : _window(window) {
 	_sceneGraph = std::make_unique<SceneGraph>(_projectionMatrix, _camera);
 
 	// Add a directional light to the scene
-	_rootTransformNode = _sceneGraph
-						 ->AddChildToRoot(new DirectionalLightNode(
-						 DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
-						 .first->AddChild(new TransformNode(Transformation()))
-						 .second;
+	_rootTransformNode =
+		_sceneGraph
+		->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
+		.first->AddChild(new TransformNode(Transformation()))
+		.second;
 
-	// Add some suzannes
-	for(size_t j = 0; j < 10; ++j) {
-		for(size_t i = 0; i < 10; ++i) {
-			Transformation transform;
-			transform.Translate(glm::vec3((i * 3.0f) + (-10.0f), (j * 2.5f) + (-10.0f), 0.0f));
-			transform.Rotate(glm::vec3(1.0f, 0.0f, 0.0f), glm::radians(90.0f));
-			transform.Rotate(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(180.0f));
-			_sceneGraph->AddChild(new DrawableNode<PositionNormal>("suzanne.blend", "phong", transform),
-								  _rootTransformNode);
-		}
-	}
+	Transformation transform;
+	_sceneGraph->AddChild(new DrawableNode<PositionNormal>("cube.blend", "phong", transform), _rootTransformNode);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
-	/*glGenVertexArrays(1, &_vao);
-	glBindVertexArray(_vao);
-
-	auto mesh = ResourceManager::Get().GetMesh("suzanne.blend");
-
-	_vb = std::make_unique<VertexBuffer>(mesh.get(), BufferUsageType::Static);
-	_ib = std::make_unique<IndexBuffer>(mesh.get(), BufferUsageType::Static);
-
-	PositionNormal::SetVertexAttribPointers();*/
 }
 
 void Engine::RenderFrame(const Time &time) {
@@ -84,38 +61,11 @@ void Engine::RenderFrame(const Time &time) {
 
 		// Rotate a little around the Z
 		Transformation rotZ;
-		rotZ.Rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(0.1f));
+		//	rotZ.Rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(0.1f));
 		transform = transform * rotZ;
 	}
 
 	_sceneGraph->Render();
-	/*
-		ResourceManager::Get().GetMaterial("phong")->Bind();
-		auto shader = ResourceManager::Get().GetMaterial("phong")->GetShader();
-
-		glm::vec3 lightPos = glm::vec3(0.0f, -5.0f, -10.0f);
-		glm::vec3 lightColor = glm::vec3(.3f, .3f, .3f);
-
-		auto rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-		rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)) * rotation;
-
-		glm::vec4 test = glm::vec4(currentPosition.x, currentPosition.y, currentPosition.z, 1.0f);
-
-		// model = model * glm::translate(currentPosition) * glm::mat4_cast(currentRotation);
-
-		// shader->SetUniform("Model", model);
-		shader->SetUniform("View", _camera->GetView());
-		shader->SetUniform("Projection", _projectionMatrix);
-		shader->SetUniform("lightPos", lightPos);
-		shader->SetUniform("lightColor", lightColor);
-
-		_vb->Bind();
-		_ib->Bind();
-
-		glBindVertexArray(_vao);
-		glDrawElements(GL_TRIANGLES, _ib->GetNumFaces() * 3, GL_UNSIGNED_INT, 0);
-	*/
 }
 
 void Engine::SetLatestFPS(float FPS) {

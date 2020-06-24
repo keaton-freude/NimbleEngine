@@ -14,7 +14,6 @@ std::shared_ptr<ShaderProgram> ResourceManager::GetShader(const std::string &nam
 		}
 	}
 
-	// User provides some name like
 	// Basic, we need to find the .frag and .vert components, create a shader
 	// program, link and check it. If all is good, return the ShaderProgram to user
 	ShaderProgram *program = new ShaderProgram(name);

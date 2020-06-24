@@ -1,6 +1,4 @@
 #include <GL/glew.h>
-#include <iostream>
-#include <list>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -8,7 +6,6 @@
 #include "spdlog/spdlog.h"
 
 #include "nimble/opengl-wrapper/FragmentShader.h"
-#include "nimble/opengl-wrapper/Shader.h"
 #include "nimble/opengl-wrapper/ShaderInfo.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/opengl-wrapper/Utils.h"

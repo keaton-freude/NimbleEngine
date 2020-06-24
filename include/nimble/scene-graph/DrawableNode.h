@@ -16,6 +16,7 @@
 #include "nimble/scene-graph/Transformation.h"
 
 #include <memory>
+#include "nimble/core/Assert.h"
 
 
 namespace Nimble {
@@ -80,6 +81,7 @@ public:
 private:
 	void InitFromFilenames(const std::string &meshName, const std::string &materialName) {
 		auto mesh = ResourceManager::Get().GetMesh(meshName);
+		ASSERT_NOT_NULL(mesh);
 		_vb = VertexBuffer(mesh.get(), BufferUsageType::Static);
 		_ib = IndexBuffer(mesh.get(), BufferUsageType::Static);
 

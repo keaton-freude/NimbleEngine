@@ -97,7 +97,8 @@ public:
 		const auto _scene =
 		importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals);
 		if(!_scene) {
-			spdlog::error("Failed to load model from path: {}", path);
+			const auto error = importer.GetErrorString();
+			spdlog::error("Failed to load model from path: {}\nError: {}", path, error);
 			return nullptr;
 		}
 
