@@ -9,7 +9,19 @@
 #include "nimble/scene-graph/DrawableNode.h"
 #include "nimble/scene-graph/TransformNode.h"
 
+#include "imgui.h"
+
 using namespace Nimble;
+
+void* __cdecl operator new[](size_t size, const char* name, int flags, unsigned debugFlags, const char* file, int line)
+{
+	return new uint8_t[size];
+}
+
+void* __cdecl operator new[](size_t size, size_t a, size_t b, const char* name, int flags, unsigned debugFlags, const char* file, int line)
+{
+	return new uint8_t[size];
+}
 
 Engine::Engine(Window *window) : _window(window) {
 	int width, height;
@@ -24,11 +36,11 @@ Engine::Engine(Window *window) : _window(window) {
 	_sceneGraph = std::make_unique<SceneGraph>(_projectionMatrix, _camera);
 
 	// Add a directional light to the scene
-	_rootTransformNode =
-		_sceneGraph
-		->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
-		.first->AddChild(new TransformNode(Transformation()))
-		.second;
+	_rootTransformNode = _sceneGraph
+						 ->AddChildToRoot(new DirectionalLightNode(
+						 DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
+						 .first->AddChild(new TransformNode(Transformation()))
+						 .second;
 
 	Transformation transform;
 	_sceneGraph->AddChild(new DrawableNode<PositionNormal>("cube.blend", "phong", transform), _rootTransformNode);
@@ -45,7 +57,6 @@ void Engine::RenderFrame(const Time &time) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	_camera->Update(time);
-
 	auto rootTransform = _sceneGraph->Find(_rootTransformNode);
 
 	/*

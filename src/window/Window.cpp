@@ -33,11 +33,11 @@ Window::Window(Width width, Height height, const char *title)
 											 height.get(), width.get(), title)
 								 .c_str());
 	}
+	// uncomment below line to disable vsync
+	glfwSwapInterval(0);
 
 	glfwMakeContextCurrent(_window);
 
-	// uncomment below line to disable vsync
-	glfwSwapInterval(0);
 
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);

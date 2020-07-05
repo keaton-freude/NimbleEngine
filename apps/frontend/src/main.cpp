@@ -12,6 +12,12 @@
 #include "nimble/input/InputManager.h"
 #include "nimble/material/Material.h"
 
+// Required by EASTL, just forward to global new[]
+// https://github.com/electronicarts/EASTL/blob/master/doc/CMake/EASTL_Project_Integration.md
+/*void* __cdecl operator new[](size_t size, const char* name, int flags, unsigned debugFlags, const char* file, int line)
+{
+	return new uint8_t[size];
+}*/
 
 using namespace Nimble;
 
@@ -23,7 +29,7 @@ int main() {
 			throw std::runtime_error("Could not initialize GLFW");
 		}
 
-		Window w(Width(800), Height(600), "Test Title");
+		Window w(Width(1920), Height(1080), "Test Title");
 		GLenum err = glewInit();
 		if(err != GLEW_OK) {
 			spdlog::critical("Failed to initialize glew.");

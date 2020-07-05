@@ -1,20 +1,17 @@
-#include <GL/glew.h>
-#include <chrono>
+#include <array>
 #include <memory>
 #include <utility>
 
 #include "nimble/engine/Engine.h"
 #include "nimble/engine/RenderLoop.h"
-#include "nimble/engine/Time.h"
 #include "nimble/input/InputManager.h"
-#include "nimble/opengl-wrapper/GLContext.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "spdlog/spdlog.h"
 
-#include "fmt/format.h"
+#include "implot.h"
+
 
 using namespace Nimble;
 
@@ -42,6 +39,8 @@ void RenderLoop::Run() {
 		// Render Frame
 		RenderFrame(_time);
 
+		PlotFrameTime();
+
 		Input::Get().ClearState();
 
 		ImGui::End();
@@ -55,10 +54,26 @@ void RenderLoop::Run() {
 
 		_time.End();
 
+
+		spdlog::info("Frametime: {}", _time.GetFrameTime());
+
 		_engine->SetLatestFPS(_time.GetFPS());
 	}
 }
 
 void RenderLoop::RenderFrame(const Time &time) {
 	_engine->RenderFrame(time);
+}
+
+void RenderLoop::PlotFrameTime() {
+	const auto frameTimeIter = _time.GetFrameTimeHistoryIterator();
+	const auto numFrames = _time.GetNumHistoryFrames();
+
+	if (numFrames) {
+		ImPlot::SetNextPlotLimits(0.f, 50.f, 0.0, _time.GetMaxFrameTimeHistory(), ImGuiCond_Always);
+		if(ImPlot::BeginPlot("Frametime", nullptr, "Frametime (ms)")) {
+			ImPlot::PlotLine("Test Plot", frameTimeIter, numFrames);
+			ImPlot::EndPlot();
+		}
+	}
 }
