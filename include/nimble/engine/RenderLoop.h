@@ -33,7 +33,6 @@ protected:
 	virtual void SwapBuffers() = 0;
 
 	void RenderFrame(const Time &time);
-	void PlotFrameTime();
 
 
 private:

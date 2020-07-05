@@ -34,7 +34,7 @@ Window::Window(Width width, Height height, const char *title)
 								 .c_str());
 	}
 	// uncomment below line to disable vsync
-	glfwSwapInterval(0);
+	glfwSwapInterval(1);
 
 	glfwMakeContextCurrent(_window);
 

@@ -39,9 +39,8 @@ void RenderLoop::Run() {
 		// Render Frame
 		RenderFrame(_time);
 
-		PlotFrameTime();
-
 		Input::Get().ClearState();
+		// ImPlot::ShowDemoWindow();
 
 		ImGui::End();
 
@@ -55,7 +54,6 @@ void RenderLoop::Run() {
 		_time.End();
 
 
-		spdlog::info("Frametime: {}", _time.GetFrameTime());
 
 		_engine->SetLatestFPS(_time.GetFPS());
 	}
@@ -65,15 +63,3 @@ void RenderLoop::RenderFrame(const Time &time) {
 	_engine->RenderFrame(time);
 }
 
-void RenderLoop::PlotFrameTime() {
-	const auto frameTimeIter = _time.GetFrameTimeHistoryIterator();
-	const auto numFrames = _time.GetNumHistoryFrames();
-
-	if (numFrames) {
-		ImPlot::SetNextPlotLimits(0.f, 50.f, 0.0, _time.GetMaxFrameTimeHistory(), ImGuiCond_Always);
-		if(ImPlot::BeginPlot("Frametime", nullptr, "Frametime (ms)")) {
-			ImPlot::PlotLine("Test Plot", frameTimeIter, numFrames);
-			ImPlot::EndPlot();
-		}
-	}
-}

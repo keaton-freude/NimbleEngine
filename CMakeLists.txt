@@ -44,6 +44,7 @@ add_library(NimbleEngine
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/Transformation.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/DirectionalLightNode.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot_demo.cpp
         )
 target_compile_features(NimbleEngine PUBLIC cxx_std_17)
 set_target_properties(NimbleEngine PROPERTIES CXX_EXTENSIONS OFF)

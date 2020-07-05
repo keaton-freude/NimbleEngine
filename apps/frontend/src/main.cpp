@@ -11,13 +11,7 @@
 #include "nimble/engine/GlfwRenderLoop.h"
 #include "nimble/input/InputManager.h"
 #include "nimble/material/Material.h"
-
-// Required by EASTL, just forward to global new[]
-// https://github.com/electronicarts/EASTL/blob/master/doc/CMake/EASTL_Project_Integration.md
-/*void* __cdecl operator new[](size_t size, const char* name, int flags, unsigned debugFlags, const char* file, int line)
-{
-	return new uint8_t[size];
-}*/
+#include "implot.h"
 
 using namespace Nimble;
 
@@ -54,6 +48,7 @@ int main() {
 		ImGui::StyleColorsDark();
 		ImGui_ImplGlfw_InitForOpenGL(windowPointer, true);
 		ImGui_ImplOpenGL3_Init("#version 150");
+
 
 		GlfwRenderLoop renderLoop(engine, windowPointer);
 		renderLoop.Run();
