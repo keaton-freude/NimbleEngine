@@ -8,11 +8,9 @@
  * `Time` _should not_ have any side effects on actual program execution.
  */
 
-#include <EASTL/bonus/ring_buffer.h>
 #include <chrono>
 #include <vector>
 
-#include "EASTL/fixed_vector.h"
 #include "implot.h"
 #include "spdlog/spdlog.h"
 

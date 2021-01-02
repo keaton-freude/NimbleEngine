@@ -15,8 +15,6 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
-find_package(EASTL CONFIG REQUIRED)
-find_package(EABase CONFIG REQUIRED)
 add_subdirectory(extern/imgui)
 
 
@@ -60,7 +58,5 @@ target_link_libraries(NimbleEngine PUBLIC glfw)
 target_link_libraries(NimbleEngine PRIVATE spdlog::spdlog)
 target_link_libraries(NimbleEngine PRIVATE glm)
 target_link_libraries(NimbleEngine PRIVATE assimp::assimp)
-target_link_libraries(NimbleEngine PUBLIC EASTL)
-target_link_libraries(NimbleEngine PUBLIC EABase)
 # Front end app
 add_subdirectory(apps)
