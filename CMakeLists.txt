@@ -49,7 +49,7 @@ set_target_properties(NimbleEngine PROPERTIES CXX_EXTENSIONS OFF)
 
 target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/extern/implot-0.3)
-
+add_subdirectory(extern/simdjson EXCLUDE_FROM_ALL)
 target_link_libraries(NimbleEngine PUBLIC ImGui)
 target_link_libraries(NimbleEngine PRIVATE ${OPENGL_LIBRARIES})
 target_link_libraries(NimbleEngine PRIVATE fmt::fmt)
