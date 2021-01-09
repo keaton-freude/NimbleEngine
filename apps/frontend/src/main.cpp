@@ -11,6 +11,7 @@
 #include "nimble/engine/GlfwRenderLoop.h"
 #include "nimble/input/InputManager.h"
 #include "nimble/material/Material.h"
+#include "nimble/resource-manager/ResourceManager.h"
 #include "implot.h"
 
 using namespace Nimble;
@@ -31,10 +32,10 @@ int main() {
 		}
 
 		const auto windowPointer = w.GetWindow();
+
+		ResourceManager::Get().LoadMaterialsFromDisk();
 		// Register Materials manually for now
-		new Material("test", "color");
-		new Material("basic", "basic");
-		new Material("phong", "phong");
+
 		auto engine = std::make_shared<Engine>(&w);
 		Input::Get().SetGlfwWindow(windowPointer);
 		// Register some basic keybindings

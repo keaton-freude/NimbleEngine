@@ -82,6 +82,11 @@ public:
 	std::shared_ptr<ShaderProgram> GetShader(const std::string &name);
 	std::shared_ptr<Material> GetMaterial(const std::string &name);
 
+	// The `materials` folder in the resource root contains material definition files, which define
+	// the structure and settings for a material. This decouples the material definition from the
+	// compiled code, allowing hot reload and easy testing & manipulation of materials
+	void LoadMaterialsFromDisk();
+
 	void AddMaterial(const std::string &name, Material *material);
 
 	// Mesh

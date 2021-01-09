@@ -1,19 +1,35 @@
 #include "nimble/material/Material.h"
 
 #include "nimble/resource-manager/ResourceManager.h"
+#include "nimble/utility/FileUtility.h"
+#include "simdjson.h"
 #include <utility>
 
 using namespace std;
 using namespace Nimble;
+using namespace simdjson;
 
 Material::Material(const string &name, const string &shaderName)
 : _name(name), _shader(ResourceManager::Get().GetShader(shaderName)) {
-	ResourceManager::Get().AddMaterial(name, this);
 }
 
 Material::Material(const string &name, shared_ptr<ShaderProgram> shader)
 : _name(name), _shader(std::move(shader)) {
-	ResourceManager::Get().AddMaterial(name, this);
+}
+
+std::shared_ptr<Material> Material::CreateMaterial(const std::string& name, const std::string& shaderName) {
+	return std::make_shared<Material>(name, shaderName);
+}
+
+void Material::LoadFromFile(const char* path) {
+	// Parse for all settings, if there are no parse errors this should be considered valid
+	dom::parser parser;
+	dom::element root = parser.load(path);
+
+	_name = root["name"];
+	_shader_name = root["shader"];
+
+	_shader = ResourceManager::Get().GetShader(_shader_name);
 }
 
 void Material::Bind() {

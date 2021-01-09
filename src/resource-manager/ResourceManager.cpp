@@ -63,13 +63,30 @@ std::shared_ptr<Material> ResourceManager::GetMaterial(const std::string &name) 
 	throw std::runtime_error(fmt::format("Failed to find material with name \"{}\"", name).c_str());
 }
 
-void ResourceManager::AddMaterial(const std::string &name, Material *material) {
-	// If it already exists, blowup
-	for(const auto &[key, value] : _materialCache) {
-		if(key == name) {
-			throw std::runtime_error(fmt::format("Material with name \"{}\" already registered", name));
+void ResourceManager::LoadMaterialsFromDisk() {
+	// Walk all material files
+	std::filesystem::path materialDirectory = std::filesystem::path(GetResourceRoot()) / "materials";
+	spdlog::debug("Iterating Material Files...");
+	for (auto & path : std::filesystem::directory_iterator(materialDirectory)) {
+		if (!path.is_regular_file()) {
+			continue;
 		}
-	}
 
-	_materialCache[name] = std::shared_ptr<Material>(material);
+		spdlog::debug("Loading material at: {}", path.path().string());
+		auto material = std::make_shared<Material>();
+
+		try {
+			material->LoadFromFile(path.path().string().c_str());
+		} catch (const std::exception& ex) {
+			spdlog::error("Failed to load material. Error message: {}", ex.what());
+		}
+
+		if (material) {
+			_materialCache[material->GetName()] = material;			
+		} else {
+			spdlog::error("Failed to create material at path: {}", path.path().string());
+			continue;
+		}
+
+	}
 }

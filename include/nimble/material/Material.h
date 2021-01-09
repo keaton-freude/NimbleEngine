@@ -33,13 +33,12 @@
 namespace Nimble {
 class Material {
 private:
-	// All materials have a name, setup upon construction which cannot change
-	const std::string _name;
+	std::string _name;
+	std::string _shader_name;
 
-	// All materials must contain a ShaderProgram, set upon construction which cannot change
-	const std::shared_ptr<ShaderProgram> _shader;
+	std::shared_ptr<ShaderProgram> _shader = nullptr;
 
-	// TODO: Textures here
+	bool _valid = false;
 
 public:
 	Material() = default;
@@ -48,8 +47,16 @@ public:
 	// Create material with name, provide a shared_ptr to specified ShaderProgram
 	Material(const std::string &name, std::shared_ptr<ShaderProgram> shader);
 
+	// Factory Methods
+	static std::shared_ptr<Material> CreateMaterial(const std::string& name, const std::string& shaderName);
+
+	void LoadFromFile(const char* path);
+
 	// Bind this materials state to the pipeline
 	void Bind();
+	const std::string& GetName() const {
+		return _name;
+	}
 
 	std::shared_ptr<ShaderProgram> GetShader() {
 		return _shader;
