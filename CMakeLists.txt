@@ -38,9 +38,12 @@ add_library(NimbleEngine
         ${CMAKE_CURRENT_SOURCE_DIR}/src/camera/Camera.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/SceneNode.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/SceneGraph.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/opengl-wrapper/Texture2D.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/RootSceneNode.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/Transformation.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/DirectionalLightNode.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/opengl-wrapper/Sampler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/stb_stub.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot_demo.cpp
         )
@@ -50,6 +53,7 @@ set_target_properties(NimbleEngine PROPERTIES CXX_EXTENSIONS OFF)
 target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/extern/implot-0.3)
 target_include_directories(NimbleEngine PRIVATE ${CMAKE_CURRENT_LIST_DIR}/extern/simdjson/include)
+target_include_directories(NimbleEngine PRIVATE ${CMAKE_CURRENT_LIST_DIR}/extern/stb)
 add_subdirectory(extern/simdjson EXCLUDE_FROM_ALL)
 target_link_libraries(NimbleEngine PUBLIC ImGui)
 target_link_libraries(NimbleEngine PRIVATE ${OPENGL_LIBRARIES})
