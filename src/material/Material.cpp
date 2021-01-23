@@ -29,9 +29,22 @@ void Material::LoadFromFile(const char* path) {
 	_name = root["name"];
 	_shader_name = root["shader"];
 
+	dom::array textures;
+	auto error = root["textures"].get(textures);
+
+	if (!error) {
+		for (auto texture : textures) {
+			spdlog::info("Texture name: {}", texture["name"].get_string().value());
+		}
+	}
+
 	_shader = ResourceManager::Get().GetShader(_shader_name);
 }
 
 void Material::Bind() {
 	_shader->Use();
+
+	for (const auto& texture : _textures) {
+		
+	}
 }

@@ -12,12 +12,12 @@ enum TextureWrapMode {
     MirroredRepeat
 };
 
-enum TextureMagFilter {
+enum class TextureMagFilter {
     Nearest,
     Linear
 };
 
-enum TextureMinFilter {
+enum class TextureMinFilter {
     Nearest,
     Linear,
     NearestMipmapNearest,

@@ -73,11 +73,11 @@ public:
 	}
 
 	[[nodiscard]] float dt() const {
-		return std::chrono::duration_cast<std::chrono::duration<float>>(_frameTime).count();
+		return static_cast<float>(std::chrono::duration_cast<std::chrono::duration<float>>(_frameTime).count());
 	}
 
 	[[nodiscard]] float GetFrameTime() const {
-		return std::chrono::duration_cast<std::chrono::milliseconds>(_frameTime).count();
+		return static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(_frameTime).count());
 	}
 };
 } // namespace Nimble

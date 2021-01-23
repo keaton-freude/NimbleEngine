@@ -26,17 +26,30 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "nimble/opengl-wrapper/ShaderProgram.h"
+#include "nimble/opengl-wrapper/Texture2D.h"
 
 
 namespace Nimble {
+
+// TODO: Name? Combines a texture pointer along with
+// the name of the uniform it should be bound to
+struct TextureUnit {
+	std::shared_ptr<Texture2D> texture;
+	std::string uniform_name;
+};
+
 class Material {
 private:
 	std::string _name;
 	std::string _shader_name;
 
 	std::shared_ptr<ShaderProgram> _shader = nullptr;
+
+	// 0 or more textures which should be bound when the material is bound
+	std::vector<TextureUnit> _textures{};
 
 	bool _valid = false;
 
