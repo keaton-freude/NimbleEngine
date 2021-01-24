@@ -20,35 +20,23 @@ public:
 	// TODO: Consider deleting defaults? Are they useful?
 	VertexBuffer() = default;
 
-	VertexBuffer(IMesh *mesh, BufferUsageType usageType) {
+	VertexBuffer(BufferUsageType usageType) {
 		glGenBuffers(1, &_vertexBufferHandle);
 		_usageType = usageType;
+	}
 
-		glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferHandle);
+	void LoadFromMesh(IMesh *mesh) {
+		Bind();
 		auto glUsageType = _usageType == BufferUsageType::Static ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
 		glBufferData(GL_ARRAY_BUFFER, (long)mesh->GetNumBytes(), mesh->GetData(), (GLenum)glUsageType);
 	}
 
-	/*
-		void SetData(const ElementStorage &data) {
-			if(data.size() == _elements.size()) {
-				// no need to realloc with operator=
-				for(size_t i = 0; i < data.size(); ++i) {
-					_elements[i] = data[i];
-				}
-			} else {
-				_elements = data;
-			}
-
-			glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferHandle);
-			auto usageType = _usageType == BufferUsageType::Static ? GL_STATIC_DRAW :
-	   GL_DYNAMIC_DRAW; glBufferData(GL_ARRAY_BUFFER, (long)(_elements.size() * T::SizeInBytes()),
-	   &_elements[0], (GLenum)usageType);
-		}
-	*/
-
 	void Bind() {
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferHandle);
+	}
+
+	void Unbind() {
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 

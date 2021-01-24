@@ -2,6 +2,8 @@
 
 #include "nimble/IMesh.h"
 #include "nimble/opengl-wrapper/Buffer.h"
+#include "GL/glew.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <vector>
@@ -19,7 +21,9 @@ private:
 
 public:
 	IndexBuffer() = default;
-	IndexBuffer(IMesh *mesh, BufferUsageType usage);
+	IndexBuffer(BufferUsageType usage);
+
+	void LoadFromMesh(IMesh* mesh);
 
 	size_t GetNumFaces() const {
 		return _numFaces;
@@ -28,6 +32,10 @@ public:
 	// Set the
 	// void SetData(const ElementStorage &data);
 	void Bind();
+
+	void Unbind() {
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 };
 
 } // namespace Nimble

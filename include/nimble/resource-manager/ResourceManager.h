@@ -87,8 +87,6 @@ public:
 	// compiled code, allowing hot reload and easy testing & manipulation of materials
 	void LoadMaterialsFromDisk();
 
-	void AddMaterial(const std::string &name, Material *material);
-
 	// Mesh
 	std::shared_ptr<IMesh> GetMesh(const std::string &name) {
 		Assimp::Importer importer;

@@ -1,9 +1,7 @@
 #pragma once
 
 
-// Wraps up a VAO, generates a new one when created
-// lets user start recording commands, stop recording and then
-// on-demand bind the state
+namespace Nimble {
 class VertexArrayObject {
 private:
 	uint32_t _vaoHandle;
@@ -13,8 +11,12 @@ public:
 		glGenVertexArrays(1, &_vaoHandle);
 	}
 
-	void StartRecording();
-	void StopRecording();
-	void Clear();
-	void Bind();
+	void Bind() {
+		glBindBuffer(GL_ARRAY_BUFFER, _vaoHandle);
+	}
+
+	void Unbind() {
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 };
+}

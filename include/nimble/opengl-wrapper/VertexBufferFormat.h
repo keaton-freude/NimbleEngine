@@ -66,22 +66,33 @@ struct PositionNormal {
 	}
 };
 
-struct Position2DTexture2D {
+struct PositionNormalUv {
 	static constexpr size_t SizeInBytes() {
-		return sizeof(glm::vec2) + sizeof(glm::vec2);
+		//return sizeof(PositionNormalUv);
+		return sizeof(glm::vec3) + sizeof(glm::vec3) + sizeof(glm::vec2);
 	}
 
 	static void SetVertexAttribPointers() {
-		// Save a call to glVertexAttribPointer by making 4 floats unpack into 2 vec2s in shader
+		// Position
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, (int)Position2DTexture2D::SizeInBytes(), (void *)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUv::SizeInBytes(), (void *)0);
+
+		// Normal
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUv::SizeInBytes(), (void *)12);
+
+		// UV
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (int)PositionNormalUv::SizeInBytes(), (void *)24);
 	}
 
-	glm::vec2 position;
+	glm::vec3 position;
+	glm::vec3 normal;
 	glm::vec2 texture;
 
-	Position2DTexture2D(glm::vec2 position, glm::vec2 texture)
-	: position(position), texture(texture) {
+	PositionNormalUv() = default;
+	PositionNormalUv(glm::vec3 position, glm::vec3 normal, glm::vec2 texture)
+	: position(position), normal(normal), texture(texture) {
 	}
 };
 

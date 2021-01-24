@@ -11,6 +11,7 @@
 #include "nimble/material/Material.h"
 #include "nimble/opengl-wrapper/IndexBuffer.h"
 #include "nimble/opengl-wrapper/VertexBuffer.h"
+#include "nimble/opengl-wrapper/VertexArrayObject.h"
 #include "nimble/resource-manager/ResourceManager.h"
 #include "nimble/scene-graph/SceneNode.h"
 #include "nimble/scene-graph/Transformation.h"
@@ -28,7 +29,7 @@ private:
 	// Require at least a vertex buffer and index buffer
 	VertexBuffer _vb;
 	IndexBuffer _ib;
-	unsigned int _vao;
+	VertexArrayObject _vao;
 
 	// Material slot, required
 	std::shared_ptr<Material> _material;
@@ -40,29 +41,33 @@ private:
 public:
 	// Drawable node from pre-existing resources
 	DrawableNode(const IMesh *mesh, std::shared_ptr<Material> material)
-	: _vb(mesh), _ib(mesh), _material(material), _localTransform() {
-		InitVao();
+	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _material(material), _localTransform() {
+		_vao.Bind();
+		_vb.LoadFromMesh(mesh);
+		T::SetVertexAttribPointers();
 	}
 
 	// Drawable node with resource names
-	DrawableNode(const std::string &meshName, const std::string &materialName) : _localTransform() {
+	DrawableNode(const std::string &meshName, const std::string &materialName)
+	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _material(nullptr), _localTransform() {
+		_vao.Bind();
 		InitFromFilenames(meshName, materialName);
-		InitVao();
+		T::SetVertexAttribPointers();
 	}
 
 	// Drawable node, resource names & passed in transform
 	DrawableNode(const std::string &meshName, const std::string &materialName, const Transformation &transform)
-	: _localTransform(transform) {
+	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _material(nullptr), _localTransform(transform) {
+		_vao.Bind();
 		InitFromFilenames(meshName, materialName);
-		InitVao();
+		T::SetVertexAttribPointers();
 	}
 
 	void Apply(SceneState &sceneState) override {
-		// Material set its own uniforms ..?
-		glBindVertexArray(_vao);
+		_vao.Bind();
 		// Draw!
-		_vb.Bind();
-		_ib.Bind();
+		//_vb.Bind();
+		//_ib.Bind();
 		_material->Bind();
 		auto shader = _material->GetShader();
 		auto overallTransform = sceneState.GetTransform() * _localTransform;
@@ -76,21 +81,21 @@ public:
 		}
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(_ib.GetNumFaces() * 3), GL_UNSIGNED_INT, 0);
+		_vao.Unbind();
 	}
 
 private:
 	void InitFromFilenames(const std::string &meshName, const std::string &materialName) {
 		auto mesh = ResourceManager::Get().GetMesh(meshName);
 		ASSERT_NOT_NULL(mesh);
-		_vb = VertexBuffer(mesh.get(), BufferUsageType::Static);
-		_ib = IndexBuffer(mesh.get(), BufferUsageType::Static);
+		_vb.LoadFromMesh(mesh.get());
+		_ib.LoadFromMesh(mesh.get());
 
 		_material = ResourceManager::Get().GetMaterial(materialName);
 	}
 
 	void InitVao() {
-		glGenVertexArrays(1, &_vao);
-		glBindVertexArray(_vao);
+		_vao.Bind();
 		T::SetVertexAttribPointers();
 	}
 };

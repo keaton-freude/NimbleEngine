@@ -47,6 +47,7 @@ int main() {
 		// Enable Dear ImGui
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
+
 		ImGuiIO &io = ImGui::GetIO();
 		(void)io;
 

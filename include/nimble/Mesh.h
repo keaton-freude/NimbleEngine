@@ -126,21 +126,44 @@ private:
 
 		return std::make_shared<Mesh<PositionNormal>>(verts, indices, mesh->mNumFaces);
 	}
+
+	static std::shared_ptr<Mesh<PositionNormalUv>> BuildMesh_PositionNormalUv(const aiMesh *mesh) {
+		spdlog::info("[PositionNormalUv]: Building mesh with {} verts and {} faces",
+					 mesh->mNumVertices, mesh->mNumFaces);
+
+		std::vector<PositionNormalUv> verts;
+		verts.resize(mesh->mNumVertices);
+
+		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
+			verts[i] = PositionNormalUv(
+				glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z),
+				glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z),
+				glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
+		}
+
+		std::vector<unsigned int> indices;
+		for(size_t i = 0; i < mesh->mNumFaces; ++i) {
+			for(size_t j = 0; j < mesh->mFaces[i].mNumIndices; ++j) {
+				indices.push_back(mesh->mFaces[i].mIndices[j]);
+			}
+		}
+
+		return std::make_shared<Mesh<PositionNormalUv>>(verts, indices, mesh->mNumFaces);
+	}
 };
 
 class MeshFactory {
 public:
 	// Factory
 	static std::shared_ptr<IMesh> FromFile(const aiMesh *mesh) {
-		// We can query things off the mesh in order to determine what
-		// our type T is
-
-		// We _always_ have Position data, along with Index data
-
-		// We need to check for: normals, texture coords
+		// We assume a Mesh should always have position data, along with
+		// index data. From there, we go from the more specific combinations
+		// and work down to the Position/Index only
 
 		// TODO: Add more attributes as we need them
-		if(mesh->HasNormals()) {
+		if(mesh->HasNormals() && mesh->HasTextureCoords(0)) {
+			return Mesh<PositionNormalUv>::BuildMesh_PositionNormalUv(mesh);
+		} else if (mesh->HasNormals()) {
 			return Mesh<PositionNormal>::BuildMesh_PositionNormal(mesh);
 		} else {
 			return Mesh<Position>::BuildMesh_Position(mesh);

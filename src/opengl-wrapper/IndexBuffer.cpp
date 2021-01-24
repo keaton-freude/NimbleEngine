@@ -3,10 +3,13 @@
 
 using namespace Nimble;
 
-IndexBuffer::IndexBuffer(IMesh *mesh, BufferUsageType usage) : _usageType(usage) {
-	_numFaces = mesh->GetNumFaces();
+IndexBuffer::IndexBuffer(BufferUsageType usage) : _usageType(usage) {
 	glGenBuffers(1, &_elementBufferHandle);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _elementBufferHandle);
+}
+
+void IndexBuffer::LoadFromMesh(IMesh* mesh) {
+	_numFaces = mesh->GetNumFaces();
+	Bind();
 	auto usageType = _usageType == BufferUsageType::Static ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->GetFacesNumBytes(), mesh->GetFaceData(),
 				 static_cast<GLenum>(usageType));
