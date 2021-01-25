@@ -25,15 +25,16 @@ private:
 	VertexStorage _vertices;
 	IndexStorage _indices;
 	size_t _numFaces;
+	std::shared_ptr<VertexArrayObject> _vao;
 
 public:
 	// support numFaces, so we could draw lines or points if we want
-	Mesh(VertexStorage vertices, IndexStorage indices, size_t numFaces)
-	: _vertices(vertices), _indices(indices), _numFaces(numFaces) {
+	Mesh(VertexStorage vertices, IndexStorage indices, size_t numFaces, std::shared_ptr<VertexArrayObject> vao)
+	: _vertices(vertices), _indices(indices), _numFaces(numFaces), _vao(vao) {
 	}
 
-	Mesh(std::initializer_list<float> vertices, std::initializer_list<unsigned int> indices)
-	: _vertices(vertices), _indices(indices) {
+	Mesh(std::initializer_list<float> vertices, std::initializer_list<unsigned int> indices, std::shared_ptr<VertexArrayObject> vao)
+	: _vertices(vertices), _indices(indices), _vao(vao) {
 	}
 
 	const VertexStorage &VertexData() {
@@ -60,26 +61,38 @@ public:
 		return _indices.size();
 	}
 
-	const size_t GetNumBytes() const override {
+	[[nodiscard]] size_t GetNumBytes() const override {
 		return _vertices.size() * T::SizeInBytes();
 	}
 
-	const void *GetData() const override {
+	[[nodiscard]] const void *GetData() const override {
 		return (void *)(&_vertices[0]);
 	}
 
-	const size_t GetNumFaces() const override {
+	[[nodiscard]] size_t GetNumFaces() const override {
 		return _numFaces;
 	}
 
-	const size_t GetFacesNumBytes() const override {
+	[[nodiscard]] size_t GetFacesNumBytes() const override {
 		return _indices.size() * sizeof(unsigned int);
 	}
-	const void *GetFaceData() const override {
+	[[nodiscard]] const void *GetFaceData() const override {
 		return (void *)(&_indices[0]);
 	}
 
+	[[nodiscard]] VertexArrayObject* GetVao() const override {
+		return _vao.get();
+	}
+
+	static std::shared_ptr<VertexArrayObject> CreateVao() {
+		auto vao = std::make_shared<VertexArrayObject>(&T::SetVertexAttribPointers);
+		vao->Bind();
+		vao->Unbind();
+		return vao;
+	}
+
 private:
+
 	static std::shared_ptr<Mesh<Position>> BuildMesh_Position(const aiMesh *mesh) {
 		spdlog::info("[Position]: Building mesh with {} verts and {} faces", mesh->mNumVertices,
 					 mesh->mNumFaces);
@@ -87,7 +100,7 @@ private:
 		std::vector<Position> verts(mesh->mNumVertices);
 
 		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
-			Position p;
+			Position p{};
 			p.x = mesh->mVertices[i].x;
 			p.y = mesh->mVertices[i].y;
 			p.z = mesh->mVertices[i].z;
@@ -101,7 +114,7 @@ private:
 			}
 		}
 
-		return std::make_shared<Mesh<Position>>(verts, indices, mesh->mNumFaces);
+		return std::make_shared<Mesh<Position>>(verts, indices, mesh->mNumFaces, Mesh<Position>::CreateVao());
 	}
 
 	static std::shared_ptr<Mesh<PositionNormal>> BuildMesh_PositionNormal(const aiMesh *mesh) {
@@ -124,7 +137,7 @@ private:
 			}
 		}
 
-		return std::make_shared<Mesh<PositionNormal>>(verts, indices, mesh->mNumFaces);
+		return std::make_shared<Mesh<PositionNormal>>(verts, indices, mesh->mNumFaces, Mesh<PositionNormal>::CreateVao());
 	}
 
 	static std::shared_ptr<Mesh<PositionNormalUv>> BuildMesh_PositionNormalUv(const aiMesh *mesh) {
@@ -148,7 +161,7 @@ private:
 			}
 		}
 
-		return std::make_shared<Mesh<PositionNormalUv>>(verts, indices, mesh->mNumFaces);
+		return std::make_shared<Mesh<PositionNormalUv>>(verts, indices, mesh->mNumFaces, Mesh<PositionNormalUv>::CreateVao());
 	}
 };
 

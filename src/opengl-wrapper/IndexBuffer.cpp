@@ -7,7 +7,7 @@ IndexBuffer::IndexBuffer(BufferUsageType usage) : _usageType(usage) {
 	glGenBuffers(1, &_elementBufferHandle);
 }
 
-void IndexBuffer::LoadFromMesh(IMesh* mesh) {
+void IndexBuffer::LoadFromMesh(const IMesh* mesh) {
 	_numFaces = mesh->GetNumFaces();
 	Bind();
 	auto usageType = _usageType == BufferUsageType::Static ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;

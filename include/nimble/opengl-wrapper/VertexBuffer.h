@@ -25,7 +25,7 @@ public:
 		_usageType = usageType;
 	}
 
-	void LoadFromMesh(IMesh *mesh) {
+	void LoadFromMesh(const IMesh *mesh) {
 		Bind();
 		auto glUsageType = _usageType == BufferUsageType::Static ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
 		glBufferData(GL_ARRAY_BUFFER, (long)mesh->GetNumBytes(), mesh->GetData(), (GLenum)glUsageType);

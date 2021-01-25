@@ -18,6 +18,7 @@ private:
 public:
     Texture2D();
     void LoadFromFile(const std::string& path);
+
 };
 
 }

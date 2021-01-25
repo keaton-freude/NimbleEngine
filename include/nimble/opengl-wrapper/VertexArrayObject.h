@@ -1,22 +1,30 @@
 #pragma once
 
+#include "GL/glew.h"
+#include <functional>
 
 namespace Nimble {
 class VertexArrayObject {
 private:
 	uint32_t _vaoHandle;
+	std::function<void()> _setVertexAttribs;
 
 public:
-	VertexArrayObject() {
+	VertexArrayObject(std::function<void()> setVertexAttribsFunc)
+	: _setVertexAttribs(setVertexAttribsFunc) {
 		glGenVertexArrays(1, &_vaoHandle);
 	}
 
 	void Bind() {
-		glBindBuffer(GL_ARRAY_BUFFER, _vaoHandle);
+		glBindVertexArray(_vaoHandle);
 	}
 
 	void Unbind() {
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+	}
+
+	void SetVertexAttribs() {
+		_setVertexAttribs();
 	}
 };
 }

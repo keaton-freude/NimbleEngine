@@ -23,13 +23,12 @@
 namespace Nimble {
 
 // T is the VertexAttribute type
-template <typename T>
 class DrawableNode : public SceneNode {
 private:
 	// Require at least a vertex buffer and index buffer
 	VertexBuffer _vb;
 	IndexBuffer _ib;
-	VertexArrayObject _vao;
+	VertexArrayObject* _vao;
 
 	// Material slot, required
 	std::shared_ptr<Material> _material;
@@ -41,33 +40,34 @@ private:
 public:
 	// Drawable node from pre-existing resources
 	DrawableNode(const IMesh *mesh, std::shared_ptr<Material> material)
-	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _material(material), _localTransform() {
-		_vao.Bind();
+	: _vb(BufferUsageType::Static),
+	  _ib(BufferUsageType::Static),
+	  _vao(mesh->GetVao()),
+	  _material(material),
+	  _localTransform() {
+		_vao->Bind();
 		_vb.LoadFromMesh(mesh);
-		T::SetVertexAttribPointers();
+		_ib.LoadFromMesh(mesh);
 	}
 
 	// Drawable node with resource names
 	DrawableNode(const std::string &meshName, const std::string &materialName)
-	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _material(nullptr), _localTransform() {
-		_vao.Bind();
+	: _vb(BufferUsageType::Static),
+	  _ib(BufferUsageType::Static),
+	  _vao(nullptr),
+	  _material(nullptr),
+	  _localTransform() {
 		InitFromFilenames(meshName, materialName);
-		T::SetVertexAttribPointers();
 	}
 
 	// Drawable node, resource names & passed in transform
 	DrawableNode(const std::string &meshName, const std::string &materialName, const Transformation &transform)
 	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _material(nullptr), _localTransform(transform) {
-		_vao.Bind();
 		InitFromFilenames(meshName, materialName);
-		T::SetVertexAttribPointers();
 	}
 
 	void Apply(SceneState &sceneState) override {
-		_vao.Bind();
-		// Draw!
-		//_vb.Bind();
-		//_ib.Bind();
+		_vao->Bind();
 		_material->Bind();
 		auto shader = _material->GetShader();
 		auto overallTransform = sceneState.GetTransform() * _localTransform;
@@ -81,22 +81,22 @@ public:
 		}
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(_ib.GetNumFaces() * 3), GL_UNSIGNED_INT, 0);
-		_vao.Unbind();
+		_vao->Unbind();
 	}
 
 private:
 	void InitFromFilenames(const std::string &meshName, const std::string &materialName) {
 		auto mesh = ResourceManager::Get().GetMesh(meshName);
+		_vao = mesh->GetVao();
+		_vao->Bind();
 		ASSERT_NOT_NULL(mesh);
 		_vb.LoadFromMesh(mesh.get());
 		_ib.LoadFromMesh(mesh.get());
-
+		_vao->SetVertexAttribs();
 		_material = ResourceManager::Get().GetMaterial(materialName);
-	}
-
-	void InitVao() {
-		_vao.Bind();
-		T::SetVertexAttribPointers();
+		_vao->Unbind();
+		_vb.Unbind();
+		_ib.Unbind();
 	}
 };
 } // namespace Nimble

@@ -14,7 +14,7 @@ public:
 										{ .5f, -.5f, 0.0f }
 
 									  },
-									  { { 0, 1, 2 } }, 1);
+									  { { 0, 1, 2 } }, 1, Mesh<Nimble::Position>::CreateVao());
 	}
 
 	// Remove me eventually, just for testing color shader
@@ -29,7 +29,7 @@ public:
 		glm::vec4 vert3Color = glm::vec4({ 0, 0, 1.0f, 1.0f });
 
 		return Mesh<Nimble::PositionColor>({ { vert1Pos, vert1Color }, { vert2Pos, vert2Color }, { vert3Pos, vert3Color } },
-										   { { 0, 1, 2 } }, 1);
+										   { { 0, 1, 2 } }, 1, Mesh<Nimble::PositionColor>::CreateVao());
 	}
 };
 } // namespace Nimble

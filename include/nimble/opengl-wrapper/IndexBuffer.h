@@ -23,14 +23,12 @@ public:
 	IndexBuffer() = default;
 	IndexBuffer(BufferUsageType usage);
 
-	void LoadFromMesh(IMesh* mesh);
+	void LoadFromMesh(const IMesh* mesh);
 
 	size_t GetNumFaces() const {
 		return _numFaces;
 	}
 
-	// Set the
-	// void SetData(const ElementStorage &data);
 	void Bind();
 
 	void Unbind() {
