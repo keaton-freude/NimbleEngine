@@ -35,16 +35,32 @@ void Material::LoadFromFile(const char* path) {
 	if (!error) {
 		for (auto texture : textures) {
 			spdlog::info("Texture name: {}", texture["name"].get_string().value());
+
+			TextureUnit tu{};
+
+			tu.uniform_name = texture["uniform_name"];
+			tu.texture = ResourceManager::Get().GetTexture2D((std::string)texture["resource_name"]);
+
+			_textures.push_back(tu);
 		}
 	}
 
 	_shader = ResourceManager::Get().GetShader(_shader_name);
+
+	// Associate textures
+	int i = 0;
+	for(const auto& texture : _textures) {
+		_shader->SetUniform(texture.uniform_name, i++);
+	}
 }
 
 void Material::Bind() {
 	_shader->Use();
 
+	int i = 0;
 	for (const auto& texture : _textures) {
-		
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, texture.texture->GetTextureHandle());
+		i++;
 	}
 }

@@ -43,7 +43,7 @@ Engine::Engine(Window *window) : _window(window) {
 						 .second;
 
 	Transformation transform;
-	_sceneGraph->AddChild(new DrawableNode("cube.fbx", "phong", transform), _rootTransformNode);
+	_sceneGraph->AddChild(new DrawableNode("cube.fbx", "diffuse-texture", transform), _rootTransformNode);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

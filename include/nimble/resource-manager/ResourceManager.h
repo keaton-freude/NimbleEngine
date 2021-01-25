@@ -30,6 +30,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <nimble/utility/FileUtility.h>
 
 namespace Nimble {
 
@@ -39,6 +40,7 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<ShaderProgram>> _shaderCache;
 	std::unordered_map<std::string, std::shared_ptr<Material>> _materialCache;
 	std::unordered_map<std::string, std::shared_ptr<IMesh>> _meshCache;
+	std::unordered_map<std::string, std::shared_ptr<Texture2D>> _texture2DCache;
 
 public:
 	// Singleton
@@ -115,9 +117,30 @@ public:
 		return mesh;
 	}
 
-	// Other options?
-	// Return a mesh by filename
-	// Return a material by name
-	// etc..
+	std::shared_ptr<Texture2D> GetTexture2D(const std::string& name) {
+		auto path = GetPathFromName("textures", name);
+		auto cachedTexture = _texture2DCache.find(path);
+		if (cachedTexture != _texture2DCache.end()) {
+			return cachedTexture->second;
+		}
+
+		auto texture = std::make_shared<Texture2D>();
+		texture->LoadFromFile(path);
+
+		_texture2DCache[path] = texture;
+		return texture;
+	}
+
+	void ReloadShaders() {
+		for(const auto& [k, v] : _shaderCache) {
+			// We look for shaders relative to the resource root in a shaders folder
+			std::filesystem::path shadersDir = std::filesystem::path(GetResourceRoot()) / "shaders";
+
+			std::filesystem::path vertexShaderSource = shadersDir / fmt::format("{}.vert", k.c_str());
+			std::filesystem::path fragmentShaderSource = shadersDir / fmt::format("{}.frag", k.c_str());
+
+			v->Reload(FileReadAllText(vertexShaderSource.string()).c_str(), FileReadAllText(fragmentShaderSource.string()).c_str());
+		}
+	}
 };
 } // namespace Nimble

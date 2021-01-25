@@ -5,6 +5,7 @@
 #include "nimble/engine/Engine.h"
 #include "nimble/engine/RenderLoop.h"
 #include "nimble/input/InputManager.h"
+#include "nimble/resource-manager/ResourceManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -35,6 +36,10 @@ void RenderLoop::Run() {
 
 		// Poll for Input
 		PollForEvents();
+
+		if (Input::Get().IsKeyPressed("reload_shaders")) {
+			ResourceManager::Get().ReloadShaders();
+		}
 
 		// Render Frame
 		RenderFrame(_time);

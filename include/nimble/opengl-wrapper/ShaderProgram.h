@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Shader.h"
-#include <list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,7 +15,7 @@
 namespace Nimble {
 class ShaderProgram {
 private:
-	std::list<std::unique_ptr<Shader>> _shaders;
+	std::vector<std::unique_ptr<Shader>> _shaders;
 	unsigned int _programHandle;
 	std::string _name;
 	ShaderInfo _shaderInfo;
@@ -27,8 +26,9 @@ public:
 
 	void AddVertexShader(const char *text);
 	void AddFragmentShader(const char *text);
+	void Reload(const char* vertexText, const char *fragmentText);
 
-	// Link all of the attached sahders
+	// Link all of the attached shaders
 	bool LinkShaders();
 
 	// Bind the shader program to the pipeline

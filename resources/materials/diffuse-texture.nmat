@@ -1,5 +1,5 @@
 {
-    "name": "Diffuse Texture",
+    "name": "diffuse-texture",
     "shader": "diffuse",
     "textures": [
         {

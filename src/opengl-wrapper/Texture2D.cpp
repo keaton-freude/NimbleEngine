@@ -39,3 +39,7 @@ void Texture2D::LoadFromFile(const std::string& path) {
 
     stbi_image_free(data);
 }
+
+unsigned int Texture2D::GetTextureHandle() {
+	return _texture;
+}

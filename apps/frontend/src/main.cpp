@@ -44,6 +44,7 @@ int main() {
 		Input::Get().SetGlfwWindow(windowPointer);
 		// Register some basic keybindings
 		Input::Get().RegisterKeyCodeMapping("exit", GLFW_KEY_ESCAPE);
+		Input::Get().RegisterKeyCodeMapping("reload_shaders", GLFW_KEY_F5);
 		// Enable Dear ImGui
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();

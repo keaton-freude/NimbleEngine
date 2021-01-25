@@ -36,7 +36,6 @@ void ShaderProgram::AddVertexShader(const char *text) {
 }
 
 void ShaderProgram::AddFragmentShader(const char *text) {
-
 	unique_ptr<Shader> shader = std::make_unique<FragmentShader>();
 	shader->Load();
 	if(!shader->Compile(text)) {
@@ -44,6 +43,25 @@ void ShaderProgram::AddFragmentShader(const char *text) {
 		throw std::runtime_error("Failed to compile shader");
 	}
 	_shaders.push_back(std::move(shader));
+}
+
+void ShaderProgram::Reload(const char *vertexText, const char *fragmentText) {
+	glDetachShader(_programHandle, _shaders[0]->GetHandle());
+	glDetachShader(_programHandle, _shaders[1]->GetHandle());
+
+	if (!_shaders[0]->Compile(vertexText)) {
+		_shaders[0]->PrintErrorOutput();
+		throw std::runtime_error("Failed to compile shader");
+	}
+
+	if (!_shaders[1]->Compile(fragmentText)) {
+		_shaders[1]->PrintErrorOutput();
+		throw std::runtime_error("Failed to compile shader");
+	}
+
+	if (!LinkShaders()) {
+		throw std::runtime_error("Failed to link shaders");
+	}
 }
 
 bool ShaderProgram::LinkShaders() {
