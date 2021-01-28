@@ -38,6 +38,8 @@ public:
 	void OnTick(float dt) override;
 	void OnDestroy() override;
 
+	Subject<std::filesystem::path> FileModifiedEvent{};
+
 private:
 	constexpr inline const char* ChangeTypeToString(ChangeType type) {
 		switch (type) {

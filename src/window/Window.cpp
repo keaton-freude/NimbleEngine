@@ -41,7 +41,7 @@ Window::Window(Width width, Height height, const char *title)
 
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
-
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	// Fix below for windows
 	// glEnable(GL_MULTISAMPLE_ARB);

@@ -68,9 +68,14 @@ void FileWatcherSubsystem::OnDirectoryChanges() {
 		case FILE_ACTION_REMOVED:
 			spdlog::info("File removed");
 			break;
-		case FILE_ACTION_MODIFIED:
-			spdlog::info("File modified");
+		case FILE_ACTION_MODIFIED: {
+			std::filesystem::path path = _monitoredDirectory / std::filesystem::path(
+				std::wstring(fileNotifyInformation->FileName, fileNotifyInformation->FileNameLength));
+
+			spdlog::info("{} modified", path.string().c_str());
+			FileModifiedEvent.Emit(path);
 			break;
+		}
 		case FILE_ACTION_RENAMED_OLD_NAME:
 			spdlog::info("File renamed - old");
 			break;

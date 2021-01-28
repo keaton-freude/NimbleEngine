@@ -19,9 +19,10 @@ using namespace Nimble;
 
 RenderLoop::RenderLoop(std::shared_ptr<Engine> engine, ExitCondition exitCondition)
 : _exitCondition(std::move(exitCondition)), _engine(std::move(engine)) {
-	_subsystems.emplace_back(std::unique_ptr<ISubsystem>(
+	auto& system = _subsystems.emplace_back(std::unique_ptr<ISubsystem>(
 	new FileWatcherSubsystem(ResourceManager::Get().GetResourceDirectoryByName("shaders"), ChangeType::FILE_CHANGED)));
 
+	ResourceManager::Get().RegisterFileChange(static_cast<FileWatcherSubsystem*>(system.get())->FileModifiedEvent);
 
 }
 
