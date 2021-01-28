@@ -6,6 +6,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <nimble/subsystem/Subsystem.h>
 
 #include "nimble/engine/Engine.h"
 #include "nimble/engine/Time.h"
@@ -40,6 +41,7 @@ private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> _lastFrameTime;
 	std::shared_ptr<Engine> _engine;
 	Time _time;
+	std::vector<std::unique_ptr<ISubsystem>> _subsystems;
 };
 
 } // namespace Nimble

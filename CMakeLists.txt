@@ -43,6 +43,8 @@ add_library(NimbleEngine
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/Transformation.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/DirectionalLightNode.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/opengl-wrapper/Sampler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/subsystem/Subsystem.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/subsystem/FileWatcherSubsystem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/stb_stub.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot_demo.cpp
@@ -66,3 +68,4 @@ target_link_libraries(NimbleEngine PRIVATE assimp::assimp)
 target_link_libraries(NimbleEngine PRIVATE simdjson)
 # Front end app
 add_subdirectory(apps)
+add_subdirectory(tests/nimble)

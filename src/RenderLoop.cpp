@@ -1,5 +1,6 @@
 #include <array>
 #include <memory>
+#include <nimble/subsystem/FileWatcherSubsystem.h>
 #include <utility>
 
 #include "nimble/engine/Engine.h"
@@ -18,9 +19,16 @@ using namespace Nimble;
 
 RenderLoop::RenderLoop(std::shared_ptr<Engine> engine, ExitCondition exitCondition)
 : _exitCondition(std::move(exitCondition)), _engine(std::move(engine)) {
+	_subsystems.emplace_back(std::unique_ptr<ISubsystem>(
+	new FileWatcherSubsystem(ResourceManager::Get().GetResourceDirectoryByName("shaders"), ChangeType::FILE_CHANGED)));
+
+
 }
 
 void RenderLoop::Run() {
+	for (const auto& subsystem : _subsystems) {
+		subsystem->OnCreate();
+	}
 	while(!_exitCondition()) {
 		_time.Begin();
 
@@ -37,7 +45,12 @@ void RenderLoop::Run() {
 		// Poll for Input
 		PollForEvents();
 
-		if (Input::Get().IsKeyPressed("reload_shaders")) {
+		// Process every installed sub system
+		for(const auto &subsystem : _subsystems) {
+			subsystem->OnTick(_time.dt());
+		}
+
+		if(Input::Get().IsKeyPressed("reload_shaders")) {
 			ResourceManager::Get().ReloadShaders();
 		}
 
@@ -59,12 +72,18 @@ void RenderLoop::Run() {
 		_time.End();
 
 
-
 		_engine->SetLatestFPS(_time.GetFPS());
+
+#ifdef _WIN32
+		// On Windows, we need the main thread to enter an alertable
+		// wait state, which allows the kernel to process any callbacks
+		// for asynchronous operations
+		// We'll sleep for the minimum amount of time
+		SleepEx(0, true);
+#endif
 	}
 }
 
 void RenderLoop::RenderFrame(const Time &time) {
 	_engine->RenderFrame(time);
 }
-

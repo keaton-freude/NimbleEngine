@@ -48,6 +48,11 @@ public:
 		spdlog::info("Resource Root: {}", GetResourceRoot());
 	}
 
+	std::string GetResourceDirectoryByName(const std::string& resourceType) {
+		std::filesystem::path subDir = std::filesystem::path(GetResourceRoot()) / resourceType;
+		return subDir.string();
+	}
+
 private:
 	// Returns a fully-qualified path, based on the passed in name
 	std::string GetPathFromName(const std::string &resourceType, const std::string &name) {
