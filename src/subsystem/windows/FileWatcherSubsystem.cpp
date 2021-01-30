@@ -4,11 +4,7 @@
 #include <nimble/core/Assert.h>
 #include <sstream>
 
-#ifdef _WIN_32
 #include <windows.h>
-#endif
-
-typedef void* HANDLE;
 
 using namespace Nimble;
 
@@ -17,7 +13,6 @@ FileWatcherSubsystem::FileWatcherSubsystem(std::fileswitchsystem::path directory
 }
 
 void FileWatcherSubsystem::OnCreate() {
-#ifdef _WIN32
 	spdlog::info("Watching for {0} events in {1}", ChangeTypeToString(_changeType),
 				 _monitoredDirectory.string().c_str());
 	_directoryHandle = new HANDLE;
@@ -31,11 +26,9 @@ void FileWatcherSubsystem::OnCreate() {
 	}
 
 	_overlap.hEvent = (void*)this;
-#endif
 }
 
 void FileWatcherSubsystem::OnTick(float dt) {
-#ifdef _WIN32
 	ASSERT_NOT_NULL(_directoryHandle);
 	HANDLE directoryHandle = *(HANDLE*)_directoryHandle;
 
@@ -55,14 +48,12 @@ void FileWatcherSubsystem::OnTick(float dt) {
 	} else {
 		// Check for completion & handle
 	}
-#endif
 }
 
 void FileWatcherSubsystem::OnDestroy() {
 }
 
 void FileWatcherSubsystem::OnDirectoryChanges() {
-#ifdef _WIN32
 	_waitingForChanges = false;
 	// Decompose the buffer to find the changes
 	auto * fileNotifyInformation = (FILE_NOTIFY_INFORMATION*)_buffer;
@@ -95,5 +86,4 @@ void FileWatcherSubsystem::OnDirectoryChanges() {
 		}
 		fileNotifyInformation = (FILE_NOTIFY_INFORMATION*)(_buffer + fileNotifyInformation->NextEntryOffset);
 	} while (fileNotifyInformation->NextEntryOffset);
-#endif
 }

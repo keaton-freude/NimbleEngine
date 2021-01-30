@@ -27,8 +27,20 @@ struct FileWatcherData {
 	bool _waitingForChanges = false;
 };
 #elif __linux__
-struct FileWatcherData {
+#include <climits>
+#include <sys/epoll.h>
+#include <sys/inotify.h>
+#include <sys/types.h>
 
+constexpr size_t EventSize = sizeof(inotify_event);
+constexpr size_t InotifyEventBufferSize = 16 * (EventSize + NAME_MAX + 1);
+
+struct FileWatcherData {
+	int fd;
+	int wd;
+	int epfd;
+	epoll_event events;
+	char buffer[InotifyEventBufferSize];
 };
 #endif
 
@@ -85,6 +97,7 @@ private:
 	// The directory we are monitoring for changes
 	std::filesystem::path _monitoredDirectory;
 	ChangeType _changeType = ChangeType::FILE_CHANGED;
+	FileWatcherData _fileWatcherData{};
 };
 
 }

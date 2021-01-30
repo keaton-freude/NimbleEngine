@@ -4,24 +4,11 @@
 #include "nimble/MeshTools.h"
 #include "nimble/camera/Camera.h"
 #include "nimble/engine/Engine.h"
-#include "nimble/resource-manager/ResourceManager.h"
 #include "nimble/scene-graph/DirectionalLightNode.h"
 #include "nimble/scene-graph/DrawableNode.h"
 #include "nimble/scene-graph/TransformNode.h"
 
-#include "imgui.h"
-
 using namespace Nimble;
-
-/*void* __cdecl operator new[](size_t size, const char* name, int flags, unsigned debugFlags, const char* file, int line)
-{
-	return new uint8_t[size];
-}
-
-void* __cdecl operator new[](size_t size, size_t a, size_t b, const char* name, int flags, unsigned debugFlags, const char* file, int line)
-{
-	return new uint8_t[size];
-}*/
 
 Engine::Engine(Window *window) : _window(window) {
 	int width, height;

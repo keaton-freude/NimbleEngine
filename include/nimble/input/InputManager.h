@@ -40,7 +40,6 @@ private:
 	int scrollWheelYState = 0;
 
 	void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-		spdlog::info("xoffset: {} yoffset: {}", xoffset, yoffset);
 		scrollWheelXState = xoffset > 0.0 ? 1 : -1;
 		scrollWheelYState = yoffset > 0.0 ? 1 : -1;
 	}

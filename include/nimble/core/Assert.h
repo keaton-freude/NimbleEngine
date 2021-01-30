@@ -24,3 +24,11 @@ while(0); 								\
 			DIE_VAR_NULL(#var)		\
 		}							\
 	} while(0);
+
+#define ASSERT_NE(expr, val) do { \
+    if (expr == val) {          \
+        spdlog::error("{} is false", #expr); \
+		std::abort();\
+		}                      \
+	} while(0);
+

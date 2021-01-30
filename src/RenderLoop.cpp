@@ -83,6 +83,10 @@ void RenderLoop::Run() {
 		SleepEx(0, true);
 #endif
 	}
+
+	for (const auto& subsystem : _subsystems) {
+		subsystem->OnDestroy();
+	}
 }
 
 void RenderLoop::RenderFrame(const Time &time) {

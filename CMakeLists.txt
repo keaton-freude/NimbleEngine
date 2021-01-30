@@ -15,9 +15,29 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
-# Suppress a cmake warning in assimp
 find_package(assimp CONFIG REQUIRED)
 set_target_properties(assimp::assimp PROPERTIES MAP_IMPORTED_CONFIG_DEBUG Release)
+
+# Fixes broken include directory export from libassimp debian package
+# Remove once new version is published (or we consume some other way)
+if(TARGET assimp::assimp)
+    get_property(assimp_INTERFACE_INCLUDE_DIRECTORIES
+            TARGET assimp::assimp
+            PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+    if(assimp_INTERFACE_INCLUDE_DIRECTORIES MATCHES "/usr/lib/include")
+        string(REPLACE "/usr/lib/include" "/usr/include" assimp_INTERFACE_INCLUDE_DIRECTORIES "${assimp_INTERFACE_INCLUDE_DIRECTORIES}")
+        set_property(TARGET assimp::assimp
+                PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+                "${assimp_INTERFACE_INCLUDE_DIRECTORIES}")
+        get_property(assimp_LOCATION_RELEASE
+                TARGET assimp::assimp
+                PROPERTY LOCATION_RELEASE)
+        set_property(TARGET assimp::assimp
+                PROPERTY IMPORTED_LOCATION
+                "${assimp_LOCATION_RELEASE}")
+    endif()
+endif()
+
 add_subdirectory(extern/imgui)
 
 set(PlatformIndependentSourceFiles
