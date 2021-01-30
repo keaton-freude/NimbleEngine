@@ -1,7 +1,7 @@
 #pragma once
 
 #include "nimble/utility/Macros.h"
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <cassert>
 
 namespace Nimble {

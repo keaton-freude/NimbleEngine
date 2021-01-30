@@ -1,11 +1,16 @@
 #pragma once
 
-#include "nimble/subsystem/Subsystem.h"
+#ifdef _WIN_32
 #include <Windows.h>
+#endif
+
+#include "nimble/subsystem/Subsystem.h"
 #include <filesystem>
 #include <functional>
 #include <string>
 #include "nimble/core/Subject.h"
+
+typedef void* OVERLAPPED;
 
 namespace Nimble {
 

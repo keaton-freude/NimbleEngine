@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <cassert>
 #include "nimble/utility/Macros.h"
 

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 project(NimbleEngine VERSION 0.0.1 LANGUAGES CXX)
 
 set(MSVC_COMPILE_FLAGS "/MP")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}")
 
 # Find all of our dependencies up front
 # NOTE: If you are on windows, install vcpkg and install your libaries first
@@ -14,6 +14,9 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+
+# Suppress a cmake warning in assimp
+set(CMAKE_POLICY_DEFAULT_CMP0012 NEW)
 find_package(assimp CONFIG REQUIRED)
 add_subdirectory(extern/imgui)
 
@@ -56,6 +59,7 @@ target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include
 target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/extern/implot-0.3)
 target_include_directories(NimbleEngine PRIVATE ${CMAKE_CURRENT_LIST_DIR}/extern/simdjson/include)
 target_include_directories(NimbleEngine PRIVATE ${CMAKE_CURRENT_LIST_DIR}/extern/stb)
+target_include_directories(NimbleEngine PUBLIC ${GLM_INCLUDE_DIRS})
 add_subdirectory(extern/simdjson EXCLUDE_FROM_ALL)
 target_link_libraries(NimbleEngine PUBLIC ImGui)
 target_link_libraries(NimbleEngine PRIVATE ${OPENGL_LIBRARIES})
@@ -63,7 +67,7 @@ target_link_libraries(NimbleEngine PRIVATE fmt::fmt)
 target_link_libraries(NimbleEngine PUBLIC GLEW::GLEW)
 target_link_libraries(NimbleEngine PUBLIC glfw)
 target_link_libraries(NimbleEngine PRIVATE spdlog::spdlog)
-target_link_libraries(NimbleEngine PRIVATE glm)
+#target_link_libraries(NimbleEngine INTERFACE glm)
 target_link_libraries(NimbleEngine PRIVATE assimp::assimp)
 target_link_libraries(NimbleEngine PRIVATE simdjson)
 # Front end app
