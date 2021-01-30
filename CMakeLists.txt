@@ -16,13 +16,11 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
 # Suppress a cmake warning in assimp
-set(CMAKE_POLICY_DEFAULT_CMP0012 NEW)
 find_package(assimp CONFIG REQUIRED)
+set_target_properties(assimp::assimp PROPERTIES MAP_IMPORTED_CONFIG_DEBUG Release)
 add_subdirectory(extern/imgui)
 
-
-# Nimble Engine
-add_library(NimbleEngine
+set(PlatformIndependentSourceFiles
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Mesh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/opengl-wrapper/FragmentShader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/opengl-wrapper/GLContext.cpp
@@ -47,11 +45,24 @@ add_library(NimbleEngine
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scene-graph/DirectionalLightNode.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/opengl-wrapper/Sampler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/subsystem/Subsystem.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/subsystem/FileWatcherSubsystem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/stb_stub.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot_demo.cpp
         )
+
+if (CMAKE_SYSTEM_NAME MATCHES Windows)
+    LIST(APPEND PlatformIndependentSourceFiles
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/subsystem/windows/FileWatcherSubsystem.cpp
+            )
+elseif(CMAKE_SYSTEM_NAME MATCHES Linux)
+    LIST(APPEND PlatformIndependentSourceFiles
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/subsystem/linux/FileWatcherSubsystem.cpp
+            )
+endif()
+
+# Nimble Engine
+add_library(NimbleEngine ${PlatformIndependentSourceFiles})
+
 target_compile_features(NimbleEngine PUBLIC cxx_std_17)
 set_target_properties(NimbleEngine PROPERTIES CXX_EXTENSIONS OFF)
 

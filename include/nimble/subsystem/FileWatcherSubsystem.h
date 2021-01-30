@@ -1,18 +1,36 @@
 #pragma once
 
-#ifdef _WIN_32
-#include <Windows.h>
-#endif
-
 #include "nimble/subsystem/Subsystem.h"
 #include <filesystem>
 #include <functional>
 #include <string>
 #include "nimble/core/Subject.h"
 
-typedef void* OVERLAPPED;
-
 namespace Nimble {
+
+#ifdef _WIN32
+// Size of the FILE_NOTIFY_INFORMATION buffer. Each entry takes around ~30 bytes
+// but too small of a buffer means we can overflow if too many changes are detected
+// which is unlikely, but might as well dedicate a handful of KB to avoid this issue
+// entirely
+
+constexpr size_t FileInfoBufferSize = 16 * 1024;
+
+#include <Windows.h>
+
+// Platform-specific bits of information needed to implement the file watcher
+// functionality
+struct FileWatcherData {
+	HANDLE directoryHandle;
+	OVERLAPPED overlap;
+	char buffer[FileInfoBufferSize];
+	bool _waitingForChanges = false;
+};
+#elif __linux__
+struct FileWatcherData {
+
+};
+#endif
 
 // Notify on what type of changes
 enum class ChangeType : unsigned int {
@@ -67,10 +85,6 @@ private:
 	// The directory we are monitoring for changes
 	std::filesystem::path _monitoredDirectory;
 	ChangeType _changeType = ChangeType::FILE_CHANGED;
-	void* _directoryHandle = nullptr;
-	char _buffer[1048576]{};
-	OVERLAPPED _overlap{};
-	bool _waitingForChanges = false;
 };
 
 }

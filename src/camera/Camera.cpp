@@ -41,7 +41,7 @@ void Camera::Update(const Time &time) {
 
 		mouse = mouse * _rotateSpeed;
 
-		glm::quat key_quat = glm::quat(glm::vec3(mouse.y, mouse.x, 0.0f));
+		glm::quat key_quat = glm::quat(glm::vec3(mouse.y, mouse.x, 0.0f)) * time.dt();
 
 		_quatRotation = key_quat * _quatRotation;
 		_quatRotation = glm::normalize(_quatRotation);

@@ -12,9 +12,7 @@ typedef void* HANDLE;
 
 using namespace Nimble;
 
-// TODO TODO TODO: MAKE THIS PORTABLE!
-
-FileWatcherSubsystem::FileWatcherSubsystem(std::filesystem::path directory, ChangeType changeType)
+FileWatcherSubsystem::FileWatcherSubsystem(std::fileswitchsystem::path directory, ChangeType changeType)
 	: _monitoredDirectory(directory), _changeType(changeType) {
 }
 

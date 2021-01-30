@@ -1,12 +1,18 @@
+#define GLFW_EXPOSE_NATIVE_X11
+#define GLFW_EXPOSE_NATIVE_GLX
+#include <GL/glew.h>
+#include <GL/glx.h>
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 #include <fmt/format.h>
 #include <stdexcept>
-#include <string>
 
 #include "nimble/opengl-wrapper/GLContext.h"
 #include "nimble/utility/StrongTypes.h"
 #include "nimble/utility/UnusedMacro.h"
 #include "nimble/window/Window.h"
+
+using namespace Nimble;
 
 void _HandleResize2(GLFWwindow *window, int width, int height) {
 	UNUSED(window);
@@ -15,7 +21,7 @@ void _HandleResize2(GLFWwindow *window, int width, int height) {
 									 Height(static_cast<unsigned>(height)));
 }
 
-Window::Window(Width width, Height height, const char *title)
+Nimble::Window::Window(Width width, Height height, const char *title)
 : _window(nullptr), _height(height), _width(width) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -23,8 +29,17 @@ Window::Window(Width width, Height height, const char *title)
 	glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
+	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
 	_window = glfwCreateWindow(static_cast<int>(width.get()), static_cast<int>(height.get()), title,
 							   nullptr, nullptr);
+
+
 
 	if(!_window) {
 		// Failed to create
@@ -33,20 +48,27 @@ Window::Window(Width width, Height height, const char *title)
 											 height.get(), width.get(), title)
 								 .c_str());
 	}
-	// uncomment below line to disable vsync
-	glfwSwapInterval(1);
 
 	glfwMakeContextCurrent(_window);
 
+	if (GLX_EXT_swap_control) {
+		auto glXSwapIntervalEXT = reinterpret_cast<PFNGLXSWAPINTERVALEXTPROC>(glXGetProcAddress((GLubyte *)"glXSwapIntervalEXT"));
+		auto display = glfwGetX11Display();
+		auto window = glfwGetGLXWindow(_window);
+		glXSwapIntervalEXT(display, window, 1);
+	} else {
+		glfwSwapInterval(1);
+	}
 
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	glViewport(0, 0, width.get(), height.get());
 	// Fix below for windows
 	// glEnable(GL_MULTISAMPLE_ARB);
 }
 
-void Window::Initialize() const {
+void Nimble::Window::Initialize() const {
 	GLContext::SetViewportDimensions(_width, _height);
 }
