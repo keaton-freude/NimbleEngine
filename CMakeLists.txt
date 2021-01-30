@@ -15,6 +15,8 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
+# Suppress a cmake warning in assimp
+set(CMAKE_POLICY_DEFAULT_CMP0012 NEW)
 find_package(assimp CONFIG REQUIRED)
 set_target_properties(assimp::assimp PROPERTIES MAP_IMPORTED_CONFIG_DEBUG Release)
 
