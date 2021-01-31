@@ -7,6 +7,7 @@
 #include "nimble/scene-graph/DirectionalLightNode.h"
 #include "nimble/scene-graph/DrawableNode.h"
 #include "nimble/scene-graph/TransformNode.h"
+#include "nimble/camera/FixedPointOrbitCamera.h"
 
 using namespace Nimble;
 
