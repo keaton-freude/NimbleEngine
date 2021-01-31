@@ -43,7 +43,7 @@ public:
 	// Use the default root node type (All-axis transform)
 	SceneGraph() = delete;
 
-	SceneGraph(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<Camera> camera);
+	SceneGraph(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<ICamera> camera);
 
 	// Apply the graph. Walk every node, applying the node
 	// This can result in transformations, meshes being drawn, etc

@@ -29,7 +29,7 @@ private:
 public:
 	RootSceneNode() = delete;
 
-	RootSceneNode(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<Camera> camera);
+	RootSceneNode(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<ICamera> camera);
 
 	// Special to the RootSceneNode, this will kick off the entire process
 	// of traversing nodes and applying them

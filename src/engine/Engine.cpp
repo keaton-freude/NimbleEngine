@@ -18,7 +18,7 @@ Engine::Engine(Window *window) : _window(window) {
 	auto proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 1000.f);
 	// Create a pointer via copy constructor
 	_projectionMatrix = std::make_shared<glm::mat4>(proj);
-	_camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 0.0f), 0.03f);
+	_camera = std::make_shared<FixedPointOrbitCamera>(glm::vec3(0.0f, 0.0f, 0.0f), 0.03f);
 
 	_sceneGraph = std::make_unique<SceneGraph>(_projectionMatrix, _camera);
 
@@ -46,7 +46,7 @@ void Engine::RenderFrame(const Time &time) {
 
 	static float t = 0.0f;
 	t += time.dt();
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	_camera->Update(time);

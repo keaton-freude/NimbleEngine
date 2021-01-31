@@ -23,7 +23,7 @@ namespace Nimble {
 class SceneState {
 private:
 	std::shared_ptr<glm::mat4> _projectionMatrix;
-	std::shared_ptr<Camera> _camera;
+	std::shared_ptr<ICamera> _camera;
 	Transformation _transform;
 	DirectionalLight _directionalLight;
 
@@ -32,7 +32,7 @@ public:
 	// if we can get away with deleting the default c'tor
 	SceneState() = delete;
 
-	SceneState(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<Camera> camera)
+	SceneState(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<ICamera> camera)
 	: _projectionMatrix(projectionMatrix), _camera(camera), _transform(), _directionalLight() {
 	}
 
@@ -40,7 +40,7 @@ public:
 		return _projectionMatrix.get();
 	}
 
-	inline Camera *GetCamera() const {
+	inline ICamera *GetCamera() const {
 		return _camera.get();
 	}
 

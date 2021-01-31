@@ -2,6 +2,6 @@
 
 using namespace Nimble;
 
-RootSceneNode::RootSceneNode(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<Camera> camera)
+RootSceneNode::RootSceneNode(std::shared_ptr<glm::mat4> projectionMatrix, std::shared_ptr<ICamera> camera)
 : _sceneState(projectionMatrix, camera) {
 }
