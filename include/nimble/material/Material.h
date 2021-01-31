@@ -30,6 +30,7 @@
 
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/opengl-wrapper/Texture2D.h"
+#include "nimble/opengl-wrapper/Sampler.h"
 
 
 namespace Nimble {
@@ -50,8 +51,11 @@ private:
 
 	// 0 or more textures which should be bound when the material is bound
 	std::vector<TextureUnit> _textures{};
+	Sampler _sampler{};
 
 	bool _valid = false;
+
+	bool _receivesLighting = false;
 
 public:
 	Material() = default;
@@ -73,6 +77,10 @@ public:
 
 	std::shared_ptr<ShaderProgram> GetShader() {
 		return _shader;
+	}
+
+	bool GetReceivesLighting() {
+		return _receivesLighting;
 	}
 
 private:

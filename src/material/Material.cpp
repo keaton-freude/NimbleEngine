@@ -52,6 +52,15 @@ void Material::LoadFromFile(const char* path) {
 	for(const auto& texture : _textures) {
 		_shader->SetUniform(texture.uniform_name, i++);
 	}
+
+	dom::element receivesLighting;
+	error = root["receives_lighting"].get(receivesLighting);
+
+	if (!error && receivesLighting.is_bool()) {
+		_receivesLighting = receivesLighting.get_bool();
+	} else {
+		_receivesLighting = false;
+	}
 }
 
 void Material::Bind() {
@@ -61,6 +70,7 @@ void Material::Bind() {
 	for (const auto& texture : _textures) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, texture.texture->GetTextureHandle());
+		_sampler.Bind();
 		i++;
 	}
 }

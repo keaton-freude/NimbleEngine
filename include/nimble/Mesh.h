@@ -80,8 +80,8 @@ public:
 		return (void *)(&_indices[0]);
 	}
 
-	[[nodiscard]] VertexArrayObject* GetVao() const override {
-		return _vao.get();
+	[[nodiscard]] std::shared_ptr<VertexArrayObject> GetVao() const override {
+		return _vao;
 	}
 
 	static std::shared_ptr<VertexArrayObject> CreateVao() {

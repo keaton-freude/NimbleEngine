@@ -8,5 +8,6 @@
             "resource_name": "wood_floor.png",
             "uniform_name": "diffuse_texture"
         }
-    ]
+    ],
+    "receives_lighting": true
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <memory>
 
 // IMesh is an interface over the Mesh class where
 // the underlying templated type is hidden from the user
@@ -36,7 +37,7 @@ public:
 	virtual size_t GetFacesNumBytes() const = 0;
 	virtual const void *GetFaceData() const = 0;
 
-	virtual VertexArrayObject* GetVao() const = 0;
+	virtual std::shared_ptr<VertexArrayObject> GetVao() const = 0;
 
 	virtual ~IMesh() = default;
 };

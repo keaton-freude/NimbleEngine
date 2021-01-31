@@ -45,6 +45,28 @@ struct PositionColor {
 	}
 };
 
+struct PositionUv {
+	static constexpr size_t SizeInBytes() {
+		return sizeof(glm::vec3) + sizeof(glm::vec2);
+	}
+
+	static void SetVertexAttribPointers() {
+		// Position
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)PositionUv::SizeInBytes(), (void *)0);
+
+		// UV
+		// Offset is 12 bytes to account for 3 floats of position
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, (int)PositionUv::SizeInBytes(), (void *)12);
+	}
+
+	glm::vec3 position;
+	glm::vec2 uv;
+	PositionUv(glm::vec3 position, glm::vec2 uv) : position(position), uv(uv) {
+	}
+};
+
 struct PositionNormal {
 	static constexpr size_t SizeInBytes() {
 		return sizeof(glm::vec3) + sizeof(glm::vec3);

@@ -1,0 +1,13 @@
+{
+    "name": "grid",
+    "shader": "grid",
+    "textures": [
+        {
+            "name": "Grid Texture",
+            "slot": 0,
+            "resource_name": "grid.png",
+            "uniform_name": "grid_texture"
+        }
+    ],
+    "receives_lighting": "false"
+}

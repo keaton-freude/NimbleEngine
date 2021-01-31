@@ -28,7 +28,7 @@ private:
 	// Require at least a vertex buffer and index buffer
 	VertexBuffer _vb;
 	IndexBuffer _ib;
-	VertexArrayObject* _vao;
+	std::shared_ptr<VertexArrayObject> _vao;
 
 	// Material slot, required
 	std::shared_ptr<Material> _material;
@@ -50,6 +50,15 @@ public:
 		_ib.LoadFromMesh(mesh);
 	}
 
+	DrawableNode(const IMesh *mesh, const std::string& materialName, const Transformation& transform)
+	: _vb(BufferUsageType::Static),
+	  _ib(BufferUsageType::Static),
+	  _vao(mesh->GetVao()),
+	  _material(nullptr),
+	  _localTransform(transform) {
+		InitFromFilenames(mesh, materialName);
+	}
+
 	// Drawable node with resource names
 	DrawableNode(const std::string &meshName, const std::string &materialName)
 	: _vb(BufferUsageType::Static),
@@ -68,6 +77,8 @@ public:
 
 	void Apply(SceneState &sceneState) override {
 		_vao->Bind();
+		_vb.Bind();
+		_ib.Bind();
 		_material->Bind();
 		auto shader = _material->GetShader();
 		auto overallTransform = sceneState.GetTransform() * _localTransform;
@@ -75,7 +86,7 @@ public:
 		shader->SetUniform("View", sceneState.GetCamera()->GetView());
 		shader->SetUniform("Projection", *(sceneState.GetProjectionMatrix()));
 
-		if(sceneState.GetDirectionalLight().enabled) {
+		if(sceneState.GetDirectionalLight().enabled && _material->GetReceivesLighting()) {
 			shader->SetUniform("lightDirection", sceneState.GetDirectionalLight().direction);
 			shader->SetUniform("lightColor", sceneState.GetDirectionalLight().color);
 		}
@@ -92,6 +103,20 @@ private:
 		ASSERT_NOT_NULL(mesh);
 		_vb.LoadFromMesh(mesh.get());
 		_ib.LoadFromMesh(mesh.get());
+		_vao->SetVertexAttribs();
+		_material = ResourceManager::Get().GetMaterial(materialName);
+		_vao->Unbind();
+		_vb.Unbind();
+		_ib.Unbind();
+	}
+
+
+	void InitFromFilenames(const IMesh* mesh, const std::string& materialName) {
+		_vao = mesh->GetVao();
+		_vao->Bind();
+		ASSERT_NOT_NULL(mesh);
+		_vb.LoadFromMesh(mesh);
+		_ib.LoadFromMesh(mesh);
 		_vao->SetVertexAttribs();
 		_material = ResourceManager::Get().GetMaterial(materialName);
 		_vao->Unbind();
