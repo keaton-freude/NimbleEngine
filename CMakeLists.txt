@@ -93,6 +93,7 @@ target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/extern/
 target_include_directories(NimbleEngine PRIVATE ${CMAKE_CURRENT_LIST_DIR}/extern/simdjson/include)
 target_include_directories(NimbleEngine PRIVATE ${CMAKE_CURRENT_LIST_DIR}/extern/stb)
 target_include_directories(NimbleEngine PUBLIC ${GLM_INCLUDE_DIRS})
+target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/extern/cxxopts/include)
 add_subdirectory(extern/simdjson EXCLUDE_FROM_ALL)
 target_link_libraries(NimbleEngine PUBLIC ImGui)
 target_link_libraries(NimbleEngine PRIVATE ${OPENGL_LIBRARIES})

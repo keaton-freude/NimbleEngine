@@ -14,14 +14,16 @@
 
 #include "nimble/engine/GlfwRenderLoop.h"
 #include "nimble/input/InputManager.h"
-#include "nimble/material/Material.h"
 #include "nimble/resource-manager/ResourceManager.h"
-#include "implot.h"
+#include "cxxopts.hpp"
 
 using namespace Nimble;
 
-int main() {
+cxxopts::ParseResult HandleCLIArgs(int argc, char** argv);
+
+int main(int argc, char** argv) {
 	try {
+		auto args = HandleCLIArgs(argc, argv);
 		spdlog::set_level(spdlog::level::debug);
 		// main application code here
 		if(!glfwInit()) {
@@ -36,7 +38,7 @@ int main() {
 		}
 
 		const auto windowPointer = w.GetWindow();
-
+		ResourceManager::Get().SetResourceRoot(args["resource-root"].as<std::string>());
 		ResourceManager::Get().LoadMaterialsFromDisk();
 		// Register Materials manually for now
 
@@ -54,7 +56,7 @@ int main() {
 
 		ImGui::StyleColorsDark();
 		ImGui_ImplGlfw_InitForOpenGL(windowPointer, true);
-		ImGui_ImplOpenGL3_Init("#version 150");
+		ImGui_ImplOpenGL3_Init("#version 460");
 
 
 		GlfwRenderLoop renderLoop(engine, windowPointer);
@@ -65,4 +67,21 @@ int main() {
 	}
 
 	return 0;
+}
+
+cxxopts::ParseResult HandleCLIArgs(int argc, char** argv) {
+	cxxopts::Options options("NimbleEngineFrontend", "Example frontend application of NimbleEngine");
+
+	options.add_options()
+		("r,resource-root", "Resource Root Directory", cxxopts::value<std::string>()->default_value("./resources")->no_implicit_value())
+		("h,help", "Print usage");
+
+	auto result = options.parse(argc, argv);
+
+	if (result.count("help")) {
+		std::cout << options.help() << std::endl;
+		std::exit(0);
+	}
+
+	return result;
 }

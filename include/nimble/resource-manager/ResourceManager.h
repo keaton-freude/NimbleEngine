@@ -27,6 +27,7 @@
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/utility/Singleton.h"
 #include "nimble/core/Subject.h"
+#include "nimble/core/Assert.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -42,11 +43,11 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<Material>> _materialCache;
 	std::unordered_map<std::string, std::shared_ptr<IMesh>> _meshCache;
 	std::unordered_map<std::string, std::shared_ptr<Texture2D>> _texture2DCache;
+	std::string _resourceRoot = "";
 
 public:
 	// Singleton
 	ResourceManager() {
-		spdlog::info("Resource Root: {}", GetResourceRoot());
 	}
 
 	std::string GetResourceDirectoryByName(const std::string& resourceType) {
@@ -58,6 +59,14 @@ public:
 		fileModifiedEvent.Subscribe([this](std::filesystem::path path){
 			this->ReloadShader(path.filename().string());
 		});
+	}
+
+	void SetResourceRoot(const std::string& resourceRoot) {
+		// Convert to an absolute path
+		std::filesystem::path p(resourceRoot);
+
+		_resourceRoot = std::filesystem::absolute(p).string();
+		spdlog::info("Resource Root: {}", GetResourceRoot());
 	}
 
 private:
@@ -78,16 +87,12 @@ private:
 	// string which points relative to the build folder
 	// In the future, we may make this possible to set (either through some settings)
 	// file, or via CLI or something similar.
-	static const std::string &GetResourceRoot() {
-		// We assume the resource directory is next to the executable
-		const static std::string RESOURCE_ROOT = (std::filesystem::current_path() / "resources").string();
-		assert(RESOURCE_ROOT.length() != 0 && "RESOURCE_ROOT is an empty string!");
+	const std::string &GetResourceRoot() {
+		ASSERT_NE(_resourceRoot.size(), 0);
 
-		// NOTE: We are making a hard assumption about the path of the executable
-		// but all components which need paths ought use this (extract to class if that
-		// usage ever leaves the ResourceManager), it'll be easy to change
+		assert(std::filesystem::exists(_resourceRoot) && "RESOURCE_ROOT does not exist!");
 
-		return RESOURCE_ROOT;
+		return _resourceRoot;
 	}
 
 public:
@@ -112,7 +117,7 @@ public:
 		}
 
 		const auto _scene =
-		importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals);
+		importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals | aiProcess_FlipUVs);
 		if(!_scene) {
 			const auto error = importer.GetErrorString();
 			spdlog::error("Failed to load model from path: {}\nError: {}", path, error);
