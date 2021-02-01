@@ -47,6 +47,10 @@ int main(int argc, char** argv) {
 		// Register some basic keybindings
 		Input::Get().RegisterKeyCodeMapping("exit", GLFW_KEY_ESCAPE);
 		Input::Get().RegisterKeyCodeMapping("reload_shaders", GLFW_KEY_F5);
+		Input::Get().RegisterKeyCodeMapping("camera_left", GLFW_KEY_A);
+		Input::Get().RegisterKeyCodeMapping("camera_right", GLFW_KEY_D);
+		Input::Get().RegisterKeyCodeMapping("camera_forward", GLFW_KEY_W);
+		Input::Get().RegisterKeyCodeMapping("camera_backward", GLFW_KEY_S);
 		// Enable Dear ImGui
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();

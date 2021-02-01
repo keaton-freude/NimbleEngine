@@ -1,13 +1,14 @@
 #include <GL/glew.h>
+#include <nimble/camera/FreeFlyCamera.h>
 
 #include "glm/gtc/matrix_transform.hpp"
 #include "nimble/MeshTools.h"
 #include "nimble/camera/Camera.h"
+#include "nimble/camera/FixedPointOrbitCamera.h"
 #include "nimble/engine/Engine.h"
 #include "nimble/scene-graph/DirectionalLightNode.h"
 #include "nimble/scene-graph/DrawableNode.h"
 #include "nimble/scene-graph/TransformNode.h"
-#include "nimble/camera/FixedPointOrbitCamera.h"
 
 using namespace Nimble;
 
@@ -19,7 +20,7 @@ Engine::Engine(Window *window) : _window(window) {
 	auto proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 1000.f);
 	// Create a pointer via copy constructor
 	_projectionMatrix = std::make_shared<glm::mat4>(proj);
-	_camera = std::make_shared<FixedPointOrbitCamera>(glm::vec3(0.0f, 0.0f, 0.0f), 0.03f);
+	_camera = std::make_shared<FreeFlyCamera>();
 
 	_sceneGraph = std::make_unique<SceneGraph>(_projectionMatrix, _camera);
 

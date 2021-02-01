@@ -39,7 +39,7 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 	_window = glfwCreateWindow(static_cast<int>(width.get()), static_cast<int>(height.get()), title,
 							   nullptr, nullptr);
 
-
+	//glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if(!_window) {
 		// Failed to create

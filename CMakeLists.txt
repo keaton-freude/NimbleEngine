@@ -68,6 +68,7 @@ set(PlatformIndependentSourceFiles
         ${CMAKE_CURRENT_SOURCE_DIR}/src/opengl-wrapper/Sampler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/subsystem/Subsystem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/camera/FixedPointOrbitCamera.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/camera/FreeFlyCamera.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/stb_stub.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot_demo.cpp
