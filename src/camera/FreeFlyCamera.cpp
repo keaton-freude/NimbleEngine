@@ -5,21 +5,24 @@
 
 using namespace Nimble;
 
+FreeFlyCamera::FreeFlyCamera() {
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront =  glm::normalize(direction);
+}
+
+FreeFlyCamera::FreeFlyCamera(float rotateSpeed) {
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront =  glm::normalize(direction);
+}
+
 glm::mat4 FreeFlyCamera::GetView() {
-
-	auto view = glm::translate(-_position);
-	// Yaw
-	view *= glm::rotate(_rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-
-	// Pitch
-	view *= glm::rotate(_rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-
-	// Roll
-	view *= glm::rotate(_rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
-	//view *= glm::translate(_position);
-
-	return glm::inverse(view);
+	return glm::lookAt(_position, _position + cameraFront, cameraUp);
 }
 
 glm::vec3 Damp(glm::vec3 source, glm::vec3 target, float smoothing, float dt) {
@@ -29,27 +32,41 @@ glm::vec3 Damp(glm::vec3 source, glm::vec3 target, float smoothing, float dt) {
 void FreeFlyCamera::Update(const Time &time) {
 
 	if (Input::Get().IsMouseRightDown()) {
+		static bool first = true;
+		if (first) {
+			first = false;
+			return;
+		}
 		auto mouseDelta = Input::Get().GetMouseMovement();
+		yaw += mouseDelta.x * _rotateSpeed ;
+		pitch -= mouseDelta.y * _rotateSpeed;
 
-		_targetRotation.x -= mouseDelta.y * time.dt();
-		_targetRotation.y -= mouseDelta.x * time.dt();
+		glm::vec3 direction;
+		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		direction.y = sin(glm::radians(pitch));
+		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		cameraFront =  glm::normalize(direction);
 	}
 
-	_rotation = Damp(_rotation, _targetRotation, 0.0001f, time.dt());
+	//_rotation = Damp(_rotation, _targetRotation, 0.0001f, time.dt());
 
 	if (Input::Get().IsKeyPressed("camera_left")) {
-		_position.x += (_moveSpeed) * time.dt();
+		_position -= glm::normalize(glm::cross(cameraFront, cameraUp)) * _moveSpeed * time.dt();
 	}
 
 	if (Input::Get().IsKeyPressed("camera_right")) {
-		_position.x -= (_moveSpeed) * time.dt();
+		_position += glm::normalize(glm::cross(cameraFront, cameraUp)) * _moveSpeed * time.dt();
 	}
 
 	if (Input::Get().IsKeyPressed("camera_forward")) {
-		_position.z += (_moveSpeed) * time.dt();
+		_position += _moveSpeed * cameraFront * time.dt();
 	}
 
 	if (Input::Get().IsKeyPressed("camera_backward")) {
-		_position.z -= (_moveSpeed) * time.dt();
+		_position -= _moveSpeed * cameraFront * time.dt();
 	}
+}
+
+glm::vec3 FreeFlyCamera::GetPosition() {
+	return _position;
 }

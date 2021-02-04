@@ -38,7 +38,10 @@ public:
 #endif
 #endif
 		// calculate the world matrix based on the current state
+		//return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
 		return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
+//		glm::mat4 model = glm::mat4(1.0f);
+//		model =
 	}
 
 	void Rotate(glm::vec3 axis, float radians) {

@@ -89,6 +89,7 @@ public:
 		if(sceneState.GetDirectionalLight().enabled && _material->GetReceivesLighting()) {
 			shader->SetUniform("lightDirection", sceneState.GetDirectionalLight().direction);
 			shader->SetUniform("lightColor", sceneState.GetDirectionalLight().color);
+			shader->SetUniform("viewPos", sceneState.GetCamera()->GetPosition());
 		}
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(_ib.GetNumFaces() * 3), GL_UNSIGNED_INT, 0);

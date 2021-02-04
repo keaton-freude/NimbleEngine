@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "nimble/opengl-wrapper/ShaderInfo.h"
 
@@ -70,7 +71,7 @@ inline void ShaderProgram::SetUniform<glm::vec4>(const std::string &name, const 
 template <>
 inline void ShaderProgram::SetUniform<glm::mat4>(const std::string &name, const glm::mat4 &t) {
 	auto location = _shaderInfo.GetUniformPosition(name);
-	glUniformMatrix4fv(location, 1, GL_FALSE, &t[0][0]);
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(t));
 }
 
 template <>

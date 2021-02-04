@@ -42,6 +42,8 @@ static inline std::string GLenumToString(GLenum type) {
 		typeName = "mat4x2f";
 	} else if(type == GL_FLOAT_MAT4x3) {
 		typeName = "mat4x3f";
+	} else if(type == GL_SAMPLER_2D) {
+		typeName = "Sampler2D";
 	} else {
 		spdlog::warn("GLenum Type -> String, no entry for value {:x}", type);
 		typeName = "unknown";

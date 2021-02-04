@@ -33,6 +33,8 @@ public:
 	// Hook where cameras can update their internal state, ultimately mutating
 	// their view
 	virtual void Update(const Time& time) = 0;
+
+	virtual glm::vec3 GetPosition() = 0;
 };
 
 } // namespace Nimble
