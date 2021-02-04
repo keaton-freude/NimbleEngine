@@ -1,6 +1,7 @@
 #include <array>
 #include <memory>
 #include <nimble/subsystem/FileWatcherSubsystem.h>
+#include <thread>
 #include <utility>
 
 #include "nimble/engine/Engine.h"

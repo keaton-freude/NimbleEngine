@@ -13,11 +13,19 @@ private:
 	glm::vec3 _position{0.0f, 5.0f, 3.0f};
 	glm::vec3 cameraFront{0.0f, 0.0f, -1.0f};
 	glm::vec3 cameraUp{0.0f, 1.0f, 0.0f};
+
+	// The current rotation values
 	float yaw{0.f};
 	float pitch{0.f};
 	float roll{0.f};
+
+	// The values we are interpolating towards for smooth movement
+	float targetYaw{0.f};
+	float targetPitch{0.f};
+	float targetRoll{0.f};
+
 	float _moveSpeed = 15.0f;
-	float _rotateSpeed = 2.5f;
+	float _rotateSpeed = 150.f;
 public:
 	FreeFlyCamera();
 	FreeFlyCamera(float rotateSpeed);

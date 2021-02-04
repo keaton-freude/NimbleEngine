@@ -33,7 +33,7 @@ Engine::Engine(Window *window) : _window(window) {
 
 	Transformation transform;
 	Transformation cubeTransform;
-	cubeTransform.Translate(glm::vec3(0.0f, 1.0f, 0.0f));
+	cubeTransform.Translate(glm::vec3(0.0f, 1.01f, 0.0f));
 	_sceneGraph->AddChild(new DrawableNode("cube.fbx", "diffuse-texture", cubeTransform), _rootTransformNode);
 	transform.Rotate(glm::vec3(1.0f, 0.0f, 0.0f), 90.f * AI_MATH_PI_F/180.f);
 	transform.Scale(glm::vec3(1000.0f, 1000.0f, 1000.0f));
