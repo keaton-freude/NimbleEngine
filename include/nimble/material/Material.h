@@ -24,13 +24,17 @@
 
 */
 
+#include <list>
 #include <memory>
+#include <nimble/utility/Singleton.h>
 #include <string>
 #include <vector>
 
+#include "nimble/opengl-wrapper/Sampler.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/opengl-wrapper/Texture2D.h"
-#include "nimble/opengl-wrapper/Sampler.h"
+
+#include "simdjson.h"
 
 
 namespace Nimble {
@@ -39,7 +43,67 @@ namespace Nimble {
 // the name of the uniform it should be bound to
 struct TextureUnit {
 	std::shared_ptr<Texture2D> texture;
-	std::string uniform_name;
+	size_t slot;
+};
+
+enum class MaterialSettingType {
+	BOOLEAN,
+	STRING,
+	// A setting type of Invalid aborts the program with an error
+	INVALID
+};
+
+// Represents a generic setting within a material file
+// and is typically used with user-settable values, such as
+// enable or disabling lighting, shadows, texture units, etc.
+class IMaterialSetting {
+protected:
+	// The name/key of the setting
+	std::string _name;
+
+	// may be useful for introspection
+	MaterialSettingType _type = MaterialSettingType::INVALID;
+
+	bool _required = false;
+	bool _resolved = true;
+
+public:
+	~IMaterialSetting() = default;
+
+	// Load the setting from its JSON representation
+	virtual void Load(const simdjson::dom::element& element) = 0;
+	bool Resolved() {
+		return _resolved;
+	}
+	virtual void Bind() = 0;
+
+
+};
+
+class BooleanMaterialSetting : public IMaterialSetting {
+private:
+	bool _value;
+
+public:
+	virtual ~BooleanMaterialSetting() = default;
+
+	void Load(const simdjson::dom::element& element) override {
+
+	}
+
+	void Bind() override {
+		// Nothing to do
+	}
+};
+
+class TextureMaterialSetting : public IMaterialSetting {
+private:
+	std::shared_ptr<TextureUnit> _texture;
+
+public:
+	void Load(const simdjson::dom::element& element) override;
+	void SetTexturePath(const std::string& path);
+	void Bind() override;
 };
 
 class Material {
@@ -49,13 +113,12 @@ private:
 
 	std::shared_ptr<ShaderProgram> _shader = nullptr;
 
-	// 0 or more textures which should be bound when the material is bound
-	std::vector<TextureUnit> _textures{};
 	Sampler _sampler{};
-
 	bool _valid = false;
 
-	bool _receivesLighting = false;
+	std::list<std::unique_ptr<IMaterialSetting>> _settings;
+
+	bool _receivesLighting = true;
 
 public:
 	Material() = default;
@@ -81,6 +144,20 @@ public:
 
 	bool GetReceivesLighting() {
 		return _receivesLighting;
+	}
+
+	bool Resolved() {
+		for (const auto& setting : _settings) {
+			if (!setting->Resolved()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	std::shared_ptr<Material> Clone() {
+		auto clone = std::make_shared<Material>();
 	}
 
 private:

@@ -56,7 +56,13 @@ std::shared_ptr<Material> ResourceManager::GetMaterial(const std::string &name) 
 	// All materials are pre-created and registered for lookup
 	for(const auto &[key, value] : _materialCache) {
 		if(key == name) {
-			return value;
+			// TODO: Evaluate if implictly returning a Clone makes sense or not
+			if (!value->Resolved()) {
+				// Return a copy of the Material
+				return value->Clone();
+			} else {
+				return value;
+			}
 		}
 	}
 

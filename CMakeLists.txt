@@ -105,7 +105,7 @@ target_link_libraries(NimbleEngine PUBLIC glfw)
 target_link_libraries(NimbleEngine PRIVATE spdlog::spdlog)
 #target_link_libraries(NimbleEngine INTERFACE glm)
 target_link_libraries(NimbleEngine PRIVATE assimp::assimp)
-target_link_libraries(NimbleEngine PRIVATE simdjson)
+target_link_libraries(NimbleEngine PUBLIC simdjson)
 # Front end app
 add_subdirectory(apps)
 add_subdirectory(tests/nimble)

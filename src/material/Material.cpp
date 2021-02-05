@@ -34,24 +34,13 @@ void Material::LoadFromFile(const char* path) {
 
 	if (!error) {
 		for (auto texture : textures) {
-			spdlog::info("Texture name: {}", texture["name"].get_string().value());
-
-			TextureUnit tu{};
-
-			tu.uniform_name = texture["uniform_name"];
-			tu.texture = ResourceManager::Get().GetTexture2D((std::string)texture["resource_name"]);
-
-			_textures.push_back(tu);
+			auto setting = std::make_unique<TextureMaterialSetting>();
+			setting->Load(texture);
+			_settings.push_back(std::move(setting));
 		}
 	}
 
 	_shader = ResourceManager::Get().GetShader(_shader_name);
-
-	// Associate textures
-	int i = 0;
-	for(const auto& texture : _textures) {
-		_shader->SetUniform(texture.uniform_name, i++);
-	}
 
 	dom::element receivesLighting;
 	error = root["receives_lighting"].get(receivesLighting);
@@ -66,11 +55,35 @@ void Material::LoadFromFile(const char* path) {
 void Material::Bind() {
 	_shader->Use();
 
-	int i = 0;
-	for (const auto& texture : _textures) {
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, texture.texture->GetTextureHandle());
+	for(const auto& setting : _settings) {
+		setting->Bind();
+		// Todo, associate sampler with texture setting
 		_sampler.Bind();
-		i++;
 	}
+}
+
+void TextureMaterialSetting::Load(const simdjson::dom::element &element) {
+	_texture = std::make_shared<TextureUnit>();
+	_texture->slot = element["slot"];
+
+	if (element.at_key("resource_name").is_object() && element.at_key("resource_name").at_key("user_specified").get_bool()) {
+		// This is a user-specified value. Creator of material is required to specify the value at some point
+		// before binding the material
+		_resolved = false;
+	} else if (element.at_key("resource_name").is_string()) {
+		// If it's not a user-specified dict, we require the texture path to be present
+		SetTexturePath(element.at_key("resource_name").get_string().first.begin());
+	} else {
+		assert(false && "Material texture path is neither user specified, or a string!");
+	}
+}
+
+void TextureMaterialSetting::SetTexturePath(const std::string &path) {
+	_texture->texture = ResourceManager::Get().GetTexture2D(path);
+}
+
+void TextureMaterialSetting::Bind() {
+	assert(_resolved && "Material settings not resolved!");
+	glActiveTexture(GL_TEXTURE0 + _texture->slot);
+	glBindTexture(GL_TEXTURE_2D, _texture->texture->GetTextureHandle());
 }
