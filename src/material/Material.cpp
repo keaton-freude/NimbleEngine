@@ -72,7 +72,7 @@ void TextureMaterialSetting::Load(const simdjson::dom::element &element) {
 		_resolved = false;
 	} else if (element.at_key("resource_name").is_string()) {
 		// If it's not a user-specified dict, we require the texture path to be present
-		SetTexturePath(element.at_key("resource_name").get_string().first.begin());
+		SetTexturePath(element.at_key("resource_name").get_string().first.data());
 	} else {
 		assert(false && "Material texture path is neither user specified, or a string!");
 	}
@@ -84,6 +84,6 @@ void TextureMaterialSetting::SetTexturePath(const std::string &path) {
 
 void TextureMaterialSetting::Bind() {
 	assert(_resolved && "Material settings not resolved!");
-	glActiveTexture(GL_TEXTURE0 + _texture->slot);
+	glActiveTexture(GL_TEXTURE0 + (GLenum)_texture->slot);
 	glBindTexture(GL_TEXTURE_2D, _texture->texture->GetTextureHandle());
 }

@@ -8,40 +8,40 @@
 
 using namespace Nimble;
 
-FileWatcherSubsystem::FileWatcherSubsystem(std::fileswitchsystem::path directory, ChangeType changeType)
+FileWatcherSubsystem::FileWatcherSubsystem(std::filesystem::path directory, ChangeType changeType)
 	: _monitoredDirectory(directory), _changeType(changeType) {
 }
 
 void FileWatcherSubsystem::OnCreate() {
 	spdlog::info("Watching for {0} events in {1}", ChangeTypeToString(_changeType),
 				 _monitoredDirectory.string().c_str());
-	_directoryHandle = new HANDLE;
+	_fileWatcherData.directoryHandle = new HANDLE;
 
-	*(HANDLE*)_directoryHandle = CreateFileA((const char *)_monitoredDirectory.string().c_str(), GENERIC_READ,
+	*(HANDLE*)_fileWatcherData.directoryHandle = CreateFileA((const char *)_monitoredDirectory.string().c_str(), GENERIC_READ,
 											 FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
 											 OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL);
 
-	if (*(HANDLE*)_directoryHandle == INVALID_HANDLE_VALUE) {
+	if (*(HANDLE*)_fileWatcherData.directoryHandle == INVALID_HANDLE_VALUE) {
 		spdlog::error("Failed to create watcher subsystem. Not able to open directory. Error: {}", GetLastError());
 	}
 
-	_overlap.hEvent = (void*)this;
+	_fileWatcherData.overlap.hEvent = (void*)this;
 }
 
 void FileWatcherSubsystem::OnTick(float dt) {
-	ASSERT_NOT_NULL(_directoryHandle);
-	HANDLE directoryHandle = *(HANDLE*)_directoryHandle;
+	ASSERT_NOT_NULL(_fileWatcherData.directoryHandle);
+	HANDLE directoryHandle = *(HANDLE*)_fileWatcherData.directoryHandle;
 
 	static auto completionHandler = [](DWORD errorCode, DWORD numBytes, LPOVERLAPPED overlapped) {
 		FileWatcherSubsystem* fws = static_cast<FileWatcherSubsystem*>(overlapped->hEvent);
 		fws->OnDirectoryChanges();
 	};
 
-	if (!_waitingForChanges) {
+	if (!_fileWatcherData.waitingForChanges) {
 
-		if(ReadDirectoryChangesW(directoryHandle, _buffer, 1048576, true,
-								 FILE_NOTIFY_CHANGE_SIZE, 0, &_overlap, completionHandler) != 0) {
-			_waitingForChanges = true;
+		if(ReadDirectoryChangesW(directoryHandle, _fileWatcherData.buffer, 1048576, true,
+								 FILE_NOTIFY_CHANGE_SIZE, 0, &_fileWatcherData.overlap, completionHandler) != 0) {
+			_fileWatcherData.waitingForChanges = true;
 		} else {
 			spdlog::error("ReadDirectoryChanges failed. Aborting tick");
 		}
@@ -54,9 +54,9 @@ void FileWatcherSubsystem::OnDestroy() {
 }
 
 void FileWatcherSubsystem::OnDirectoryChanges() {
-	_waitingForChanges = false;
+	_fileWatcherData.waitingForChanges = false;
 	// Decompose the buffer to find the changes
-	auto * fileNotifyInformation = (FILE_NOTIFY_INFORMATION*)_buffer;
+	auto * fileNotifyInformation = (FILE_NOTIFY_INFORMATION*)_fileWatcherData.buffer;
 
 	do {
 		// Find each change and create events from them
@@ -84,6 +84,6 @@ void FileWatcherSubsystem::OnDirectoryChanges() {
 		default:
 			spdlog::error("Unhandled action type");
 		}
-		fileNotifyInformation = (FILE_NOTIFY_INFORMATION*)(_buffer + fileNotifyInformation->NextEntryOffset);
+		fileNotifyInformation = (FILE_NOTIFY_INFORMATION*)(_fileWatcherData.buffer + fileNotifyInformation->NextEntryOffset);
 	} while (fileNotifyInformation->NextEntryOffset);
 }
