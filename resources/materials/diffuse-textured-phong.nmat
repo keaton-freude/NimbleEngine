@@ -5,11 +5,7 @@
         {
             "name": "Diffuse Texture",
             "slot": 0,
-            "resource_name": {
-                "user_specified": true,
-                "type": "string",
-                "required": true
-            }
+            "resource_name": "grid.png"
         }
     ],
     "receives_lighting": {

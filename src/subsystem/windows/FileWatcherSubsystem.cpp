@@ -17,11 +17,11 @@ void FileWatcherSubsystem::OnCreate() {
 				 _monitoredDirectory.string().c_str());
 	_fileWatcherData.directoryHandle = new HANDLE;
 
-	*(HANDLE*)_fileWatcherData.directoryHandle = CreateFileA((const char *)_monitoredDirectory.string().c_str(), GENERIC_READ,
+	_fileWatcherData.directoryHandle = CreateFileA((const char *)_monitoredDirectory.string().c_str(), GENERIC_READ,
 											 FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
 											 OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL);
 
-	if (*(HANDLE*)_fileWatcherData.directoryHandle == INVALID_HANDLE_VALUE) {
+	if (_fileWatcherData.directoryHandle == INVALID_HANDLE_VALUE) {
 		spdlog::error("Failed to create watcher subsystem. Not able to open directory. Error: {}", GetLastError());
 	}
 
@@ -30,7 +30,6 @@ void FileWatcherSubsystem::OnCreate() {
 
 void FileWatcherSubsystem::OnTick(float dt) {
 	ASSERT_NOT_NULL(_fileWatcherData.directoryHandle);
-	HANDLE directoryHandle = *(HANDLE*)_fileWatcherData.directoryHandle;
 
 	static auto completionHandler = [](DWORD errorCode, DWORD numBytes, LPOVERLAPPED overlapped) {
 		FileWatcherSubsystem* fws = static_cast<FileWatcherSubsystem*>(overlapped->hEvent);
@@ -39,11 +38,11 @@ void FileWatcherSubsystem::OnTick(float dt) {
 
 	if (!_fileWatcherData.waitingForChanges) {
 
-		if(ReadDirectoryChangesW(directoryHandle, _fileWatcherData.buffer, 1048576, true,
+		if(ReadDirectoryChangesW(_fileWatcherData.directoryHandle, _fileWatcherData.buffer, FileInfoBufferSize, true,
 								 FILE_NOTIFY_CHANGE_SIZE, 0, &_fileWatcherData.overlap, completionHandler) != 0) {
 			_fileWatcherData.waitingForChanges = true;
 		} else {
-			spdlog::error("ReadDirectoryChanges failed. Aborting tick");
+			spdlog::error("ReadDirectoryChanges failed with error {:#04x} Aborting tick", GetLastError());
 		}
 	} else {
 		// Check for completion & handle

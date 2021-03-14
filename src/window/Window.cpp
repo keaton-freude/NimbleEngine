@@ -64,7 +64,7 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 		glfwSwapInterval(1);
 	}
 #else
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 #endif
 
 	// Setup handler for resize

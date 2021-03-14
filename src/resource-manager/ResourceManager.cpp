@@ -59,7 +59,8 @@ std::shared_ptr<Material> ResourceManager::GetMaterial(const std::string &name) 
 			// TODO: Evaluate if implictly returning a Clone makes sense or not
 			if (!value->Resolved()) {
 				// Return a copy of the Material
-				return value->Clone();
+				//return value->Clone();
+				return value;
 			} else {
 				return value;
 			}

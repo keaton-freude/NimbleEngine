@@ -80,6 +80,7 @@ void TextureMaterialSetting::Load(const simdjson::dom::element &element) {
 
 void TextureMaterialSetting::SetTexturePath(const std::string &path) {
 	_texture->texture = ResourceManager::Get().GetTexture2D(path);
+	_resolved = true;
 }
 
 void TextureMaterialSetting::Bind() {

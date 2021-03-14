@@ -72,12 +72,10 @@ public:
 
 	// Load the setting from its JSON representation
 	virtual void Load(const simdjson::dom::element& element) = 0;
-	bool Resolved() {
+	bool Resolved() const {
 		return _resolved;
 	}
 	virtual void Bind() = 0;
-
-
 };
 
 class BooleanMaterialSetting : public IMaterialSetting {
@@ -142,7 +140,7 @@ public:
 		return _shader;
 	}
 
-	bool GetReceivesLighting() {
+	bool GetReceivesLighting() const {
 		return _receivesLighting;
 	}
 
@@ -158,6 +156,8 @@ public:
 
 	std::shared_ptr<Material> Clone() {
 		auto clone = std::make_shared<Material>();
+		assert(false);
+		return clone;
 	}
 
 private:
