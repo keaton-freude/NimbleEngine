@@ -34,76 +34,20 @@
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/opengl-wrapper/Texture2D.h"
 
+#include <optional>
+
 #include "simdjson.h"
 
 
 namespace Nimble {
 
-// TODO: Name? Combines a texture pointer along with
-// the name of the uniform it should be bound to
 struct TextureUnit {
+	TextureUnit() = default;
+	TextureUnit(std::shared_ptr<Texture2D> texture, Sampler sampler) :
+ 		texture(texture), sampler(sampler) {}
+
 	std::shared_ptr<Texture2D> texture;
-	size_t slot;
-};
-
-enum class MaterialSettingType {
-	BOOLEAN,
-	STRING,
-	// A setting type of Invalid aborts the program with an error
-	INVALID
-};
-
-// Represents a generic setting within a material file
-// and is typically used with user-settable values, such as
-// enable or disabling lighting, shadows, texture units, etc.
-class IMaterialSetting {
-protected:
-	// The name/key of the setting
-	std::string _name;
-
-	// may be useful for introspection
-	MaterialSettingType _type = MaterialSettingType::INVALID;
-
-	bool _required = false;
-	bool _resolved = true;
-
-public:
-	~IMaterialSetting() = default;
-
-	// Load the setting from its JSON representation
-	virtual void Load(const simdjson::dom::element& element) = 0;
-	bool Resolved() {
-		return _resolved;
-	}
-	virtual void Bind() = 0;
-
-
-};
-
-class BooleanMaterialSetting : public IMaterialSetting {
-private:
-	bool _value;
-
-public:
-	virtual ~BooleanMaterialSetting() = default;
-
-	void Load(const simdjson::dom::element& element) override {
-
-	}
-
-	void Bind() override {
-		// Nothing to do
-	}
-};
-
-class TextureMaterialSetting : public IMaterialSetting {
-private:
-	std::shared_ptr<TextureUnit> _texture;
-
-public:
-	void Load(const simdjson::dom::element& element) override;
-	void SetTexturePath(const std::string& path);
-	void Bind() override;
+	Sampler sampler;
 };
 
 class Material {
@@ -111,53 +55,43 @@ private:
 	std::string _name;
 	std::string _shader_name;
 
+	// Compiled shader program, built from N shaders
 	std::shared_ptr<ShaderProgram> _shader = nullptr;
 
-	Sampler _sampler{};
-	bool _valid = false;
+	std::optional<TextureUnit> _diffuse_texture{};
+	std::optional<TextureUnit> _normal_texture{};
 
-	std::list<std::unique_ptr<IMaterialSetting>> _settings;
-
-	bool _receivesLighting = true;
+	// Whether the object receives lighting or not
+	std::optional<bool> _receives_lighting{};
 
 public:
 	Material() = default;
 	// Create material with name, do a lookup for shader
-	Material(const std::string &name, const std::string &shaderName);
+	Material(std::string name, const std::string &shaderName);
 	// Create material with name, provide a shared_ptr to specified ShaderProgram
-	Material(const std::string &name, std::shared_ptr<ShaderProgram> shader);
+	Material(std::string name, std::shared_ptr<ShaderProgram> shader);
 
 	// Factory Methods
 	static std::shared_ptr<Material> CreateMaterial(const std::string& name, const std::string& shaderName);
 
 	void LoadFromFile(const char* path);
 
-	// Bind this materials state to the pipeline
-	void Bind();
-	const std::string& GetName() const {
-		return _name;
-	}
+	[[nodiscard]] const std::string& GetName() const;
+	[[nodiscard]] std::shared_ptr<ShaderProgram> GetShader() const;
 
-	std::shared_ptr<ShaderProgram> GetShader() {
-		return _shader;
-	}
+	[[nodiscard]] std::optional<bool> GetReceivesLighting() const;
+	[[nodiscard]] std::optional<TextureUnit> GetDiffuseTexture() const;
+	[[nodiscard]] std::optional<TextureUnit> GetNormalTexture() const;
 
-	bool GetReceivesLighting() {
-		return _receivesLighting;
-	}
+	// TODO throw this away
+	void Bind() {
+		_shader->Use();
 
-	bool Resolved() {
-		for (const auto& setting : _settings) {
-			if (!setting->Resolved()) {
-				return false;
-			}
+		if (_diffuse_texture) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D,
+			_diffuse_texture.value().texture->GetTextureHandle());
 		}
-
-		return true;
-	}
-
-	std::shared_ptr<Material> Clone() {
-		auto clone = std::make_shared<Material>();
 	}
 
 private:

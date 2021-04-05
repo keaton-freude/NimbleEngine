@@ -55,14 +55,8 @@ std::shared_ptr<Material> ResourceManager::GetMaterial(const std::string &name) 
 	// Check if it exists in the cache, if not throw.
 	// All materials are pre-created and registered for lookup
 	for(const auto &[key, value] : _materialCache) {
-		if(key == name) {
-			// TODO: Evaluate if implictly returning a Clone makes sense or not
-			if (!value->Resolved()) {
-				// Return a copy of the Material
-				return value->Clone();
-			} else {
-				return value;
-			}
+		if (key == name) {
+			return value;
 		}
 	}
 
@@ -75,6 +69,10 @@ void ResourceManager::LoadMaterialsFromDisk() {
 	spdlog::debug("Iterating Material Files...");
 	for (auto & path : std::filesystem::directory_iterator(materialDirectory)) {
 		if (!path.is_regular_file()) {
+			continue;
+		}
+
+		if (path.path().extension().string() != ".nmat") {
 			continue;
 		}
 

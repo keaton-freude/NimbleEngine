@@ -2,88 +2,123 @@
 
 #include "nimble/resource-manager/ResourceManager.h"
 #include "nimble/utility/FileUtility.h"
-#include "simdjson.h"
+#include "rapidjson/document.h"
+#include "rapidjson/filereadstream.h"
+#include "rapidjson/error/en.h"
 #include <utility>
+#include <memory>
 
 using namespace std;
 using namespace Nimble;
-using namespace simdjson;
+using namespace rapidjson;
 
-Material::Material(const string &name, const string &shaderName)
-: _name(name), _shader(ResourceManager::Get().GetShader(shaderName)) {
+Material::Material(string name, const string &shaderName)
+: _name(std::move(name)), _shader(ResourceManager::Get().GetShader(shaderName)) {
 }
 
-Material::Material(const string &name, shared_ptr<ShaderProgram> shader)
-: _name(name), _shader(std::move(shader)) {
+Material::Material(string name, shared_ptr<ShaderProgram> shader)
+: _name(std::move(name)), _shader(std::move(shader)) {
 }
 
 std::shared_ptr<Material> Material::CreateMaterial(const std::string& name, const std::string& shaderName) {
 	return std::make_shared<Material>(name, shaderName);
 }
 
-void Material::LoadFromFile(const char* path) {
-	// Parse for all settings, if there are no parse errors this should be considered valid
-	dom::parser parser;
-	dom::element root = parser.load(path);
+static TextureUnit GetTextureUnitFromJson(const Value& texture_obj) {
+	ASSERT(texture_obj.HasMember("texture_uri"), "texture_uri must be a key in diffuse_texture");
+	ASSERT(texture_obj["texture_uri"].IsString(), "texture_uri must be a string!");
 
-	_name = root["name"];
-	_shader_name = root["shader"];
+	// Retrieve the texture, or load it for the first time if this is our first time seeing it
+	auto texture_uri = texture_obj["texture_uri"].GetString();
+	std::shared_ptr<Texture2D> texture = ResourceManager::Get().GetTexture2D(texture_uri);
 
-	dom::array textures;
-	auto error = root["textures"].get(textures);
+	// Load sampler settings
+	SamplerSettings settings;
 
-	if (!error) {
-		for (auto texture : textures) {
-			auto setting = std::make_unique<TextureMaterialSetting>();
-			setting->Load(texture);
-			_settings.push_back(std::move(setting));
+	if (texture_obj.HasMember("sampler_settings")) {
+		// If user has specified settings, extract them here
+		ASSERT(texture_obj["sampler_settings"].IsObject(), "Sampler settings must be an object. Check the schema.");
+		auto sampler_settings = texture_obj["sampler_settings"].GetObject();
+
+		if (sampler_settings.HasMember("texture_wrap_mode_u")) {
+			ASSERT(sampler_settings["texture_wrap_mode_u"].IsString(), "texture_wrap_mode_u must be a string.");
+			settings.textureWrapModeU = SamplerSettingsUtil::TextureWrapModeFromString(
+			sampler_settings["texture_wrap_mode_u"].GetString());
+		}
+
+		if (sampler_settings.HasMember("texture_wrap_mode_v")) {
+			ASSERT(sampler_settings["texture_wrap_mode_v"].IsString(), "texture_wrap_mode_v must be a string.");
+			settings.textureWrapModeV = SamplerSettingsUtil::TextureWrapModeFromString(
+			sampler_settings["texture_wrap_mode_v"].GetString());
+		}
+
+		if (sampler_settings.HasMember("texture_mag_filter")) {
+			ASSERT(sampler_settings["texture_mag_filter"].IsString(), "texture_mag_filter must be a string.");
+			settings.textureMagFilter = SamplerSettingsUtil::TextureMagFilterFromString(
+			sampler_settings["texture_mag_filter"].GetString());
+		}
+
+		if (sampler_settings.HasMember("texture_min_filter")) {
+			ASSERT(sampler_settings["texture_min_filter"].IsString(), "texture_min_filter must be a string.");
+			settings.textureMinFilter = SamplerSettingsUtil::TextureMinFilterFromString(
+			sampler_settings["texture_min_filter"].GetString());
 		}
 	}
 
+	// Even if user doesn't specify sampler settings, we'll just take the defaults we started with
+	return TextureUnit(texture, Sampler());
+}
+
+void Material::LoadFromFile(const char* path) {
+	Document document;
+	document.Parse(FileReadAllText(path).c_str());
+
+	ASSERT(!document.HasParseError(), "JSON parsing for {} failed.\n\nDetails: {}", path, GetParseError_En(document.GetParseError()));
+
+	ASSERT(document.HasMember("name") && document["name"].IsString(), "Material JSON is missing `name` field, or it is not a string.");
+	_name = document["name"].GetString();
+
+	ASSERT(document.HasMember("shader") && document["shader"].IsString(), "\x1b[31m Material JSON is missing `shader` field, or it is not a string.");
+
+	_shader_name = document["shader"].GetString();
+
 	_shader = ResourceManager::Get().GetShader(_shader_name);
 
-	dom::element receivesLighting;
-	error = root["receives_lighting"].get(receivesLighting);
+	if (document.HasMember("diffuse_texture")) {
+		// If a texture key is present, validate required keys are present
+		ASSERT(document["diffuse_texture"].IsObject(), "Diffuse Texture element is not an object. Check the schema.");
+		_diffuse_texture = GetTextureUnitFromJson(document["diffuse_texture"].GetObject());
+	}
 
-	if (!error && receivesLighting.is_bool()) {
-		_receivesLighting = receivesLighting.get_bool();
+	if (document.HasMember("normal_texture")) {
+		ASSERT(document["normal_texture"].IsObject(), "Normal Texture element is not an object. Check the schema.");
+		_normal_texture = GetTextureUnitFromJson(document["normal_texture"].GetObject());
+	}
+
+	if (document.HasMember("receives_lighting")) {
+		ASSERT(document["receives_lighting"].IsBool(), "receives_lighting key must be a boolean");
+		_receives_lighting = document["receives_lighting"].GetBool();
 	} else {
-		_receivesLighting = false;
+		_receives_lighting = true;
 	}
 }
 
-void Material::Bind() {
-	_shader->Use();
-
-	for(const auto& setting : _settings) {
-		setting->Bind();
-		// Todo, associate sampler with texture setting
-		_sampler.Bind();
-	}
+const std::string& Material::GetName() const {
+	return _name;
 }
 
-void TextureMaterialSetting::Load(const simdjson::dom::element &element) {
-	_texture = std::make_shared<TextureUnit>();
-	_texture->slot = element["slot"];
-
-	if (element.at_key("resource_name").is_object() && element.at_key("resource_name").at_key("user_specified").get_bool()) {
-		// This is a user-specified value. Creator of material is required to specify the value at some point
-		// before binding the material
-		_resolved = false;
-	} else if (element.at_key("resource_name").is_string()) {
-		// If it's not a user-specified dict, we require the texture path to be present
-		SetTexturePath(element.at_key("resource_name").get_string().first.begin());
-	} else {
-		assert(false && "Material texture path is neither user specified, or a string!");
-	}
+std::shared_ptr<ShaderProgram> Material::GetShader() const {
+	return _shader;
 }
 
-void TextureMaterialSetting::SetTexturePath(const std::string &path) {
-	_texture->texture = ResourceManager::Get().GetTexture2D(path);
+std::optional<bool> Material::GetReceivesLighting() const {
+	return _receives_lighting;
 }
 
-void TextureMaterialSetting::Bind() {
-	assert(_resolved && "Material settings not resolved!");
-	glActiveTexture(GL_TEXTURE0 + _texture->slot);
-	glBindTexture(GL_TEXTURE_2D, _texture->texture->GetTextureHandle());
+std::optional<TextureUnit> Material::GetDiffuseTexture() const {
+	return _diffuse_texture;
+}
+
+std::optional<TextureUnit> Material::GetNormalTexture() const {
+	return _normal_texture;
 }

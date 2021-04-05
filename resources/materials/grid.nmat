@@ -1,13 +1,8 @@
 {
     "name": "grid",
     "shader": "grid",
-    "textures": [
-        {
-            "name": "Grid Texture",
-            "slot": 0,
-            "resource_name": "grid.png",
-            "uniform_name": "grid_texture"
-        }
-    ],
-    "receives_lighting": "false"
+    "diffuse_texture": {
+        "texture_uri": "grid.png"
+    },
+    "receives_lighting": false
 }

@@ -41,8 +41,8 @@ void FreeFlyCamera::Update(const Time &time) {
 		targetPitch -= mouseDelta.y * _rotateSpeed * time.dt();
 	}
 
-	yaw = lerp(yaw, targetYaw, time.dt() * 10.0f);
-	pitch = lerp(pitch, targetPitch, time.dt() * 10.0f);
+	yaw = lerp(yaw, targetYaw, time.dt() * 20.0f);
+	pitch = lerp(pitch, targetPitch, time.dt() * 20.0f);
 
 	glm::vec3 direction;
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
