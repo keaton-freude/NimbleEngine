@@ -24,7 +24,7 @@ struct FileWatcherData {
 	HANDLE directoryHandle;
 	OVERLAPPED overlap;
 	char buffer[FileInfoBufferSize];
-	bool _waitingForChanges = false;
+	bool waitingForChanges = false;
 };
 #elif __linux__
 #include <climits>

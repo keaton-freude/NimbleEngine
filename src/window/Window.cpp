@@ -1,9 +1,12 @@
 #define GLFW_EXPOSE_NATIVE_X11
 #define GLFW_EXPOSE_NATIVE_GLX
 #include <GL/glew.h>
+
+#ifdef __linux__
 #include <GL/glx.h>
-#include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
+#endif
+#include <GLFW/glfw3.h>
 #include <fmt/format.h>
 #include <stdexcept>
 
@@ -51,6 +54,7 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 
 	glfwMakeContextCurrent(_window);
 
+#ifdef __linux__
 	if (GLX_EXT_swap_control) {
 		auto glXSwapIntervalEXT = reinterpret_cast<PFNGLXSWAPINTERVALEXTPROC>(glXGetProcAddress((GLubyte *)"glXSwapIntervalEXT"));
 		auto display = glfwGetX11Display();
@@ -59,6 +63,9 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 	} else {
 		glfwSwapInterval(1);
 	}
+#else
+	glfwSwapInterval(0);
+#endif
 
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
