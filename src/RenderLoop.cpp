@@ -34,6 +34,9 @@ void RenderLoop::Run() {
 	while(!_exitCondition()) {
 		_time.Begin();
 
+		// Poll for Input
+		PollForEvents();
+
 		// Start the ImGui Frame, from here on, any component in our game loop
 		// can add to the debug window
 		ImGui_ImplOpenGL3_NewFrame();
@@ -43,9 +46,6 @@ void RenderLoop::Run() {
 
 		// Draw the latest FPS measurement
 		ImGui::Text("%s", fmt::format("FPS: {}", _time.GetFPS()).c_str());
-
-		// Poll for Input
-		PollForEvents();
 
 		// Process every installed sub system
 		for(const auto &subsystem : _subsystems) {

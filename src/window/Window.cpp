@@ -4,6 +4,7 @@
 
 #ifdef __linux__
 #include <GL/glx.h>
+#include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 #endif
 #include <GLFW/glfw3.h>
@@ -31,6 +32,7 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 	glfwWindowHint(GLFW_SAMPLES, 16);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 
 	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
@@ -54,26 +56,13 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 
 	glfwMakeContextCurrent(_window);
 
-#ifdef __linux__
-	if (GLX_EXT_swap_control) {
-		auto glXSwapIntervalEXT = reinterpret_cast<PFNGLXSWAPINTERVALEXTPROC>(glXGetProcAddress((GLubyte *)"glXSwapIntervalEXT"));
-		auto display = glfwGetX11Display();
-		auto window = glfwGetGLXWindow(_window);
-		glXSwapIntervalEXT(display, window, 1);
-	} else {
-		glfwSwapInterval(1);
-	}
-#else
+	// Set to 1 to enable vsync
 	glfwSwapInterval(0);
-#endif
 
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
-	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glViewport(0, 0, width.get(), height.get());
-	// Fix below for windows
-	// glEnable(GL_MULTISAMPLE_ARB);
 }
 
 void Nimble::Window::Initialize() const {

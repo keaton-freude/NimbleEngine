@@ -25,7 +25,7 @@ private:
 	float targetRoll{0.f};
 
 	float _moveSpeed = 15.0f;
-	float _rotateSpeed = 150.f;
+	float _rotateSpeed = 300.f;
 public:
 	FreeFlyCamera();
 	FreeFlyCamera(float rotateSpeed);
