@@ -46,9 +46,7 @@ Engine::Engine(Window *window) : _window(window) {
 
 void Engine::RenderFrame(const Time &time) {
 
-	static float t = 0.0f;
-	t += time.dt();
-	glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	_camera->Update(time);
@@ -67,11 +65,25 @@ void Engine::RenderFrame(const Time &time) {
 
 		// Rotate a little around the Z
 		Transformation rotZ;
-		//	rotZ.Rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(0.1f));
+		//rotZ.Rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(60.0f) * time.dt());
 		transform = transform * rotZ;
 	}
 
 	_sceneGraph->Render();
+
+	static bool vsyncEnabled = false;
+	if (ImGui::Checkbox("VSync Enabled", &vsyncEnabled)) {
+		_window->SetVSync(vsyncEnabled);
+	}
+
+	static int FPS = 60;
+	ImGui::SliderInt("FPS", &FPS, 1, 1000);
+	static size_t microseconds = 0;
+
+	microseconds = static_cast<size_t>(((1.0f / (float)FPS) * 1000.0f) * 1000.0f);
+
+	std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
+	//spdlog::info("Delay: {}", microseconds);
 }
 
 void Engine::SetLatestFPS(float FPS) {

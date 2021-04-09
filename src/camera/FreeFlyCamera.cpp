@@ -35,6 +35,8 @@ float lerp(float v0, float v1, float t) {
 
 void FreeFlyCamera::Update(const Time &time) {
 
+	ImGui::SliderFloat("Camera Rotate Speed", &_rotateSpeed, 10.0f, 300.0f);
+
 	if (Input::Get().IsMouseRightDown()) {
 		auto mouseDelta = Input::Get().GetMouseMovement();
 		targetYaw += mouseDelta.x * _rotateSpeed * time.dt();
@@ -66,6 +68,10 @@ void FreeFlyCamera::Update(const Time &time) {
 
 	if (Input::Get().IsKeyPressed("camera_backward")) {
 		_position -= _moveSpeed * cameraFront * time.dt();
+	}
+
+	if (Input::Get().IsKeyPressed("camera_up")) {
+		_position.y += _moveSpeed * time.dt();
 	}
 }
 

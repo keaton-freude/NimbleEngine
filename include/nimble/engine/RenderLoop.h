@@ -10,6 +10,7 @@
 
 #include "nimble/engine/Engine.h"
 #include "nimble/engine/Time.h"
+#include "nimble/engine/Time.h"
 
 namespace Nimble {
 
@@ -34,6 +35,8 @@ protected:
 	virtual void SwapBuffers() = 0;
 
 	void RenderFrame(const Time &time);
+
+	void FixedUpdate();
 
 
 private:

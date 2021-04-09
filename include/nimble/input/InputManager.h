@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
+#include "nimble/engine/Time.h"
 
 namespace Nimble {
 

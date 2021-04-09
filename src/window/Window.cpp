@@ -57,7 +57,7 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 	glfwMakeContextCurrent(_window);
 
 	// Set to 1 to enable vsync
-	glfwSwapInterval(0);
+	glfwSwapInterval(1);
 
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
@@ -67,4 +67,8 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 
 void Nimble::Window::Initialize() const {
 	GLContext::SetViewportDimensions(_width, _height);
+}
+
+void Nimble::Window::SetVSync(bool enabled) {
+	glfwSwapInterval(enabled ? 1 : 0);
 }

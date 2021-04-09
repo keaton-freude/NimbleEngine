@@ -51,6 +51,7 @@ int main(int argc, char** argv) {
 		Input::Get().RegisterKeyCodeMapping("camera_right", GLFW_KEY_D);
 		Input::Get().RegisterKeyCodeMapping("camera_forward", GLFW_KEY_W);
 		Input::Get().RegisterKeyCodeMapping("camera_backward", GLFW_KEY_S);
+		Input::Get().RegisterKeyCodeMapping("camera_up", GLFW_KEY_SPACE);
 		// Enable Dear ImGui
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();

@@ -24,7 +24,6 @@ RenderLoop::RenderLoop(std::shared_ptr<Engine> engine, ExitCondition exitConditi
 	new FileWatcherSubsystem(ResourceManager::Get().GetResourceDirectoryByName("shaders"), ChangeType::FILE_CHANGED)));
 
 	ResourceManager::Get().RegisterFileChange(static_cast<FileWatcherSubsystem*>(system.get())->FileModifiedEvent);
-
 }
 
 void RenderLoop::Run() {
@@ -34,8 +33,15 @@ void RenderLoop::Run() {
 	while(!_exitCondition()) {
 		_time.Begin();
 
-		// Poll for Input
-		PollForEvents();
+		static float accumulated_time = 0.0f;
+
+		accumulated_time += _time.dt();
+
+		if (accumulated_time >= (1.0f / 60.0f)) {
+			accumulated_time -= (1.0f / 60.0f);
+			FixedUpdate();
+		}
+
 
 		// Start the ImGui Frame, from here on, any component in our game loop
 		// can add to the debug window
@@ -92,4 +98,9 @@ void RenderLoop::Run() {
 
 void RenderLoop::RenderFrame(const Time &time) {
 	_engine->RenderFrame(time);
+}
+
+void RenderLoop::FixedUpdate() {
+	// Poll for Input
+	PollForEvents();
 }

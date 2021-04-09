@@ -18,6 +18,8 @@ public:
 	}
 	void Initialize() const;
 
+	void SetVSync(bool enabled);
+
 private:
 };
 
