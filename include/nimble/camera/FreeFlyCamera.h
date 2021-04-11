@@ -34,6 +34,9 @@ public:
 	glm::mat4 GetView() override;
 	void Update(const Time& time) override;
 	glm::vec3 GetPosition() override;
+
+	float GetRotateSpeed() const;
+	void SetRotateSpeed(float rotateSpeed);
 };
 
 }

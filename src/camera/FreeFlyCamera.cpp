@@ -13,7 +13,8 @@ FreeFlyCamera::FreeFlyCamera() {
 	cameraFront =  glm::normalize(direction);
 }
 
-FreeFlyCamera::FreeFlyCamera(float rotateSpeed) {
+FreeFlyCamera::FreeFlyCamera(float rotateSpeed)
+	: _rotateSpeed(rotateSpeed) {
 	glm::vec3 direction;
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	direction.y = sin(glm::radians(pitch));
@@ -34,9 +35,6 @@ float lerp(float v0, float v1, float t) {
 }
 
 void FreeFlyCamera::Update(const Time &time) {
-
-	ImGui::SliderFloat("Camera Rotate Speed", &_rotateSpeed, 10.0f, 300.0f);
-
 	if (Input::Get().IsMouseRightDown()) {
 		auto mouseDelta = Input::Get().GetMouseMovement();
 		targetYaw += mouseDelta.x * _rotateSpeed * time.dt();
@@ -77,4 +75,12 @@ void FreeFlyCamera::Update(const Time &time) {
 
 glm::vec3 FreeFlyCamera::GetPosition() {
 	return _position;
+}
+
+float FreeFlyCamera::GetRotateSpeed() const {
+	return _rotateSpeed;
+}
+
+void FreeFlyCamera::SetRotateSpeed(float rotateSpeed) {
+	_rotateSpeed = rotateSpeed;
 }

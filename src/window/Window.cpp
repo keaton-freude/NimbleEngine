@@ -26,7 +26,7 @@ void _HandleResize2(GLFWwindow *window, int width, int height) {
 }
 
 Nimble::Window::Window(Width width, Height height, const char *title)
-: _window(nullptr), _height(height), _width(width) {
+: _window(nullptr), _height(height), _width(width), _vsync_enabled(false) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -56,8 +56,7 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 
 	glfwMakeContextCurrent(_window);
 
-	// Set to 1 to enable vsync
-	glfwSwapInterval(1);
+	SetVSync(_vsync_enabled);
 
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
@@ -71,4 +70,9 @@ void Nimble::Window::Initialize() const {
 
 void Nimble::Window::SetVSync(bool enabled) {
 	glfwSwapInterval(enabled ? 1 : 0);
+	_vsync_enabled = enabled;
+}
+
+bool Nimble::Window::IsVSyncEnabled() const {
+	return _vsync_enabled;
 }

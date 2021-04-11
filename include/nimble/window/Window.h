@@ -9,6 +9,7 @@ private:
 	GLFWwindow *_window;
 	Height _height;
 	Width _width;
+	bool _vsync_enabled;
 
 public:
 	explicit Window(Width width, Height height, const char *title);
@@ -19,6 +20,7 @@ public:
 	void Initialize() const;
 
 	void SetVSync(bool enabled);
+	bool IsVSyncEnabled() const;
 
 private:
 };

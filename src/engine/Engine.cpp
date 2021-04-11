@@ -20,7 +20,7 @@ Engine::Engine(Window *window) : _window(window) {
 	auto proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 1000.f);
 	// Create a pointer via copy constructor
 	_projectionMatrix = std::make_shared<glm::mat4>(proj);
-	_camera = std::make_shared<FreeFlyCamera>();
+	_camera = std::make_shared<FreeFlyCamera>(150.0f);
 
 	_sceneGraph = std::make_unique<SceneGraph>(_projectionMatrix, _camera);
 
@@ -71,19 +71,25 @@ void Engine::RenderFrame(const Time &time) {
 
 	_sceneGraph->Render();
 
-	static bool vsyncEnabled = false;
+	static bool vsyncEnabled = _window->IsVSyncEnabled();
 	if (ImGui::Checkbox("VSync Enabled", &vsyncEnabled)) {
 		_window->SetVSync(vsyncEnabled);
 	}
 
-	static int FPS = 60;
+	static float cameraRotateSpeed = static_cast<FreeFlyCamera*>(_camera.get())->GetRotateSpeed();
+	if (ImGui::SliderFloat("Camera Rotate Speed", &cameraRotateSpeed, 10.0f, 300.0f)) {
+		static_cast<FreeFlyCamera*>(_camera.get())->SetRotateSpeed(cameraRotateSpeed);
+	}
+
+	// Horrible hacky way to limit FPS, does not take into account render time, so its pretty
+	// useless except quick testing with limited FPS
+	/*static int FPS = 60;
 	ImGui::SliderInt("FPS", &FPS, 1, 1000);
 	static size_t microseconds = 0;
 
 	microseconds = static_cast<size_t>(((1.0f / (float)FPS) * 1000.0f) * 1000.0f);
 
-	std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
-	//spdlog::info("Delay: {}", microseconds);
+	std::this_thread::sleep_for(std::chrono::microseconds(microseconds));*/
 }
 
 void Engine::SetLatestFPS(float FPS) {
