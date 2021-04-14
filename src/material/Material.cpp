@@ -12,16 +12,12 @@ using namespace std;
 using namespace Nimble;
 using namespace rapidjson;
 
-Material::Material(string name, const string &shaderName)
-: _name(std::move(name)), _shader(ResourceManager::Get().GetShader(shaderName)) {
+Material::Material(string name)
+: _name(std::move(name)) {
 }
 
-Material::Material(string name, shared_ptr<ShaderProgram> shader)
-: _name(std::move(name)), _shader(std::move(shader)) {
-}
-
-std::shared_ptr<Material> Material::CreateMaterial(const std::string& name, const std::string& shaderName) {
-	return std::make_shared<Material>(name, shaderName);
+std::shared_ptr<Material> Material::CreateMaterial(const std::string& name) {
+	return std::make_shared<Material>(name);
 }
 
 static TextureUnit GetTextureUnitFromJson(const Value& texture_obj) {
@@ -78,11 +74,7 @@ void Material::LoadFromFile(const char* path) {
 	ASSERT(document.HasMember("name") && document["name"].IsString(), "Material JSON is missing `name` field, or it is not a string.");
 	_name = document["name"].GetString();
 
-	ASSERT(document.HasMember("shader") && document["shader"].IsString(), "\x1b[31m Material JSON is missing `shader` field, or it is not a string.");
-
-	_shader_name = document["shader"].GetString();
-
-	_shader = ResourceManager::Get().GetShader(_shader_name);
+	ASSERT(document.HasMember("material_type") && document["material_type"].IsString(), "Material JSON is missing `material_type` field, or it is not a string.");
 
 	if (document.HasMember("diffuse_texture")) {
 		// If a texture key is present, validate required keys are present
@@ -107,10 +99,6 @@ const std::string& Material::GetName() const {
 	return _name;
 }
 
-std::shared_ptr<ShaderProgram> Material::GetShader() const {
-	return _shader;
-}
-
 std::optional<bool> Material::GetReceivesLighting() const {
 	return _receives_lighting;
 }
@@ -121,4 +109,8 @@ std::optional<TextureUnit> Material::GetDiffuseTexture() const {
 
 std::optional<TextureUnit> Material::GetNormalTexture() const {
 	return _normal_texture;
+}
+
+MaterialType Material::GetMaterialType() const {
+	return _material_type;
 }

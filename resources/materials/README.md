@@ -11,10 +11,10 @@ A material defines a set of settings which represent how a mesh is shaded and co
     "description": "user-friendly name for this instance of a material. Example: 'Robot' might refer to a material used to render a metallic robot",
     "required": true
   },
-  "shader_name": {
+  "material_type": {
     "type": "string",
-    "description": "resource name for the set of shaders which should be loaded and linked and then subsequently bound before drawing",
-    "required" : true
+    "description": "type of material determine which passes are involved in rendering objects using this material",
+    "required": true
   },
   "diffuse_texture": {
     "type": "object",

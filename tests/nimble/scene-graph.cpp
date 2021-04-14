@@ -165,11 +165,11 @@ TEST_CASE("Find nodes", "[scenenode]") {
 	node2->AddChild(node4);
 	node4->AddChild(node5);
 
-	auto &found1 = root->Find(node1Id);
+	auto found1 = root->Find(node1Id);
 	REQUIRE(found1.has_value());
 	REQUIRE(found1.value()->GetID() == node1Id);
 
-	auto &found2 = root->Find(node5Id);
+	auto found2 = root->Find(node5Id);
 
 	REQUIRE(found2.has_value());
 	REQUIRE(found2.value()->GetID() == node5Id);
@@ -262,4 +262,95 @@ TEST_CASE("Apply Transformations", "[transform]") {
 	Transformation combinedTransform = transform1 * transform2;
 
 	REQUIRE(glm::epsilonEqual(combinedTransform.GetRotation().w, 0.5f, glm::epsilon<float>()));
+}
+
+TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
+	std::unique_ptr<SceneGraph> sceneGraph = std::make_unique<SceneGraph>(nullptr, nullptr);
+	TestState state{};
+
+	// Build up the scene graph, using default transforms for each node. Then modify
+	// transforms throughout the graph ensuring transform changes are propagated
+	TestSceneNode* testNode1 = new TestSceneNode(1, &state);
+	TestSceneNode* testNode2 = new TestSceneNode(2, &state);
+
+	TestSceneNode* testNode3 = new TestSceneNode(3, &state);
+	TestSceneNode* testNode4 = new TestSceneNode(4, &state);
+	TestSceneNode* testNode5 = new TestSceneNode(5, &state);
+	TestSceneNode* testNode6 = new TestSceneNode(6, &state);
+
+	/*
+	 *                1
+	 *               / \
+	 *              2   3
+	 *                 / \
+	 *                6   4
+	 *                     \
+	 *                      5
+	 */
+
+	testNode1->AddChild(testNode2);
+
+	testNode1->AddChild(testNode3).first->AddChild(testNode4).first->AddChild(testNode5);
+	testNode3->AddChild(testNode6);
+
+	// Check that we're starting with default transforms on all entries
+	REQUIRE(testNode1->GetTransformation() == Transformation::Default());
+	REQUIRE(testNode2->GetTransformation() == Transformation::Default());
+	REQUIRE(testNode3->GetTransformation() == Transformation::Default());
+	REQUIRE(testNode4->GetTransformation() == Transformation::Default());
+	REQUIRE(testNode5->GetTransformation() == Transformation::Default());
+	REQUIRE(testNode6->GetTransformation() == Transformation::Default());
+
+	// Modify root...
+	testNode1->Translate(glm::vec3(10.0f, 0.0f, 0.0f));
+
+	// Every transform should now be translated +10.0f along x axis
+	Transformation expectedTransform1 = Transformation::Default();
+	expectedTransform1.Translate(glm::vec3(10.0f, 0.0f, 0.0f));
+
+	REQUIRE(testNode1->GetTransformation() == expectedTransform1);
+	REQUIRE(testNode2->GetTransformation() == expectedTransform1);
+	REQUIRE(testNode3->GetTransformation() == expectedTransform1);
+	REQUIRE(testNode4->GetTransformation() == expectedTransform1);
+	REQUIRE(testNode5->GetTransformation() == expectedTransform1);
+	REQUIRE(testNode6->GetTransformation() == expectedTransform1);
+
+	// Now transform a node lower in the hierarchy
+	testNode3->Translate(glm::vec3(5.0f, 10.0f, 0.0f));
+	Transformation expectedTransform2 = expectedTransform1;
+	expectedTransform2.Translate(glm::vec3(5.0f, 10.0f, 0.0f));
+
+	// Should not be modified
+	REQUIRE(testNode1->GetTransformation() == expectedTransform1);
+	REQUIRE(testNode2->GetTransformation() == expectedTransform1);
+
+	// Should be modified
+	REQUIRE(testNode3->GetTransformation() == expectedTransform2);
+	REQUIRE(testNode4->GetTransformation() == expectedTransform2);
+	REQUIRE(testNode5->GetTransformation() == expectedTransform2);
+	REQUIRE(testNode6->GetTransformation() == expectedTransform2);
+
+	testNode1->Scale(glm::vec3(0.5f, 0.5f, 0.5f));
+	testNode1->Rotate(glm::vec3(1.0f, 1.0f, 0.0f), 45.0f);
+	testNode1->Translate(glm::vec3(10.0f, 10.0f, 10.0f));
+
+	Transformation expectedTransform3 = expectedTransform1;
+	Transformation expectedTransform4 = expectedTransform2;
+
+	expectedTransform3.Scale(glm::vec3(0.5f, 0.5f, 0.5f));
+	expectedTransform3.Rotate(glm::vec3(1.0f, 1.0f, 0.0f), 45.0f);
+	expectedTransform3.Translate(glm::vec3(10.0f, 10.0f, 10.0f));
+
+	expectedTransform4.Scale(glm::vec3(0.5f, 0.5f, 0.5f));
+	expectedTransform4.Rotate(glm::vec3(1.0f, 1.0f, 0.0f), 45.0f);
+	expectedTransform4.Translate(glm::vec3(10.0f, 10.0f, 10.0f));
+
+	REQUIRE(testNode1->GetTransformation() == expectedTransform3);
+	REQUIRE(testNode2->GetTransformation() == expectedTransform3);
+
+	// Should be modified
+	REQUIRE(testNode3->GetTransformation() == expectedTransform4);
+	REQUIRE(testNode4->GetTransformation() == expectedTransform4);
+	REQUIRE(testNode5->GetTransformation() == expectedTransform4);
+	REQUIRE(testNode6->GetTransformation() == expectedTransform4);
 }

@@ -75,6 +75,10 @@ public:
 		return _scale;
 	}
 
+	static Transformation Default() {
+		return Transformation{};
+	}
+
 	// ---- Operators -----
 	Transformation operator*(const Transformation &transformation) {
 		Transformation newTransform = *this;
@@ -84,5 +88,21 @@ public:
 
 		return newTransform;
 	}
+
+	Transformation& operator*=(const Transformation& transformation) {
+		_rotation *= transformation._rotation;
+		_position += transformation._position;
+		_scale *= transformation._scale;
+
+		return *this;
+	}
+
+	bool operator==(const Transformation& rhs) const {
+		return this->_rotation == rhs._rotation &&
+			   this->_scale == rhs._scale &&
+			   this->_position == rhs._position;
+	}
 };
+
+
 } // namespace Nimble

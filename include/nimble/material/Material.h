@@ -33,6 +33,7 @@
 #include "nimble/opengl-wrapper/Sampler.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/opengl-wrapper/Texture2D.h"
+#include "nimble/material/MaterialType.h"
 
 #include <optional>
 
@@ -53,10 +54,7 @@ struct TextureUnit {
 class Material {
 private:
 	std::string _name;
-	std::string _shader_name;
-
-	// Compiled shader program, built from N shaders
-	std::shared_ptr<ShaderProgram> _shader = nullptr;
+	MaterialType _material_type;
 
 	std::optional<TextureUnit> _diffuse_texture{};
 	std::optional<TextureUnit> _normal_texture{};
@@ -67,26 +65,23 @@ private:
 public:
 	Material() = default;
 	// Create material with name, do a lookup for shader
-	Material(std::string name, const std::string &shaderName);
-	// Create material with name, provide a shared_ptr to specified ShaderProgram
-	Material(std::string name, std::shared_ptr<ShaderProgram> shader);
+	Material(std::string name);
 
 	// Factory Methods
-	static std::shared_ptr<Material> CreateMaterial(const std::string& name, const std::string& shaderName);
+	static std::shared_ptr<Material> CreateMaterial(const std::string& name);
 
 	void LoadFromFile(const char* path);
 
 	[[nodiscard]] const std::string& GetName() const;
-	[[nodiscard]] std::shared_ptr<ShaderProgram> GetShader() const;
 
 	[[nodiscard]] std::optional<bool> GetReceivesLighting() const;
 	[[nodiscard]] std::optional<TextureUnit> GetDiffuseTexture() const;
 	[[nodiscard]] std::optional<TextureUnit> GetNormalTexture() const;
 
+	MaterialType GetMaterialType() const;
+
 	// TODO throw this away
 	void Bind() {
-		_shader->Use();
-
 		if (_diffuse_texture) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D,

@@ -30,8 +30,9 @@ glm::vec3 Damp(glm::vec3 source, glm::vec3 target, float smoothing, float dt) {
 	return glm::mix(source, target, 1.0f - pow(smoothing, dt));
 }
 
-float lerp(float v0, float v1, float t) {
-	return (1 - t) * v0 + t * v1;
+template <typename T>
+float Lerp(T v0, T v1, T t) {
+	return (static_cast<T>(1) - t) * v0 + t * v1;
 }
 
 void FreeFlyCamera::Update(const Time &time) {
@@ -41,16 +42,14 @@ void FreeFlyCamera::Update(const Time &time) {
 		targetPitch -= mouseDelta.y * _rotateSpeed * time.dt();
 	}
 
-	yaw = lerp(yaw, targetYaw, time.dt() * 20.0f);
-	pitch = lerp(pitch, targetPitch, time.dt() * 20.0f);
+	yaw = Lerp(yaw, targetYaw, time.dt() * 20.0f);
+	pitch = Lerp(pitch, targetPitch, time.dt() * 20.0f);
 
 	glm::vec3 direction;
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	direction.y = sin(glm::radians(pitch));
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront =  glm::normalize(direction);
-
-	//_rotation = Damp(_rotation, _targetRotation, 0.0001f, time.dt());
 
 	if (Input::Get().IsKeyPressed("camera_left")) {
 		_position -= glm::normalize(glm::cross(cameraFront, cameraUp)) * _moveSpeed * time.dt();

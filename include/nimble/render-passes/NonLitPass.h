@@ -4,10 +4,10 @@
 
 namespace Nimble {
 
-class RenderPass {
+class NonLitPass {
 private:
 public:
-	virtual void Draw(const SceneGraph& sceneGraph) = 0;
+	explicit NonLitPass(const SceneGraph& sceneGraph);
 };
 
 }

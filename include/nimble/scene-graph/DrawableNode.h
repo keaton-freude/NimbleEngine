@@ -80,9 +80,9 @@ public:
 		_vb.Bind();
 		_ib.Bind();
 		_material->Bind();
-		auto shader = _material->GetShader();
+		//auto shader = _material->GetShader();
 		auto overallTransform = sceneState.GetTransform() * _localTransform;
-		shader->SetUniform("Model", overallTransform.GetWorldMatrix());
+		/*shader->SetUniform("Model", overallTransform.GetWorldMatrix());
 		shader->SetUniform("View", sceneState.GetCamera()->GetView());
 		shader->SetUniform("Projection", *(sceneState.GetProjectionMatrix()));
 
@@ -90,7 +90,7 @@ public:
 			shader->SetUniform("lightDirection", sceneState.GetDirectionalLight().direction);
 			shader->SetUniform("lightColor", sceneState.GetDirectionalLight().color);
 			shader->SetUniform("viewPos", sceneState.GetCamera()->GetPosition());
-		}
+		}*/
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(_ib.GetNumFaces() * 3), GL_UNSIGNED_INT, nullptr);
 		_vao->Unbind();
@@ -99,9 +99,10 @@ public:
 private:
 	void InitFromFilenames(const std::string &meshName, const std::string &materialName) {
 		auto mesh = ResourceManager::Get().GetMesh(meshName);
+		ASSERT_NOT_NULL(mesh);
+
 		_vao = mesh->GetVao();
 		_vao->Bind();
-		ASSERT_NOT_NULL(mesh);
 		_vb.LoadFromMesh(mesh.get());
 		_ib.LoadFromMesh(mesh.get());
 		_vao->SetVertexAttribs();
@@ -113,9 +114,10 @@ private:
 
 
 	void InitFromFilenames(const IMesh* mesh, const std::string& materialName) {
+		ASSERT_NOT_NULL(mesh);
+
 		_vao = mesh->GetVao();
 		_vao->Bind();
-		ASSERT_NOT_NULL(mesh);
 		_vb.LoadFromMesh(mesh);
 		_ib.LoadFromMesh(mesh);
 		_vao->SetVertexAttribs();
