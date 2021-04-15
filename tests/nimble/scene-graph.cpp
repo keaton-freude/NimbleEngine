@@ -207,7 +207,7 @@ TEST_CASE("Add Nodes to SceneGraph", "[scenegraph]") {
 	SceneNode *node2 = new TestSceneNode(2, &state);
 
 	// Add some new root children, which is a special operation in the scene graph which
-	// inserts nodes agaginst the root node in the graph
+	// inserts nodes against the root node in the graph
 	auto node1Id = graph.AddChildToRoot(node1).second;
 	auto node2Id = graph.AddChildToRoot(node2).second;
 
@@ -270,13 +270,13 @@ TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
 
 	// Build up the scene graph, using default transforms for each node. Then modify
 	// transforms throughout the graph ensuring transform changes are propagated
-	TestSceneNode* testNode1 = new TestSceneNode(1, &state);
-	TestSceneNode* testNode2 = new TestSceneNode(2, &state);
+	TestSceneNode *testNode1 = new TestSceneNode(1, &state);
+	TestSceneNode *testNode2 = new TestSceneNode(2, &state);
 
-	TestSceneNode* testNode3 = new TestSceneNode(3, &state);
-	TestSceneNode* testNode4 = new TestSceneNode(4, &state);
-	TestSceneNode* testNode5 = new TestSceneNode(5, &state);
-	TestSceneNode* testNode6 = new TestSceneNode(6, &state);
+	TestSceneNode *testNode3 = new TestSceneNode(3, &state);
+	TestSceneNode *testNode4 = new TestSceneNode(4, &state);
+	TestSceneNode *testNode5 = new TestSceneNode(5, &state);
+	TestSceneNode *testNode6 = new TestSceneNode(6, &state);
 
 	/*
 	 *                1
@@ -353,4 +353,90 @@ TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
 	REQUIRE(testNode4->GetTransformation() == expectedTransform4);
 	REQUIRE(testNode5->GetTransformation() == expectedTransform4);
 	REQUIRE(testNode6->GetTransformation() == expectedTransform4);
+}
+
+TEST_CASE("Apply Transformations to Scene Graph Edge Cases", "[scenegraph]") {
+	std::unique_ptr<SceneGraph> sceneGraph = std::make_unique<SceneGraph>(nullptr, nullptr);
+	TestState state{};
+
+	/*
+	 * 		Scene Graph state
+	 *
+	 *                 1
+	 *                / \
+	 *               2   3
+	 *                  / \
+	 *                 4   5
+	 *
+	 */
+
+	SceneNode *sceneNode1 = new TestSceneNode(1, &state);
+
+	SceneNode *sceneNode2 = new TestSceneNode(2, &state);
+	SceneNode *sceneNode3 = new TestSceneNode(3, &state);
+	SceneNode *sceneNode4 = new TestSceneNode(4, &state);
+	SceneNode *sceneNode5 = new TestSceneNode(5, &state);
+
+	sceneNode1->AddChild(sceneNode2);
+	sceneNode1->AddChild(sceneNode3).first->AddChild(sceneNode4);
+	sceneNode3->AddChild(sceneNode5);
+
+	// Ensure modifying a leaf node doesn't modify any other node
+	sceneNode2->Translate(glm::vec3(10.0f, 0.0f, 0.0f));
+	Transformation expectedTransform1{};
+	expectedTransform1.Translate(glm::vec3(10.0f, 0.0f, 0.0f));
+
+	// Ensure the nodes transform has changed..
+	REQUIRE(sceneNode2->GetTransformation() == expectedTransform1);
+
+
+	// .. and the rest have not
+	REQUIRE(sceneNode1->GetTransformation() == Transformation::Default());
+	REQUIRE(sceneNode3->GetTransformation() == Transformation::Default());
+	REQUIRE(sceneNode4->GetTransformation() == Transformation::Default());
+	REQUIRE(sceneNode5->GetTransformation() == Transformation::Default());
+
+	sceneNode2->Translate(glm::vec3(-10.0f, 0.0f, 0.0f));
+	expectedTransform1.Translate(glm::vec3(-10.0f, 0.0f, 0.0f));
+
+	// Try another leaf node, this one further down the hierarchy
+	sceneNode3->Translate(glm::vec3(0.0f, 5.0f, 0.0f));
+	expectedTransform1.Translate(glm::vec3(0.0f, 5.0f, 0.0f));
+
+	REQUIRE(sceneNode3->GetTransformation() == expectedTransform1);
+	REQUIRE(sceneNode4->GetTransformation() == expectedTransform1);
+	REQUIRE(sceneNode5->GetTransformation() == expectedTransform1);
+
+	REQUIRE(sceneNode1->GetTransformation() == Transformation::Default());
+	REQUIRE(sceneNode2->GetTransformation() == Transformation::Default());
+}
+
+TEST_CASE("Add Children", "[scenegraph]") {
+	std::unique_ptr<SceneGraph> sceneGraph = std::make_unique<SceneGraph>(nullptr, nullptr);
+	TestState state{};
+	sceneGraph->AddChildrenToRoot(new TestSceneNode(1, &state), new TestSceneNode(2, &state));
+
+	sceneGraph->Render();
+
+	REQUIRE(state.values.size() == 2);
+	REQUIRE(state.values[0] == 1);
+	REQUIRE(state.values[1] == 2);
+
+	state.values.clear();
+
+	SceneNode *node3 = new TestSceneNode(3, &state);
+
+	sceneGraph->AddChildToRoot(node3);
+
+	node3->AddChildren(new TestSceneNode(4, &state), new TestSceneNode(5, &state), new TestSceneNode(6, &state));
+
+	sceneGraph->Render();
+
+	REQUIRE(state.values.size() == 6);
+	REQUIRE(state.values[0] == 1);
+	REQUIRE(state.values[1] == 2);
+	REQUIRE(state.values[2] == 3);
+	REQUIRE(state.values[3] == 4);
+	REQUIRE(state.values[4] == 5);
+	REQUIRE(state.values[5] == 6);
 }

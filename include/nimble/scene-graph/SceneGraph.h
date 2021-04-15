@@ -56,6 +56,13 @@ public:
 	size_t AddChild(SceneNode *node, size_t id);
 	size_t AddChild(std::unique_ptr<SceneNode> &&node, size_t id);
 
+	template <typename... Args>
+	void AddChildrenToRoot(Args... args) {
+		static_assert((std::is_base_of_v<SceneNode, std::remove_pointer_t<Args>> && ...),
+					  "One of the arguments passed to this function is not derived from SceneNode");
+		_rootNode->AddChildren(args...);
+	}
+
 	RootSceneNode *GetRootNode() const {
 		return _rootNode.get();
 	}

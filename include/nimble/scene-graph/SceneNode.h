@@ -30,9 +30,9 @@ private:
 	// Every scene node has a transform
 	Transformation _transform{};
 
-	void PropagateTranslation(const glm::vec3& translation);
-	void PropagateRotation(const glm::vec3& axis, float rotation);
-	void PropagateScale(const glm::vec3& scale);
+	void PropagateTranslation(const glm::vec3 &translation);
+	void PropagateRotation(const glm::vec3 &axis, float rotation);
+	void PropagateScale(const glm::vec3 &scale);
 
 public:
 	SceneNode();
@@ -65,6 +65,15 @@ public:
 		return std::make_pair(_children.back().get(), _children.back()->GetID());
 	}
 
+	template <typename... Args>
+	void AddChildren(Args... args) {
+		static_assert((std::is_base_of_v<SceneNode, std::remove_pointer_t<Args>> && ...),
+					  "One of the arguments passed to this function is not derived from SceneNode");
+
+		// add the children
+		((AddChild(args)), ...);
+	}
+
 	// Users should call GetID() on important nodes before they are giving over to the scene graph
 	// This allows your systems to keep track of where important nodes are like:
 	// The transform which governs an entire character, or, the Render node we would like to tweak
@@ -82,7 +91,7 @@ public:
 	void Rotate(glm::vec3 axis, float radians);
 	void Scale(glm::vec3 scale);
 
-	const Transformation& GetTransformation() const;
+	const Transformation &GetTransformation() const;
 
 private:
 	static size_t GenerateID();
