@@ -1,7 +1,7 @@
 #include <GLFW/glfw3.h>
 
-#include "nimble/engine/Time.h"
 #include "nimble/input/InputManager.h"
+#include "nimble/engine/Time.h"
 using namespace Nimble;
 using std::string;
 using std::unordered_map;

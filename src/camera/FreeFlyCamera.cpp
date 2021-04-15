@@ -10,15 +10,16 @@ FreeFlyCamera::FreeFlyCamera() {
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	direction.y = sin(glm::radians(pitch));
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(direction);
+	cameraFront =  glm::normalize(direction);
 }
 
-FreeFlyCamera::FreeFlyCamera(float rotateSpeed) : _rotateSpeed(rotateSpeed) {
+FreeFlyCamera::FreeFlyCamera(float rotateSpeed)
+	: _rotateSpeed(rotateSpeed) {
 	glm::vec3 direction;
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	direction.y = sin(glm::radians(pitch));
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(direction);
+	cameraFront =  glm::normalize(direction);
 }
 
 glm::mat4 FreeFlyCamera::GetView() {
@@ -35,7 +36,7 @@ float Lerp(T v0, T v1, T t) {
 }
 
 void FreeFlyCamera::Update(const Time &time) {
-	if(Input::Get().IsMouseRightDown()) {
+	if (Input::Get().IsMouseRightDown()) {
 		auto mouseDelta = Input::Get().GetMouseMovement();
 		targetYaw += mouseDelta.x * _rotateSpeed * time.dt();
 		targetPitch -= mouseDelta.y * _rotateSpeed * time.dt();
@@ -48,25 +49,25 @@ void FreeFlyCamera::Update(const Time &time) {
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	direction.y = sin(glm::radians(pitch));
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(direction);
+	cameraFront =  glm::normalize(direction);
 
-	if(Input::Get().IsKeyPressed("camera_left")) {
+	if (Input::Get().IsKeyPressed("camera_left")) {
 		_position -= glm::normalize(glm::cross(cameraFront, cameraUp)) * _moveSpeed * time.dt();
 	}
 
-	if(Input::Get().IsKeyPressed("camera_right")) {
+	if (Input::Get().IsKeyPressed("camera_right")) {
 		_position += glm::normalize(glm::cross(cameraFront, cameraUp)) * _moveSpeed * time.dt();
 	}
 
-	if(Input::Get().IsKeyPressed("camera_forward")) {
+	if (Input::Get().IsKeyPressed("camera_forward")) {
 		_position += _moveSpeed * cameraFront * time.dt();
 	}
 
-	if(Input::Get().IsKeyPressed("camera_backward")) {
+	if (Input::Get().IsKeyPressed("camera_backward")) {
 		_position -= _moveSpeed * cameraFront * time.dt();
 	}
 
-	if(Input::Get().IsKeyPressed("camera_up")) {
+	if (Input::Get().IsKeyPressed("camera_up")) {
 		_position.y += _moveSpeed * time.dt();
 	}
 }

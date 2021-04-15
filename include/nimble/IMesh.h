@@ -1,7 +1,7 @@
 #pragma once
 
-#include <memory>
 #include <stdint.h>
+#include <memory>
 
 // IMesh is an interface over the Mesh class where
 // the underlying templated type is hidden from the user

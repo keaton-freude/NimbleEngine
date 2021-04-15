@@ -28,11 +28,13 @@ std::shared_ptr<ShaderProgram> ResourceManager::GetShader(const std::string &nam
 	spdlog::debug("Frag: {}", fragmentShaderSource.string());
 
 	if(!std::filesystem::exists(vertexShaderSource)) {
-		throw std::runtime_error(fmt::format("Failed to find vertex shader at: {}", vertexShaderSource.string()));
+		throw std::runtime_error(
+		fmt::format("Failed to find vertex shader at: {}", vertexShaderSource.string()));
 	}
 
 	if(!std::filesystem::exists(fragmentShaderSource)) {
-		throw std::runtime_error(fmt::format("Failed to find fragment shader at: {}", vertexShaderSource.string()));
+		throw std::runtime_error(
+		fmt::format("Failed to find fragment shader at: {}", vertexShaderSource.string()));
 	}
 
 	program->AddVertexShader(FileReadAllText(vertexShaderSource.string()).c_str());
@@ -53,7 +55,7 @@ std::shared_ptr<Material> ResourceManager::GetMaterial(const std::string &name) 
 	// Check if it exists in the cache, if not throw.
 	// All materials are pre-created and registered for lookup
 	for(const auto &[key, value] : _materialCache) {
-		if(key == name) {
+		if (key == name) {
 			return value;
 		}
 	}
@@ -65,12 +67,12 @@ void ResourceManager::LoadMaterialsFromDisk() {
 	// Walk all material files
 	std::filesystem::path materialDirectory = std::filesystem::path(GetResourceRoot()) / "materials";
 	spdlog::debug("Iterating Material Files...");
-	for(auto &path : std::filesystem::directory_iterator(materialDirectory)) {
-		if(!path.is_regular_file()) {
+	for (auto & path : std::filesystem::directory_iterator(materialDirectory)) {
+		if (!path.is_regular_file()) {
 			continue;
 		}
 
-		if(path.path().extension().string() != ".nmat") {
+		if (path.path().extension().string() != ".nmat") {
 			continue;
 		}
 
@@ -79,15 +81,16 @@ void ResourceManager::LoadMaterialsFromDisk() {
 
 		try {
 			material->LoadFromFile(path.path().string().c_str());
-		} catch(const std::exception &ex) {
+		} catch (const std::exception& ex) {
 			spdlog::error("Failed to load material. Error message: {}", ex.what());
 		}
 
-		if(material) {
-			_materialCache[material->GetName()] = material;
+		if (material) {
+			_materialCache[material->GetName()] = material;			
 		} else {
 			spdlog::error("Failed to create material at path: {}", path.path().string());
 			continue;
 		}
+
 	}
 }

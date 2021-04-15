@@ -7,11 +7,12 @@ IndexBuffer::IndexBuffer(BufferUsageType usage) : _usageType(usage) {
 	glGenBuffers(1, &_elementBufferHandle);
 }
 
-void IndexBuffer::LoadFromMesh(const IMesh *mesh) {
+void IndexBuffer::LoadFromMesh(const IMesh* mesh) {
 	_numFaces = mesh->GetNumFaces();
 	Bind();
 	auto usageType = _usageType == BufferUsageType::Static ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->GetFacesNumBytes(), mesh->GetFaceData(), static_cast<GLenum>(usageType));
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->GetFacesNumBytes(), mesh->GetFaceData(),
+				 static_cast<GLenum>(usageType));
 }
 
 void IndexBuffer::Bind() {

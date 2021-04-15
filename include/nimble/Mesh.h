@@ -92,8 +92,10 @@ public:
 	}
 
 private:
+
 	static std::shared_ptr<Mesh<Position>> BuildMesh_Position(const aiMesh *mesh) {
-		spdlog::info("[Position]: Building mesh with {} verts and {} faces", mesh->mNumVertices, mesh->mNumFaces);
+		spdlog::info("[Position]: Building mesh with {} verts and {} faces", mesh->mNumVertices,
+					 mesh->mNumFaces);
 		// Return a mesh where we only read off Positions & Index data
 		std::vector<Position> verts(mesh->mNumVertices);
 
@@ -116,7 +118,8 @@ private:
 	}
 
 	static std::shared_ptr<Mesh<PositionNormal>> BuildMesh_PositionNormal(const aiMesh *mesh) {
-		spdlog::info("[PositionNormal]: Building mesh with {} verts and {} faces", mesh->mNumVertices, mesh->mNumFaces);
+		spdlog::info("[PositionNormal]: Building mesh with {} verts and {} faces",
+					 mesh->mNumVertices, mesh->mNumFaces);
 		// Return a mesh where we only read off Positions & Index data
 		std::vector<PositionNormal> verts(mesh->mNumVertices);
 
@@ -138,15 +141,17 @@ private:
 	}
 
 	static std::shared_ptr<Mesh<PositionNormalUv>> BuildMesh_PositionNormalUv(const aiMesh *mesh) {
-		spdlog::info("[PositionNormalUv]: Building mesh with {} verts and {} faces", mesh->mNumVertices, mesh->mNumFaces);
+		spdlog::info("[PositionNormalUv]: Building mesh with {} verts and {} faces",
+					 mesh->mNumVertices, mesh->mNumFaces);
 
 		std::vector<PositionNormalUv> verts;
 		verts.resize(mesh->mNumVertices);
 
 		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
-			verts[i] = PositionNormalUv(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z),
-										glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z),
-										glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
+			verts[i] = PositionNormalUv(
+				glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z),
+				glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z),
+				glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
 		}
 
 		std::vector<unsigned int> indices;
@@ -171,7 +176,7 @@ public:
 		// TODO: Add more attributes as we need them
 		if(mesh->HasNormals() && mesh->HasTextureCoords(0)) {
 			return Mesh<PositionNormalUv>::BuildMesh_PositionNormalUv(mesh);
-		} else if(mesh->HasNormals()) {
+		} else if (mesh->HasNormals()) {
 			return Mesh<PositionNormal>::BuildMesh_PositionNormal(mesh);
 		} else {
 			return Mesh<Position>::BuildMesh_Position(mesh);
