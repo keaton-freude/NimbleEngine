@@ -21,8 +21,7 @@ using namespace Nimble;
 void _HandleResize2(GLFWwindow *window, int width, int height) {
 	UNUSED(window);
 
-	GLContext::SetViewportDimensions(Width(static_cast<unsigned>(width)),
-									 Height(static_cast<unsigned>(height)));
+	GLContext::SetViewportDimensions(Width(static_cast<unsigned>(width)), Height(static_cast<unsigned>(height)));
 }
 
 Nimble::Window::Window(Width width, Height height, const char *title)
@@ -34,24 +33,25 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 	glfwWindowHint(GLFW_SAMPLES, 16);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 
-	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-	_window = glfwCreateWindow(static_cast<int>(width.get()), static_cast<int>(height.get()), title,
-							   nullptr, nullptr);
+	_window = glfwCreateWindow(static_cast<int>(width.get()), static_cast<int>(height.get()), title, nullptr, nullptr);
 
-	//glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if(!_window) {
 		// Failed to create
 		throw std::runtime_error(fmt::format("Failed to create window with parameters:"
 											 "height: {} width: {} title: {}",
-											 height.get(), width.get(), title)
-								 .c_str());
+											 height.get(),
+											 width.get(),
+											 title)
+									 .c_str());
 	}
 
 	glfwMakeContextCurrent(_window);

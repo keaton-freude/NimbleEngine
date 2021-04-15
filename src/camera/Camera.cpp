@@ -4,4 +4,3 @@
 #include "nimble/input/InputManager.h"
 
 using namespace Nimble;
-

@@ -49,17 +49,17 @@ void ShaderProgram::Reload(const char *vertexText, const char *fragmentText) {
 	glDetachShader(_programHandle, _shaders[0]->GetHandle());
 	glDetachShader(_programHandle, _shaders[1]->GetHandle());
 
-	if (!_shaders[0]->Compile(vertexText)) {
+	if(!_shaders[0]->Compile(vertexText)) {
 		_shaders[0]->PrintErrorOutput();
 		throw std::runtime_error("Failed to compile shader");
 	}
 
-	if (!_shaders[1]->Compile(fragmentText)) {
+	if(!_shaders[1]->Compile(fragmentText)) {
 		_shaders[1]->PrintErrorOutput();
 		throw std::runtime_error("Failed to compile shader");
 	}
 
-	if (!LinkShaders()) {
+	if(!LinkShaders()) {
 		throw std::runtime_error("Failed to link shaders");
 	}
 }
