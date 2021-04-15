@@ -40,6 +40,10 @@ public:
 	void Apply(SceneState &sceneState) override {
 		// Does nothing, because this is the root node
 	}
+
+	SceneNodeType GetSceneNodeType() override {
+		return SceneNodeType::ROOT;
+	}
 };
 
 } // namespace Nimble

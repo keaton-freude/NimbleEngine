@@ -21,5 +21,7 @@ public:
 	DirectionalLightNode(DirectionalLight light);
 
 	void Apply(SceneState &sceneState) override;
+
+	SceneNodeType GetSceneNodeType() override;
 };
 } // namespace Nimble

@@ -17,6 +17,9 @@
 
 namespace Nimble {
 
+// Unknown type is just here for testing
+enum class SceneNodeType { DIRECTIONAL_LIGHT, DRAWABLE, ROOT, UNKNOWN };
+
 class SceneNode {
 private:
 	using NodeTy = std::unique_ptr<SceneNode>;
@@ -33,6 +36,10 @@ private:
 	void PropagateTranslation(const glm::vec3 &translation);
 	void PropagateRotation(const glm::vec3 &axis, float rotation);
 	void PropagateScale(const glm::vec3 &scale);
+
+protected:
+	// Implementers must declare their type
+	virtual SceneNodeType GetSceneNodeType() = 0;
 
 public:
 	SceneNode();

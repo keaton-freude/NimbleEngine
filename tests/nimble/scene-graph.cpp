@@ -32,6 +32,10 @@ public:
 	void Apply(SceneState &sceneState) override {
 		_state->values.push_back(_value);
 	}
+
+	SceneNodeType GetSceneNodeType() override {
+		return SceneNodeType::UNKNOWN;
+	}
 };
 
 /**

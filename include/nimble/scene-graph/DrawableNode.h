@@ -10,14 +10,14 @@
 #include "nimble/Mesh.h"
 #include "nimble/material/Material.h"
 #include "nimble/opengl-wrapper/IndexBuffer.h"
-#include "nimble/opengl-wrapper/VertexBuffer.h"
 #include "nimble/opengl-wrapper/VertexArrayObject.h"
+#include "nimble/opengl-wrapper/VertexBuffer.h"
 #include "nimble/resource-manager/ResourceManager.h"
 #include "nimble/scene-graph/SceneNode.h"
 #include "nimble/scene-graph/Transformation.h"
 
-#include <memory>
 #include "nimble/core/Assert.h"
+#include <memory>
 
 
 namespace Nimble {
@@ -40,32 +40,22 @@ private:
 public:
 	// Drawable node from pre-existing resources
 	DrawableNode(const IMesh *mesh, std::shared_ptr<Material> material)
-	: _vb(BufferUsageType::Static),
-	  _ib(BufferUsageType::Static),
-	  _vao(mesh->GetVao()),
-	  _material(material),
+	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(material),
 	  _localTransform() {
 		_vao->Bind();
 		_vb.LoadFromMesh(mesh);
 		_ib.LoadFromMesh(mesh);
 	}
 
-	DrawableNode(const IMesh *mesh, const std::string& materialName, const Transformation& transform)
-	: _vb(BufferUsageType::Static),
-	  _ib(BufferUsageType::Static),
-	  _vao(mesh->GetVao()),
-	  _material(nullptr),
+	DrawableNode(const IMesh *mesh, const std::string &materialName, const Transformation &transform)
+	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(nullptr),
 	  _localTransform(transform) {
 		InitFromFilenames(mesh, materialName);
 	}
 
 	// Drawable node with resource names
 	DrawableNode(const std::string &meshName, const std::string &materialName)
-	: _vb(BufferUsageType::Static),
-	  _ib(BufferUsageType::Static),
-	  _vao(nullptr),
-	  _material(nullptr),
-	  _localTransform() {
+	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(nullptr), _material(nullptr), _localTransform() {
 		InitFromFilenames(meshName, materialName);
 	}
 
@@ -80,8 +70,8 @@ public:
 		_vb.Bind();
 		_ib.Bind();
 		_material->Bind();
-		//auto shader = _material->GetShader();
-		auto overallTransform = sceneState.GetTransform() * _localTransform;
+		// auto shader = _material->GetShader();
+		// auto overallTransform = sceneState.GetTransform() * _localTransform;
 		/*shader->SetUniform("Model", overallTransform.GetWorldMatrix());
 		shader->SetUniform("View", sceneState.GetCamera()->GetView());
 		shader->SetUniform("Projection", *(sceneState.GetProjectionMatrix()));
@@ -94,6 +84,10 @@ public:
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(_ib.GetNumFaces() * 3), GL_UNSIGNED_INT, nullptr);
 		_vao->Unbind();
+	}
+
+	SceneNodeType GetSceneNodeType() override {
+		return SceneNodeType::DIRECTIONAL_LIGHT;
 	}
 
 private:
@@ -113,7 +107,7 @@ private:
 	}
 
 
-	void InitFromFilenames(const IMesh* mesh, const std::string& materialName) {
+	void InitFromFilenames(const IMesh *mesh, const std::string &materialName) {
 		ASSERT_NOT_NULL(mesh);
 
 		_vao = mesh->GetVao();

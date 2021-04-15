@@ -8,7 +8,6 @@
 #include "nimble/engine/Engine.h"
 #include "nimble/scene-graph/DirectionalLightNode.h"
 #include "nimble/scene-graph/DrawableNode.h"
-#include "nimble/scene-graph/TransformNode.h"
 
 using namespace Nimble;
 
@@ -18,24 +17,22 @@ Engine::Engine(Window *window) : _window(window) {
 
 	// Create our perspective matrix
 	auto proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 1000.f);
-	// Create a pointer via copy constructor
 	_projectionMatrix = std::make_shared<glm::mat4>(proj);
 	_camera = std::make_shared<FreeFlyCamera>(150.0f);
 
 	_sceneGraph = std::make_unique<SceneGraph>(_projectionMatrix, _camera);
 
 	// Add a directional light to the scene
-	_rootTransformNode = _sceneGraph
-						 ->AddChildToRoot(new DirectionalLightNode(
-						 DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
-						 .first->AddChild(new TransformNode(Transformation()))
-						 .second;
+	_rootTransformNode =
+		_sceneGraph
+			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
+			.second;
 
 	Transformation transform;
 	Transformation cubeTransform;
 	cubeTransform.Translate(glm::vec3(0.0f, 1.01f, 0.0f));
 	_sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube", cubeTransform), _rootTransformNode);
-	transform.Rotate(glm::vec3(1.0f, 0.0f, 0.0f), 90.f * AI_MATH_PI_F/180.f);
+	transform.Rotate(glm::vec3(1.0f, 0.0f, 0.0f), 90.f * AI_MATH_PI_F / 180.f);
 	transform.Scale(glm::vec3(1000.0f, 1000.0f, 1000.0f));
 	auto plane = MeshTools::CreateTexturedPlane();
 	_sceneGraph->AddChild(new DrawableNode(&plane, "grid", transform), _rootTransformNode);
@@ -54,35 +51,25 @@ void Engine::RenderFrame(const Time &time) {
 
 	/*
 		Note for later: We need to apply local transforms, before applying
-		the overall scene transform. We also need some way for the user to specify
-		the ordering of transform multiply (scale -> rotate -> translate) vs
-		(scale -> translate -> rotate), etc
+		the overall scene transform. We also need some way for the user to
+	   specify the ordering of transform multiply (scale -> rotate -> translate)
+	   vs (scale -> translate -> rotate), etc
 	*/
-
-	if(rootTransform.has_value()) {
-		TransformNode *transformNode = dynamic_cast<TransformNode *>(rootTransform.value());
-		auto &transform = transformNode->GetTransform();
-
-		// Rotate a little around the Z
-		Transformation rotZ;
-		//rotZ.Rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(60.0f) * time.dt());
-		transform = transform * rotZ;
-	}
 
 	_sceneGraph->Render();
 
 	static bool vsyncEnabled = _window->IsVSyncEnabled();
-	if (ImGui::Checkbox("VSync Enabled", &vsyncEnabled)) {
+	if(ImGui::Checkbox("VSync Enabled", &vsyncEnabled)) {
 		_window->SetVSync(vsyncEnabled);
 	}
 
-	static float cameraRotateSpeed = static_cast<FreeFlyCamera*>(_camera.get())->GetRotateSpeed();
-	if (ImGui::SliderFloat("Camera Rotate Speed", &cameraRotateSpeed, 10.0f, 300.0f)) {
-		static_cast<FreeFlyCamera*>(_camera.get())->SetRotateSpeed(cameraRotateSpeed);
+	static float cameraRotateSpeed = static_cast<FreeFlyCamera *>(_camera.get())->GetRotateSpeed();
+	if(ImGui::SliderFloat("Camera Rotate Speed", &cameraRotateSpeed, 10.0f, 300.0f)) {
+		static_cast<FreeFlyCamera *>(_camera.get())->SetRotateSpeed(cameraRotateSpeed);
 	}
 
-	// Horrible hacky way to limit FPS, does not take into account render time, so its pretty
-	// useless except quick testing with limited FPS
+	// Horrible hacky way to limit FPS, does not take into account render time,
+	// so its pretty useless except quick testing with limited FPS
 	/*static int FPS = 60;
 	ImGui::SliderInt("FPS", &FPS, 1, 1000);
 	static size_t microseconds = 0;
