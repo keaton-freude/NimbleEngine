@@ -4,8 +4,7 @@
 using namespace Nimble;
 
 FixedPointOrbitCamera::FixedPointOrbitCamera()
-: _focusPoint(glm::vec3(0.f, 0.f, 0.f)), _rotation(0.f, 0.f), _position(0.0f, 0.0f, -3.0f),
-  _rotateSpeed(1.0f) {
+: _focusPoint(glm::vec3(0.f, 0.f, 0.f)), _rotation(0.f, 0.f), _position(0.0f, 0.0f, -3.0f), _rotateSpeed(1.0f) {
 	_position = glm::vec3(0.0f, 0.0f, -2.0f);
 }
 
@@ -71,8 +70,7 @@ void FixedPointOrbitCamera::Update(const Time &time) {
 
 	auto camFocusVector = _position - _focusPoint;
 
-	ImGui::Text("Camera Rotation: %f, %f, %f, %f", _quatRotation.w, _quatRotation.x,
-				_quatRotation.y, _quatRotation.z);
+	ImGui::Text("Camera Rotation: %f, %f, %f, %f", _quatRotation.w, _quatRotation.x, _quatRotation.y, _quatRotation.z);
 
 	// Apply rotation
 	camFocusVector = camFocusVector * _quatRotation;

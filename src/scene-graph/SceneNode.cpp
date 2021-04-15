@@ -50,7 +50,7 @@ size_t SceneNode::GenerateID() {
 std::optional<SceneNode *const> SceneNode::Find(size_t id) {
 	// Look through our children for the correct node
 	for(auto &child : _children) {
-		if (child->GetID() == id) {
+		if(child->GetID() == id) {
 			return child.get();
 		} else {
 			// recurse
@@ -67,7 +67,7 @@ std::optional<SceneNode *const> SceneNode::Find(size_t id) {
 void SceneNode::PropagateTranslation(const glm::vec3 &translation) {
 	_transform.Translate(translation);
 
-	for (auto& child: _children) {
+	for(auto &child : _children) {
 		child->PropagateTranslation(translation);
 	}
 }
@@ -75,7 +75,7 @@ void SceneNode::PropagateTranslation(const glm::vec3 &translation) {
 void SceneNode::PropagateRotation(const glm::vec3 &axis, float rotation) {
 	_transform.Rotate(axis, rotation);
 
-	for (auto& child: _children) {
+	for(auto &child : _children) {
 		child->PropagateRotation(axis, rotation);
 	}
 }
@@ -83,7 +83,7 @@ void SceneNode::PropagateRotation(const glm::vec3 &axis, float rotation) {
 void SceneNode::PropagateScale(const glm::vec3 &scale) {
 	_transform.Scale(scale);
 
-	for (auto& child: _children) {
+	for(auto &child : _children) {
 		child->PropagateScale(scale);
 	}
 }
@@ -100,6 +100,6 @@ void SceneNode::Scale(glm::vec3 scale) {
 	PropagateScale(scale);
 }
 
-const Transformation& SceneNode::GetTransformation() const {
+const Transformation &SceneNode::GetTransformation() const {
 	return _transform;
 }
