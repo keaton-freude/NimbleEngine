@@ -38,9 +38,6 @@ private:
 	void PropagateScale(const glm::vec3 &scale);
 
 protected:
-	// Implementers must declare their type
-	virtual SceneNodeType GetSceneNodeType() = 0;
-
 public:
 	SceneNode();
 	virtual ~SceneNode() = default;
@@ -57,6 +54,9 @@ public:
 
 	// Traverse. First ourself, then our children. Only supporting pre-order traversal for now
 	void Visit(SceneState sceneState);
+
+	// Implementers must declare their type
+	virtual SceneNodeType GetSceneNodeType() = 0;
 
 	// Fluent API, return a reference to the inserted child after doing the insert
 	// Also include the ID, in the pair
@@ -79,6 +79,10 @@ public:
 
 		// add the children
 		((AddChild(args)), ...);
+	}
+
+	const ChildrenStorageTy &GetChildren() {
+		return _children;
 	}
 
 	// Users should call GetID() on important nodes before they are giving over to the scene graph

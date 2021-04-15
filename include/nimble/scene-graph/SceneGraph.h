@@ -28,6 +28,7 @@
 #include "nimble/scene-graph/RootSceneNode.h"
 #include "nimble/scene-graph/SceneNode.h"
 #include <glm/glm.hpp>
+#include <list>
 #include <memory>
 
 namespace Nimble {
@@ -69,6 +70,8 @@ public:
 
 	// Look through all nodes in the graph for `id`
 	const std::optional<SceneNode *const> Find(size_t id);
+
+	std::list<SceneNode *> GetNodesByType(SceneNodeType type);
 };
 
 }; // namespace Nimble

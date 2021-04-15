@@ -38,6 +38,16 @@ public:
 	}
 };
 
+class TestSceneNode2 : public SceneNode {
+	void Apply(SceneState &sceneState) override {
+		//
+	}
+
+	SceneNodeType GetSceneNodeType() override {
+		return SceneNodeType::DIRECTIONAL_LIGHT;
+	}
+};
+
 /**
 	Tests can utitize this shared state to ensure that traversal, insertion,
 	deletion methods, etc are working as expected
@@ -443,4 +453,23 @@ TEST_CASE("Add Children", "[scenegraph]") {
 	REQUIRE(state.values[3] == 4);
 	REQUIRE(state.values[4] == 5);
 	REQUIRE(state.values[5] == 6);
+}
+
+TEST_CASE("Get Nodes By Type", "[scenegraph]") {
+	std::unique_ptr<SceneGraph> sceneGraph = std::make_unique<SceneGraph>(nullptr, nullptr);
+	TestState state{};
+
+	sceneGraph->AddChildrenToRoot(new TestSceneNode(1, nullptr),
+								  new TestSceneNode(2, nullptr),
+								  new TestSceneNode2(),
+								  new TestSceneNode2(),
+								  new TestSceneNode2());
+
+	auto nodes = sceneGraph->GetNodesByType(SceneNodeType::UNKNOWN);
+
+	REQUIRE(nodes.size() == 2);
+
+	nodes = sceneGraph->GetNodesByType(SceneNodeType::DIRECTIONAL_LIGHT);
+
+	REQUIRE(nodes.size() == 3);
 }
