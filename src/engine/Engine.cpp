@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <nimble/camera/FreeFlyCamera.h>
+#include <nimble/render-passes/PhongPass.h>
 
 #include "glm/gtc/matrix_transform.hpp"
 #include "nimble/MeshTools.h"
@@ -28,14 +29,17 @@ Engine::Engine(Window *window) : _window(window) {
 			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
 			.second;
 
-	Transformation transform;
-	Transformation cubeTransform;
-	cubeTransform.Translate(glm::vec3(0.0f, 1.01f, 0.0f));
-	_sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube", cubeTransform), _rootTransformNode);
-	transform.Rotate(glm::vec3(1.0f, 0.0f, 0.0f), 90.f * AI_MATH_PI_F / 180.f);
-	transform.Scale(glm::vec3(1000.0f, 1000.0f, 1000.0f));
-	auto plane = MeshTools::CreateTexturedPlane();
-	_sceneGraph->AddChild(new DrawableNode(&plane, "grid", transform), _rootTransformNode);
+	auto cubeNodeId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "phong_001"), _rootTransformNode);
+	auto cubeNode = _sceneGraph->Find(cubeNodeId).value();
+	cubeNode->Translate(glm::vec3(0.0f, 1.01f, 0.0f));
+
+	auto plane = MeshTools::CreateTexturedPlane(1024.0f);
+	auto gridNodeId = _sceneGraph->AddChild(new DrawableNode(&plane, "grid"), _rootTransformNode);
+	auto gridNode = _sceneGraph->Find(gridNodeId).value();
+	gridNode->Scale(glm::vec3(1000.0f, 1000.0f, 0.0f));
+	gridNode->Rotate(glm::vec3(1.0f, 0.0f, 0.0f), glm::radians(90.0f));
+
+	_render_pass = std::make_unique<PhongPass>();
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -56,7 +60,9 @@ void Engine::RenderFrame(const Time &time) {
 	   vs (scale -> translate -> rotate), etc
 	*/
 
-	_sceneGraph->Render();
+	//_sceneGraph->Render();
+
+	_render_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
 
 	static bool vsyncEnabled = _window->IsVSyncEnabled();
 	if(ImGui::Checkbox("VSync Enabled", &vsyncEnabled)) {

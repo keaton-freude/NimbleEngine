@@ -22,6 +22,16 @@ public:
 
 	void Apply(SceneState &sceneState) override;
 
-	SceneNodeType GetSceneNodeType() override;
+	static SceneNodeType SCENE_NODE_TYPE() {
+		return SceneNodeType::DIRECTIONAL_LIGHT;
+	}
+
+	SceneNodeType GetSceneNodeType() override {
+		return SCENE_NODE_TYPE();
+	}
+
+	DirectionalLight GetDirectionalLight() {
+		return _light;
+	}
 };
 } // namespace Nimble

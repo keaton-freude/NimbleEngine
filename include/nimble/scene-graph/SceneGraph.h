@@ -25,6 +25,7 @@
 */
 
 #include "nimble/camera/Camera.h"
+#include "nimble/core/Assert.h"
 #include "nimble/scene-graph/RootSceneNode.h"
 #include "nimble/scene-graph/SceneNode.h"
 #include <glm/glm.hpp>
@@ -71,7 +72,51 @@ public:
 	// Look through all nodes in the graph for `id`
 	const std::optional<SceneNode *const> Find(size_t id);
 
-	std::list<SceneNode *> GetNodesByType(SceneNodeType type);
+	std::list<SceneNode *> GetNodesByType(SceneNodeType type) const;
+
+	// Templated helper to automatically cast found nodes to `T*`
+	template <typename T>
+	std::list<T *> GetNodesByDerivedType(SceneNodeType type) const {
+		ASSERT(T::SCENE_NODE_TYPE() == type, "Requested cast type ({}) does not match template parameter type ({})", T::SCENE_NODE_TYPE(), type);
+
+		// walk scene graph looking for all nodes of @type and return
+		std::list<T *> nodes{};
+
+		std::function<void(SceneNodeType, SceneNode *)> func = [&nodes, &func](SceneNodeType type, SceneNode *node) {
+			if(node->GetSceneNodeType() == type) {
+				nodes.push_back(dynamic_cast<T *>(node));
+			}
+
+			for(auto &child : node->GetChildren()) {
+				func(type, child.get());
+			}
+		};
+
+		func(type, _rootNode.get());
+
+		return nodes;
+	}
+
+	template <typename T>
+	T *GetOneNodeByDerivedType(SceneNodeType type) const {
+		// Return the first node we find with the requested type
+
+		std::function<T *(SceneNodeType, SceneNode *)> func = [&func](SceneNodeType type, SceneNode *node) -> T * {
+			if(node->GetSceneNodeType() == type) {
+				return dynamic_cast<T *>(node);
+			}
+
+			for(auto &child : node->GetChildren()) {
+				return func(type, child.get());
+			}
+
+			return nullptr;
+		};
+
+		T *result = func(type, _rootNode.get());
+
+		return result;
+	}
 };
 
 }; // namespace Nimble

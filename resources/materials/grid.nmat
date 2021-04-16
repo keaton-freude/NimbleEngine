@@ -1,8 +1,12 @@
 {
     "name": "grid",
-    "shader": "grid",
+    "material_type": "phong",
     "diffuse_texture": {
-        "texture_uri": "grid.png"
+        "texture_uri": "grid.png",
+        "sampler_settings": {
+            "texture_wrap_mode_u": "Repeat",
+            "texture_wrap_mode_v": "Repeat"
+        }
     },
     "receives_lighting": false
 }

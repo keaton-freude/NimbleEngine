@@ -53,21 +53,29 @@ public:
 										   Mesh<Nimble::PositionColor>::CreateVao());
 	}
 
-	static Mesh<Nimble::PositionUv> CreateTexturedPlane() {
+	static Mesh<Nimble::PositionNormalUv> CreateTexturedPlane(float uv_modifier) {
 		glm::vec3 vert1Pos = glm::vec3({ -1.0f, 1.0f, 0.0f });
 		glm::vec3 vert2Pos = glm::vec3({ -1.0f, -1.0f, 0.0f });
 		glm::vec3 vert3Pos = glm::vec3({ 1.0f, -1.0f, 0.0f });
 		glm::vec3 vert4Pos = glm::vec3({ 1.0f, 1.0f, 0.0f });
 
-		glm::vec2 vert1Uv = glm::vec2({ 0.0f, 1.0f });
-		glm::vec2 vert2Uv = glm::vec2({ 0.0f, 0.0f });
-		glm::vec2 vert3Uv = glm::vec2({ 1.0f, 0.0f });
-		glm::vec2 vert4Uv = glm::vec2({ 1.0f, 1.0f });
+		glm::vec3 vert1Normal = glm::vec3({ 0.0f, 1.0f, 0.0f });
+		glm::vec3 vert2Normal = glm::vec3({ 0.0f, 1.0f, 0.0f });
+		glm::vec3 vert3Normal = glm::vec3({ 0.0f, 1.0f, 0.0f });
+		glm::vec3 vert4Normal = glm::vec3({ 0.0f, 1.0f, 0.0f });
 
-		return Mesh<Nimble::PositionUv>({ { vert1Pos, vert1Uv }, { vert2Pos, vert2Uv }, { vert3Pos, vert3Uv }, { vert4Pos, vert4Uv } },
-										{ { 0, 1, 2, 0, 2, 3 } },
-										2,
-										Mesh<Nimble::PositionUv>::CreateVao());
+		glm::vec2 vert1Uv = glm::vec2({ 0.0f, 1.0f * uv_modifier });
+		glm::vec2 vert2Uv = glm::vec2({ 0.0f, 0.0f });
+		glm::vec2 vert3Uv = glm::vec2({ 1.0f * uv_modifier, 0.0f });
+		glm::vec2 vert4Uv = glm::vec2({ 1.0f * uv_modifier, 1.0f * uv_modifier });
+
+		return Mesh<Nimble::PositionNormalUv>({ { vert1Pos, vert1Normal, vert1Uv },
+												{ vert2Pos, vert2Normal, vert2Uv },
+												{ vert3Pos, vert3Normal, vert3Uv },
+												{ vert4Pos, vert4Normal, vert4Uv } },
+											  { { 0, 1, 2, 0, 2, 3 } },
+											  2,
+											  Mesh<Nimble::PositionNormalUv>::CreateVao());
 	}
 };
 } // namespace Nimble

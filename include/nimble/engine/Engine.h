@@ -17,6 +17,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <memory>
+#include <nimble/render-passes/RenderPass.h>
 
 // Contains the top-level object for the Nimble Rendering Engine
 // Contains all of the methods for interacting with the Engine
@@ -46,6 +47,8 @@ private:
 	std::shared_ptr<glm::mat4> _projectionMatrix;
 	std::unique_ptr<SceneGraph> _sceneGraph;
 	size_t _rootTransformNode;
+	// TODO: Make this variable sized
+	std::unique_ptr<RenderPass> _render_pass;
 };
 
 } // namespace Nimble

@@ -33,61 +33,51 @@ private:
 	// Material slot, required
 	std::shared_ptr<Material> _material;
 
-	// An additional local transform to apply to the global transform
-	// before rendering
-	Transformation _localTransform;
-
 public:
 	// Drawable node from pre-existing resources
 	DrawableNode(const IMesh *mesh, std::shared_ptr<Material> material)
-	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(material),
-	  _localTransform() {
+	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(material) {
 		_vao->Bind();
 		_vb.LoadFromMesh(mesh);
 		_ib.LoadFromMesh(mesh);
 	}
 
-	DrawableNode(const IMesh *mesh, const std::string &materialName, const Transformation &transform)
-	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(nullptr),
-	  _localTransform(transform) {
+	DrawableNode(const IMesh *mesh, const std::string &materialName)
+	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(nullptr) {
 		InitFromFilenames(mesh, materialName);
 	}
 
 	// Drawable node with resource names
 	DrawableNode(const std::string &meshName, const std::string &materialName)
-	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(nullptr), _material(nullptr), _localTransform() {
-		InitFromFilenames(meshName, materialName);
-	}
-
-	// Drawable node, resource names & passed in transform
-	DrawableNode(const std::string &meshName, const std::string &materialName, const Transformation &transform)
-	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _material(nullptr), _localTransform(transform) {
+	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(nullptr), _material(nullptr) {
 		InitFromFilenames(meshName, materialName);
 	}
 
 	void Apply(SceneState &sceneState) override {
-		_vao->Bind();
-		_vb.Bind();
-		_ib.Bind();
-		_material->Bind();
-		// auto shader = _material->GetShader();
-		// auto overallTransform = sceneState.GetTransform() * _localTransform;
-		/*shader->SetUniform("Model", overallTransform.GetWorldMatrix());
-		shader->SetUniform("View", sceneState.GetCamera()->GetView());
-		shader->SetUniform("Projection", *(sceneState.GetProjectionMatrix()));
+	}
 
-		if(sceneState.GetDirectionalLight().enabled && _material->GetReceivesLighting().value()) {
-			shader->SetUniform("lightDirection", sceneState.GetDirectionalLight().direction);
-			shader->SetUniform("lightColor", sceneState.GetDirectionalLight().color);
-			shader->SetUniform("viewPos", sceneState.GetCamera()->GetPosition());
-		}*/
+	std::shared_ptr<VertexArrayObject> GetVAO() const {
+		return _vao;
+	}
 
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(_ib.GetNumFaces() * 3), GL_UNSIGNED_INT, nullptr);
-		_vao->Unbind();
+	VertexBuffer &GetVB() {
+		return _vb;
+	}
+
+	IndexBuffer &GetIB() {
+		return _ib;
+	}
+
+	std::shared_ptr<Material> GetMaterial() {
+		return _material;
+	}
+
+	static SceneNodeType SCENE_NODE_TYPE() {
+		return SceneNodeType::DRAWABLE;
 	}
 
 	SceneNodeType GetSceneNodeType() override {
-		return SceneNodeType::DIRECTIONAL_LIGHT;
+		return SCENE_NODE_TYPE();
 	}
 
 private:

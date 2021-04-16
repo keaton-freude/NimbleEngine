@@ -1,8 +1,0 @@
-{
-    "name": "cube",
-    "shader": "diffuse-textured-phong",
-    "diffuse_texture": {
-        "texture_uri": "wood_floor.png"
-    },
-    "receives_lighting": true
-}

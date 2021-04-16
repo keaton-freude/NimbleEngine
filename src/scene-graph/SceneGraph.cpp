@@ -40,7 +40,7 @@ const std::optional<SceneNode *const> SceneGraph::Find(size_t id) {
 	return _rootNode->Find(id);
 }
 
-std::list<SceneNode *> SceneGraph::GetNodesByType(SceneNodeType type) {
+std::list<SceneNode *> SceneGraph::GetNodesByType(SceneNodeType type) const {
 	// walk scene graph looking for all nodes of @type and return
 	std::list<SceneNode *> nodes{};
 

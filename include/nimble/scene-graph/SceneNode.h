@@ -55,8 +55,13 @@ public:
 	// Traverse. First ourself, then our children. Only supporting pre-order traversal for now
 	void Visit(SceneState sceneState);
 
-	// Implementers must declare their type
-	virtual SceneNodeType GetSceneNodeType() = 0;
+	static SceneNodeType SCENE_NODE_TYPE() {
+		return SceneNodeType::UNKNOWN;
+	}
+
+	virtual SceneNodeType GetSceneNodeType() {
+		return SCENE_NODE_TYPE();
+	}
 
 	// Fluent API, return a reference to the inserted child after doing the insert
 	// Also include the ID, in the pair
@@ -96,7 +101,7 @@ public:
 	// Returning a raw pointer, because we can't use references in std::optional
 	// Just have to hope users don't hold onto pointers for very long, OR always call
 	// Find
-	std::optional<SceneNode *const> Find(size_t id);
+	std::optional<SceneNode *> Find(size_t id);
 
 	void Translate(glm::vec3 translation);
 	void Rotate(glm::vec3 axis, float radians);

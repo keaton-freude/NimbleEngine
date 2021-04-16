@@ -7,7 +7,7 @@ namespace Nimble {
 class RenderPass {
 private:
 public:
-	virtual void Draw(const SceneGraph& sceneGraph) = 0;
+	virtual void Draw(SceneState &state, const SceneGraph &sceneGraph) = 0;
 };
 
-}
+} // namespace Nimble

@@ -47,7 +47,7 @@ size_t SceneNode::GenerateID() {
 	return CurrentId++;
 }
 
-std::optional<SceneNode *const> SceneNode::Find(size_t id) {
+std::optional<SceneNode *> SceneNode::Find(size_t id) {
 	// Look through our children for the correct node
 	for(auto &child : _children) {
 		if(child->GetID() == id) {

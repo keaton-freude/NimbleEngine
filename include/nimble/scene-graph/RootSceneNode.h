@@ -41,8 +41,17 @@ public:
 		// Does nothing, because this is the root node
 	}
 
-	SceneNodeType GetSceneNodeType() override {
+	static SceneNodeType SCENE_NODE_TYPE() {
 		return SceneNodeType::ROOT;
+	}
+
+	SceneNodeType GetSceneNodeType() override {
+		return SCENE_NODE_TYPE();
+	}
+
+	// TODO: Consider moving into Engine
+	SceneState &GetSceneState() {
+		return _sceneState;
 	}
 };
 

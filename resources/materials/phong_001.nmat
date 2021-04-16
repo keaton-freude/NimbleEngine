@@ -1,0 +1,7 @@
+{
+    "name": "phong_001",
+    "material_type": "phong",
+    "diffuse_texture": {
+        "texture_uri": "wood_floor.png"
+    }
+}
