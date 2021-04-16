@@ -36,9 +36,17 @@ public:
 	SceneNodeType GetSceneNodeType() override {
 		return SceneNodeType::UNKNOWN;
 	}
+
+	int GetValue() const {
+		return _value;
+	}
 };
 
-class TestSceneNode2 : public SceneNode {
+class TestSceneNode2 : public TestSceneNode {
+public:
+	TestSceneNode2(int value, TestState *state) : TestSceneNode(value, state) {
+	}
+
 	void Apply(SceneState &sceneState) override {
 		//
 	}
@@ -461,15 +469,39 @@ TEST_CASE("Get Nodes By Type", "[scenegraph]") {
 
 	sceneGraph->AddChildrenToRoot(new TestSceneNode(1, nullptr),
 								  new TestSceneNode(2, nullptr),
-								  new TestSceneNode2(),
-								  new TestSceneNode2(),
-								  new TestSceneNode2());
+								  new TestSceneNode2(3, nullptr),
+								  new TestSceneNode2(4, nullptr),
+								  new TestSceneNode2(5, nullptr));
 
 	auto nodes = sceneGraph->GetNodesByType(SceneNodeType::UNKNOWN);
 
 	REQUIRE(nodes.size() == 2);
 
+	// Check that our nodes contain exactly what we expect
+	REQUIRE(std::any_of(nodes.begin(), nodes.end(), [](SceneNode *node) {
+		return node->GetSceneNodeType() == Nimble::SceneNodeType::UNKNOWN && dynamic_cast<TestSceneNode *>(node)->GetValue() == 1;
+	}));
+
+	REQUIRE(std::any_of(nodes.begin(), nodes.end(), [](SceneNode *node) {
+		return node->GetSceneNodeType() == Nimble::SceneNodeType::UNKNOWN && dynamic_cast<TestSceneNode *>(node)->GetValue() == 2;
+	}));
+
 	nodes = sceneGraph->GetNodesByType(SceneNodeType::DIRECTIONAL_LIGHT);
 
 	REQUIRE(nodes.size() == 3);
+
+	REQUIRE(std::any_of(nodes.begin(), nodes.end(), [](SceneNode *node) {
+		return node->GetSceneNodeType() == Nimble::SceneNodeType::DIRECTIONAL_LIGHT &&
+			   dynamic_cast<TestSceneNode2 *>(node)->GetValue() == 3;
+	}));
+
+	REQUIRE(std::any_of(nodes.begin(), nodes.end(), [](SceneNode *node) {
+		return node->GetSceneNodeType() == Nimble::SceneNodeType::DIRECTIONAL_LIGHT &&
+			   dynamic_cast<TestSceneNode2 *>(node)->GetValue() == 4;
+	}));
+
+	REQUIRE(std::any_of(nodes.begin(), nodes.end(), [](SceneNode *node) {
+		return node->GetSceneNodeType() == Nimble::SceneNodeType::DIRECTIONAL_LIGHT &&
+			   dynamic_cast<TestSceneNode2 *>(node)->GetValue() == 5;
+	}));
 }
