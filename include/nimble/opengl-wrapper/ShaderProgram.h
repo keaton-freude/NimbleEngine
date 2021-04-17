@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <nimble/core/Assert.h>
 
 #include "nimble/opengl-wrapper/ShaderInfo.h"
 
@@ -27,7 +28,7 @@ public:
 
 	void AddVertexShader(const char *text);
 	void AddFragmentShader(const char *text);
-	void Reload(const char* vertexText, const char *fragmentText);
+	void Reload(const char *vertexText, const char *fragmentText);
 
 	// Link all of the attached shaders
 	bool LinkShaders();
@@ -41,6 +42,7 @@ public:
 
 	template <typename T>
 	void SetUniform(const std::string &name, const T &t) {
+		ASSERT(false, "SetUniform called with a type without a specialization. Type: {}", typeid(T).name());
 	}
 
 
@@ -120,6 +122,12 @@ template <>
 inline void ShaderProgram::SetUniform<glm::mat2x4>(const std::string &name, const glm::mat2x4 &t) {
 	auto location = _shaderInfo.GetUniformPosition(name);
 	glUniformMatrix2x4fv(location, 1, GL_FALSE, &t[0][0]);
+}
+
+template <>
+inline void ShaderProgram::SetUniform<bool>(const std::string &name, const bool &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniform1i(location, t);
 }
 
 } // namespace Nimble

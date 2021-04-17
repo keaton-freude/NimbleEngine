@@ -18,6 +18,8 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	DirectionalLightNode *directionalLightNode =
 		sceneGraph.GetOneNodeByDerivedType<DirectionalLightNode>(SceneNodeType::DIRECTIONAL_LIGHT);
 
+	directionalLightNode->Apply(state);
+
 	// Walk every drawable node and draw them
 
 	// TODO: Only draw nodes with a Phong material attached
@@ -46,7 +48,6 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		ASSERT(diffuse_texture_unit.has_value(), "Phong Pass requires a diffuse texture to be set!");
 
 		auto texture = diffuse_texture_unit->texture;
-		auto sampler_settings = diffuse_texture_unit->sampler;
 		auto receives_lighting = drawable->GetMaterial()->GetReceivesLighting().value();
 		auto transform = drawable->GetTransformation();
 
@@ -60,6 +61,9 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 			_shader->SetUniform("lightDirection", light.direction);
 			_shader->SetUniform("lightColor", light.color);
 			_shader->SetUniform("viewPos", state.GetCamera()->GetPosition());
+			_shader->SetUniform("lightingEnabled", true);
+		} else {
+			_shader->SetUniform("lightingEnabled", false);
 		}
 
 		glActiveTexture(GL_TEXTURE0);
