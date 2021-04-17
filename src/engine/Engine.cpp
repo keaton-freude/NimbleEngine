@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <nimble/camera/FreeFlyCamera.h>
 #include <nimble/render-passes/PhongPass.h>
+#include <nimble/render-passes/ShadowPass.h>
 
 #include "glm/gtc/matrix_transform.hpp"
 #include "nimble/MeshTools.h"
@@ -26,11 +27,11 @@ Engine::Engine(Window *window) : _window(window) {
 	// Add a directional light to the scene
 	_rootTransformNode =
 		_sceneGraph
-			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
+			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec3(.3f, .3f, .3f))))
 			.second;
 
 	auto cubeNodeId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube"), _rootTransformNode);
-	auto cubeNode = _sceneGraph->Find(cubeNodeId).value();
+	cubeNode = _sceneGraph->Find(cubeNodeId).value();
 	cubeNode->Translate(glm::vec3(0.0f, 2.0f, 0.0f));
 
 	auto plane = MeshTools::CreateTexturedPlane(1024.0f);
@@ -46,7 +47,8 @@ Engine::Engine(Window *window) : _window(window) {
 	gridNode->Scale(glm::vec3(1000.0f, 1000.0f, 0.0f));
 	gridNode->Rotate(glm::vec3(1.0f, 0.0f, 0.0f), glm::radians(90.0f));
 
-	_render_pass = std::make_unique<PhongPass>();
+	_render_pass = std::make_unique<ShadowPass>(1024, 1024);
+	_phong_pass = std::make_unique<PhongPass>();
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -54,11 +56,14 @@ Engine::Engine(Window *window) : _window(window) {
 
 void Engine::RenderFrame(const Time &time) {
 
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	_camera->Update(time);
 	auto rootTransform = _sceneGraph->Find(_rootTransformNode);
+	static float total_time = 0.0f;
+	total_time += time.dt();
+	cubeNode->Translate(glm::vec3(sin(total_time) * time.dt(), 0.0f, sin(total_time) * time.dt()));
 
 	/*
 		Note for later: We need to apply local transforms, before applying
@@ -70,6 +75,11 @@ void Engine::RenderFrame(const Time &time) {
 	//_sceneGraph->Render();
 
 	_render_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
+	glViewport(0, 0, _window->GetWidth().get(), _window->GetHeight().get());
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	static_cast<PhongPass *>(_phong_pass.get())->SetDepthTexture(static_cast<ShadowPass *>(_render_pass.get())->GetDepthTexture());
+	_phong_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
 
 	static bool vsyncEnabled = _window->IsVSyncEnabled();
 	if(ImGui::Checkbox("VSync Enabled", &vsyncEnabled)) {

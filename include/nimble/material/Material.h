@@ -59,6 +59,7 @@ private:
 	std::optional<TextureUnit> _diffuse_texture{};
 	std::optional<TextureUnit> _normal_texture{};
 	std::optional<float> _uv_multiplier{};
+	std::optional<bool> _casts_shadows{};
 
 	// Whether the object receives lighting or not
 	std::optional<bool> _receives_lighting{};
@@ -79,6 +80,7 @@ public:
 	[[nodiscard]] std::optional<TextureUnit> GetDiffuseTexture() const;
 	[[nodiscard]] std::optional<TextureUnit> GetNormalTexture() const;
 	[[nodiscard]] std::optional<float> GetUvMultiplier() const;
+	[[nodiscard]] std::optional<bool> GetCastsShadows() const;
 
 	MaterialType GetMaterialType() const;
 

@@ -18,7 +18,7 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	DirectionalLightNode *directionalLightNode =
 		sceneGraph.GetOneNodeByDerivedType<DirectionalLightNode>(SceneNodeType::DIRECTIONAL_LIGHT);
 
-	directionalLightNode->Apply(state);
+	// directionalLightNode->Apply(state);
 
 	// Walk every drawable node and draw them
 
@@ -68,9 +68,29 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 			_shader->SetUniform("lightingEnabled", false);
 		}
 
+		_shader->SetUniform("diffuse_texture", 0);
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuse_texture_unit->texture->GetTextureHandle());
 		diffuse_texture_unit->sampler.Bind();
+
+		if(_depth_texture) {
+			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 1000.5f);
+
+			auto lightPosition = directionalLightNode->GetDirectionalLight().direction;
+
+			lightPosition = lightPosition * 100.0f;
+
+			// glm::vec3 lightPosition = glm::vec3(-2.0f, 4.0f, -1.0f);
+
+			glm::mat4 lightView = glm::lookAt(lightPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+			_shader->SetUniform("lightSpaceMatrix", lightSpaceMatrix);
+			_shader->SetUniform("shadow_map", 1);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, _depth_texture->GetTextureHandle());
+		}
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(drawable->GetIB().GetNumFaces() * 3), GL_UNSIGNED_INT, nullptr);
 		drawable->GetVAO()->Unbind();

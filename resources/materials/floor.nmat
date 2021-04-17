@@ -4,5 +4,6 @@
     "diffuse_texture": {
         "texture_uri": "wood_floor.png"
     },
-    "uv_multiplier": 8.0
+    "uv_multiplier": 8.0,
+    "casts_shadows": false
 }

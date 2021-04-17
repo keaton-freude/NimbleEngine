@@ -22,8 +22,7 @@ struct DirectionalLight {
 		// by default. User should set their light config, and enable the light
 	}
 
-	DirectionalLight(glm::vec3 direction, glm::vec3 color)
-	: direction(glm::normalize(direction)), color(color) {
+	DirectionalLight(glm::vec3 direction, glm::vec3 color) : direction(direction), color(color) {
 	}
 };
 } // namespace Nimble

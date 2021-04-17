@@ -8,5 +8,6 @@
             "texture_wrap_mode_v": "Repeat"
         }
     },
-    "receives_lighting": false
+    "receives_lighting": false,
+    "casts_shadows": false
 }

@@ -100,6 +100,13 @@ void Material::LoadFromFile(const char *path) {
 	} else {
 		_uv_multiplier = 1.0f;
 	}
+
+	if(document.HasMember("casts_shadows")) {
+		ASSERT(document["casts_shadows"].IsBool(), "casts_shadows must be a bool");
+		_casts_shadows = document["casts_shadows"].GetBool();
+	} else {
+		_casts_shadows = true;
+	}
 }
 
 const std::string &Material::GetName() const {
@@ -124,4 +131,8 @@ std::optional<float> Material::GetUvMultiplier() const {
 
 MaterialType Material::GetMaterialType() const {
 	return _material_type;
+}
+
+std::optional<bool> Material::GetCastsShadows() const {
+	return _casts_shadows;
 }

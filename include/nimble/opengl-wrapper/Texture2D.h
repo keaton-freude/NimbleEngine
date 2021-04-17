@@ -1,25 +1,25 @@
 #pragma once
 
-#include <string>
+#include "nimble/utility/Macros.h"
 #include <GL/glew.h>
 #include <cassert>
-#include "nimble/utility/Macros.h"
+#include <string>
 
 namespace Nimble {
 
 
 class Texture2D {
 private:
-    unsigned int _texture;
-    int _width;
-    int _height;
-    int _num_channels;
+	unsigned int _texture;
+	int _width;
+	int _height;
+	int _num_channels;
 
 public:
-    Texture2D();
-    void LoadFromFile(const std::string& path);
+	Texture2D();
+	void LoadFromFile(const std::string &path);
+	void Create(int width, int height, int format);
 	unsigned int GetTextureHandle();
-
 };
 
-}
+} // namespace Nimble

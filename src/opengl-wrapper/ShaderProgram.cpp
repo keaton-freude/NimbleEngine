@@ -103,7 +103,7 @@ void ShaderProgram::QueryUniformsAndAttributes() {
 
 	std::vector<GLchar> nameData(256);
 
-	const GLsizei bufSize = 16;
+	const GLsizei bufSize = 64;
 	GLsizei length;
 	GLint size;
 	GLenum type;

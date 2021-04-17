@@ -131,6 +131,12 @@ inline void ShaderProgram::SetUniform<bool>(const std::string &name, const bool 
 }
 
 template <>
+inline void ShaderProgram::SetUniform<int>(const std::string &name, const int &t) {
+	auto location = _shaderInfo.GetUniformPosition(name);
+	glUniform1i(location, t);
+}
+
+template <>
 inline void ShaderProgram::SetUniform<float>(const std::string &name, const float &t) {
 	auto location = _shaderInfo.GetUniformPosition(name);
 	glUniform1f(location, t);

@@ -22,8 +22,16 @@ public:
 	void SetVSync(bool enabled);
 	bool IsVSyncEnabled() const;
 
+	Height GetHeight() {
+		return _height;
+	}
+
+	Width GetWidth() {
+		return _width;
+	}
+
 private:
 };
 
 void _HandleResize(GLFWwindow *window, int width, int height);
-}
+} // namespace Nimble
