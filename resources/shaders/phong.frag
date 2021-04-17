@@ -12,6 +12,7 @@ uniform vec3 lightColor;
 uniform vec3 lightDirection;
 uniform vec3 viewPos;
 uniform bool lightingEnabled;
+uniform float UvMultiplier;
 
 void main()
 {
@@ -31,8 +32,8 @@ void main()
         vec3 specular = specularStrength * spec * lightColor;
 
         vec3 result = (ambient + diffuse + specular) * vec3(1.0, 1.0, 1.0);
-        FragColor = vec4(result, 1.0) * texture2D(diffuse_texture, TexCoord);
+        FragColor = vec4(result, 1.0) * texture2D(diffuse_texture, TexCoord * UvMultiplier);
     } else {
-        FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f) * texture2D(diffuse_texture, TexCoord);
+        FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f) * texture2D(diffuse_texture, TexCoord * UvMultiplier);
     }
 }

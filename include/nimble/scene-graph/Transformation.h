@@ -38,10 +38,10 @@ public:
 #endif
 #endif
 		// calculate the world matrix based on the current state
-		//return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
+		// return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
 		return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
-//		glm::mat4 model = glm::mat4(1.0f);
-//		model =
+		//		glm::mat4 model = glm::mat4(1.0f);
+		//		model =
 	}
 
 	void Rotate(glm::vec3 axis, float radians) {
@@ -57,7 +57,7 @@ public:
 	}
 
 	void Scale(glm::vec3 amount) {
-		_scale += amount;
+		_scale *= amount;
 	}
 	void SetScale(glm::vec3 scale) {
 		_scale = scale;
@@ -89,7 +89,7 @@ public:
 		return newTransform;
 	}
 
-	Transformation& operator*=(const Transformation& transformation) {
+	Transformation &operator*=(const Transformation &transformation) {
 		_rotation *= transformation._rotation;
 		_position += transformation._position;
 		_scale *= transformation._scale;
@@ -97,10 +97,8 @@ public:
 		return *this;
 	}
 
-	bool operator==(const Transformation& rhs) const {
-		return this->_rotation == rhs._rotation &&
-			   this->_scale == rhs._scale &&
-			   this->_position == rhs._position;
+	bool operator==(const Transformation &rhs) const {
+		return this->_rotation == rhs._rotation && this->_scale == rhs._scale && this->_position == rhs._position;
 	}
 };
 

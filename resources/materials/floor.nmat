@@ -1,7 +1,8 @@
 {
-    "name": "phong_001",
+    "name": "floor",
     "material_type": "phong",
     "diffuse_texture": {
         "texture_uri": "wood_floor.png"
-    }
+    },
+    "uv_multiplier": 8.0
 }

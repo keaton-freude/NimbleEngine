@@ -1,0 +1,8 @@
+{
+    "name": "cube",
+    "material_type": "phong",
+    "diffuse_texture": {
+        "texture_uri": "wall.png"
+    },
+    "uv_multiplier": 2.0
+}

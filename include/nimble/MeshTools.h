@@ -77,5 +77,11 @@ public:
 											  2,
 											  Mesh<Nimble::PositionNormalUv>::CreateVao());
 	}
+
+	/*static Mesh<Nimble::PositionNormalUv> CreateTexturedCube(glm::vec3 dimensions) {
+		std::vector<glm::vec3> verts = {
+
+		};
+	}*/
 };
 } // namespace Nimble

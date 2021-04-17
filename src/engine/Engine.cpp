@@ -29,13 +29,20 @@ Engine::Engine(Window *window) : _window(window) {
 			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec3(.3f, .3f, .3f))))
 			.second;
 
-	auto cubeNodeId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "phong_001"), _rootTransformNode);
+	auto cubeNodeId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube"), _rootTransformNode);
 	auto cubeNode = _sceneGraph->Find(cubeNodeId).value();
-	cubeNode->Translate(glm::vec3(0.0f, 1.01f, 0.0f));
+	cubeNode->Translate(glm::vec3(0.0f, 2.0f, 0.0f));
 
 	auto plane = MeshTools::CreateTexturedPlane(1024.0f);
 	auto gridNodeId = _sceneGraph->AddChild(new DrawableNode(&plane, "grid"), _rootTransformNode);
 	auto gridNode = _sceneGraph->Find(gridNodeId).value();
+
+	auto floorId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "floor"), _rootTransformNode);
+	auto floorNode = _sceneGraph->Find(floorId).value();
+
+	floorNode->Scale(glm::vec3(20.0f, 0.01f, 20.0f));
+	floorNode->Translate(glm::vec3(0.0f, 0.25f, 0.0f));
+
 	gridNode->Scale(glm::vec3(1000.0f, 1000.0f, 0.0f));
 	gridNode->Rotate(glm::vec3(1.0f, 0.0f, 0.0f), glm::radians(90.0f));
 

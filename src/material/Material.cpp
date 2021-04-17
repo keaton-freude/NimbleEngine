@@ -93,6 +93,13 @@ void Material::LoadFromFile(const char *path) {
 	} else {
 		_receives_lighting = true;
 	}
+
+	if(document.HasMember("uv_multiplier")) {
+		ASSERT(document["uv_multiplier"].IsFloat(), "uv_multiplier must be a float");
+		_uv_multiplier = document["uv_multiplier"].GetFloat();
+	} else {
+		_uv_multiplier = 1.0f;
+	}
 }
 
 const std::string &Material::GetName() const {
@@ -109,6 +116,10 @@ std::optional<TextureUnit> Material::GetDiffuseTexture() const {
 
 std::optional<TextureUnit> Material::GetNormalTexture() const {
 	return _normal_texture;
+}
+
+std::optional<float> Material::GetUvMultiplier() const {
+	return _uv_multiplier;
 }
 
 MaterialType Material::GetMaterialType() const {

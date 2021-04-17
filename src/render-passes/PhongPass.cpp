@@ -50,11 +50,13 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		auto texture = diffuse_texture_unit->texture;
 		auto receives_lighting = drawable->GetMaterial()->GetReceivesLighting().value();
 		auto transform = drawable->GetTransformation();
+		auto uv_multiplier = drawable->GetMaterial()->GetUvMultiplier();
 
 		_shader->Use();
 		_shader->SetUniform("Model", transform.GetWorldMatrix());
 		_shader->SetUniform("View", state.GetCamera()->GetView());
 		_shader->SetUniform("Projection", *(state.GetProjectionMatrix()));
+		_shader->SetUniform("UvMultiplier", uv_multiplier.value());
 
 		if(directionalLightNode && receives_lighting) {
 			auto light = directionalLightNode->GetDirectionalLight();

@@ -30,10 +30,10 @@
 #include <string>
 #include <vector>
 
+#include "nimble/material/MaterialType.h"
 #include "nimble/opengl-wrapper/Sampler.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/opengl-wrapper/Texture2D.h"
-#include "nimble/material/MaterialType.h"
 
 #include <optional>
 
@@ -44,8 +44,8 @@ namespace Nimble {
 
 struct TextureUnit {
 	TextureUnit() = default;
-	TextureUnit(std::shared_ptr<Texture2D> texture, Sampler sampler) :
- 		texture(texture), sampler(sampler) {}
+	TextureUnit(std::shared_ptr<Texture2D> texture, Sampler sampler) : texture(texture), sampler(sampler) {
+	}
 
 	std::shared_ptr<Texture2D> texture;
 	Sampler sampler;
@@ -58,6 +58,7 @@ private:
 
 	std::optional<TextureUnit> _diffuse_texture{};
 	std::optional<TextureUnit> _normal_texture{};
+	std::optional<float> _uv_multiplier{};
 
 	// Whether the object receives lighting or not
 	std::optional<bool> _receives_lighting{};
@@ -68,24 +69,24 @@ public:
 	Material(std::string name);
 
 	// Factory Methods
-	static std::shared_ptr<Material> CreateMaterial(const std::string& name);
+	static std::shared_ptr<Material> CreateMaterial(const std::string &name);
 
-	void LoadFromFile(const char* path);
+	void LoadFromFile(const char *path);
 
-	[[nodiscard]] const std::string& GetName() const;
+	[[nodiscard]] const std::string &GetName() const;
 
 	[[nodiscard]] std::optional<bool> GetReceivesLighting() const;
 	[[nodiscard]] std::optional<TextureUnit> GetDiffuseTexture() const;
 	[[nodiscard]] std::optional<TextureUnit> GetNormalTexture() const;
+	[[nodiscard]] std::optional<float> GetUvMultiplier() const;
 
 	MaterialType GetMaterialType() const;
 
 	// TODO throw this away
 	void Bind() {
-		if (_diffuse_texture) {
+		if(_diffuse_texture) {
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D,
-			_diffuse_texture.value().texture->GetTextureHandle());
+			glBindTexture(GL_TEXTURE_2D, _diffuse_texture.value().texture->GetTextureHandle());
 		}
 	}
 

@@ -40,6 +40,11 @@ A material defines a set of settings which represent how a mesh is shaded and co
     "description": "Whether this object should be lit by external lighting",
     "default": true,
     "required": false
+  },
+  "uv_multiplier": {
+    "type": "number",
+    "default": "1.0",
+    "required": false
   }
 }
 ```
