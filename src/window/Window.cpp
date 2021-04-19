@@ -61,7 +61,6 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 	// Setup handler for resize
 	glfwSetFramebufferSizeCallback(_window, _HandleResize2);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
 	glViewport(0, 0, width.get(), height.get());
 }

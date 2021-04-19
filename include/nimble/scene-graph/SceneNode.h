@@ -18,7 +18,7 @@
 namespace Nimble {
 
 // Unknown type is just here for testing
-enum class SceneNodeType { DIRECTIONAL_LIGHT, DRAWABLE, ROOT, UNKNOWN };
+enum class SceneNodeType { DIRECTIONAL_LIGHT, DRAWABLE, ROOT, UNKNOWN, NULL_NODE };
 
 class SceneNode {
 private:

@@ -73,7 +73,7 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		diffuse_texture_unit->sampler.Bind();
 
 		if(_depth_texture) {
-			const float bounds = 10.0f;
+			const float bounds = 100.0f;
 			glm::mat4 lightProjection = glm::ortho(-bounds, bounds, -bounds, bounds, 1.0f, 100.0f);
 
 			auto lightPosition = directionalLightNode->GetDirectionalLight().direction;
