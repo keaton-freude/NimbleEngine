@@ -60,8 +60,6 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 
 		if(directionalLightNode && receives_lighting) {
 			auto light = directionalLightNode->GetDirectionalLight();
-			_shader->SetUniform("lightDirection", light.direction);
-			_shader->SetUniform("lightColor", light.color);
 			_shader->SetUniform("viewPos", state.GetCamera()->GetPosition());
 			_shader->SetUniform("lightingEnabled", true);
 		} else {
@@ -75,13 +73,14 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		diffuse_texture_unit->sampler.Bind();
 
 		if(_depth_texture) {
-			glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 1000.5f);
+			const float bounds = 10.0f;
+			glm::mat4 lightProjection = glm::ortho(-bounds, bounds, -bounds, bounds, 1.0f, 100.0f);
 
 			auto lightPosition = directionalLightNode->GetDirectionalLight().direction;
+			lightPosition *= -1.0f;
+			lightPosition *= 10.0f;
 
-			lightPosition = lightPosition * 100.0f;
-
-			// glm::vec3 lightPosition = glm::vec3(-2.0f, 4.0f, -1.0f);
+			_shader->SetUniform("lightPos", lightPosition);
 
 			glm::mat4 lightView = glm::lookAt(lightPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 

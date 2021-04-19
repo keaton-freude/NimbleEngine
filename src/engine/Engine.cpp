@@ -27,7 +27,7 @@ Engine::Engine(Window *window) : _window(window) {
 	// Add a directional light to the scene
 	_rootTransformNode =
 		_sceneGraph
-			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec3(.3f, .3f, .3f))))
+			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(1.0f, -1.0f, -1.0f), glm::vec3(.3f, .3f, .3f))))
 			.second;
 
 	auto cubeNodeId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube"), _rootTransformNode);
@@ -41,13 +41,12 @@ Engine::Engine(Window *window) : _window(window) {
 	auto floorId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "floor"), _rootTransformNode);
 	auto floorNode = _sceneGraph->Find(floorId).value();
 
-	floorNode->Scale(glm::vec3(20.0f, 0.01f, 20.0f));
+	floorNode->Scale(glm::vec3(30.0f, 0.01f, 30.0f));
 	floorNode->Translate(glm::vec3(0.0f, 0.25f, 0.0f));
 
-	gridNode->Scale(glm::vec3(1000.0f, 1000.0f, 0.0f));
-	gridNode->Rotate(glm::vec3(1.0f, 0.0f, 0.0f), glm::radians(90.0f));
+	gridNode->Scale(glm::vec3(1000.0f, 1.0f, 1000.0f));
 
-	_render_pass = std::make_unique<ShadowPass>(1024, 1024);
+	_shadow_pass = std::make_unique<ShadowPass>(4096, 4096);
 	_phong_pass = std::make_unique<PhongPass>();
 
 	glEnable(GL_BLEND);
@@ -74,11 +73,11 @@ void Engine::RenderFrame(const Time &time) {
 
 	//_sceneGraph->Render();
 
-	_render_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
+	_shadow_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
 	glViewport(0, 0, _window->GetWidth().get(), _window->GetHeight().get());
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	static_cast<PhongPass *>(_phong_pass.get())->SetDepthTexture(static_cast<ShadowPass *>(_render_pass.get())->GetDepthTexture());
+	_phong_pass->SetDepthTexture(_shadow_pass->GetDepthTexture());
 	_phong_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
 
 	static bool vsyncEnabled = _window->IsVSyncEnabled();

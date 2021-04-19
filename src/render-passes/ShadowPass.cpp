@@ -40,13 +40,13 @@ void ShadowPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	DirectionalLightNode *directionalLightNode =
 		sceneGraph.GetOneNodeByDerivedType<DirectionalLightNode>(SceneNodeType::DIRECTIONAL_LIGHT);
 
-	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 1000.5f);
+	const float bounds = 10.0f;
+	glm::mat4 lightProjection = glm::ortho(-bounds, bounds, -bounds, bounds, 1.0f, 100.0f);
 
 	auto lightPosition = directionalLightNode->GetDirectionalLight().direction;
 
-	lightPosition = lightPosition * 100.0f;
-
-	// glm::vec3 lightPosition = glm::vec3(-2.0f, 4.0f, -1.0f);
+	lightPosition *= -1.0f;
+	lightPosition *= 10.0f;
 
 	glm::mat4 lightView = glm::lookAt(lightPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 

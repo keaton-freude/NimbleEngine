@@ -54,10 +54,10 @@ public:
 	}
 
 	static Mesh<Nimble::PositionNormalUv> CreateTexturedPlane(float uv_modifier) {
-		glm::vec3 vert1Pos = glm::vec3({ -1.0f, 1.0f, 0.0f });
-		glm::vec3 vert2Pos = glm::vec3({ -1.0f, -1.0f, 0.0f });
-		glm::vec3 vert3Pos = glm::vec3({ 1.0f, -1.0f, 0.0f });
-		glm::vec3 vert4Pos = glm::vec3({ 1.0f, 1.0f, 0.0f });
+		glm::vec3 vert1Pos = glm::vec3({ -1.0f, 0.0f, 1.0f });
+		glm::vec3 vert2Pos = glm::vec3({ -1.0f, 0.0f, -1.0f });
+		glm::vec3 vert3Pos = glm::vec3({ 1.0f, 0.0f, -1.0f });
+		glm::vec3 vert4Pos = glm::vec3({ 1.0f, 0.0f, 1.0f });
 
 		glm::vec3 vert1Normal = glm::vec3({ 0.0f, 1.0f, 0.0f });
 		glm::vec3 vert2Normal = glm::vec3({ 0.0f, 1.0f, 0.0f });
@@ -73,15 +73,9 @@ public:
 												{ vert2Pos, vert2Normal, vert2Uv },
 												{ vert3Pos, vert3Normal, vert3Uv },
 												{ vert4Pos, vert4Normal, vert4Uv } },
-											  { { 0, 1, 2, 0, 2, 3 } },
+											  { { 2, 1, 0, 3, 2, 0 } },
 											  2,
 											  Mesh<Nimble::PositionNormalUv>::CreateVao());
 	}
-
-	/*static Mesh<Nimble::PositionNormalUv> CreateTexturedCube(glm::vec3 dimensions) {
-		std::vector<glm::vec3> verts = {
-
-		};
-	}*/
 };
 } // namespace Nimble

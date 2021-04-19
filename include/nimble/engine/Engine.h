@@ -17,7 +17,8 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <memory>
-#include <nimble/render-passes/RenderPass.h>
+#include <nimble/render-passes/PhongPass.h>
+#include <nimble/render-passes/ShadowPass.h>
 
 // Contains the top-level object for the Nimble Rendering Engine
 // Contains all of the methods for interacting with the Engine
@@ -49,8 +50,8 @@ private:
 	size_t _rootTransformNode;
 	SceneNode *cubeNode;
 	// TODO: Make this variable sized
-	std::unique_ptr<RenderPass> _render_pass;
-	std::unique_ptr<RenderPass> _phong_pass;
+	std::unique_ptr<ShadowPass> _shadow_pass;
+	std::unique_ptr<PhongPass> _phong_pass;
 };
 
 } // namespace Nimble
