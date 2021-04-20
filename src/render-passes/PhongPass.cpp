@@ -72,9 +72,7 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		glBindTexture(GL_TEXTURE_2D, diffuse_texture_unit->texture->GetTextureHandle());
 		diffuse_texture_unit->sampler.Bind();
 
-		if(_depth_texture) {
-			const float bounds = 100.0f;
-			glm::mat4 lightProjection = glm::ortho(-bounds, bounds, -bounds, bounds, 1.0f, 100.0f);
+		if(_shadow_map.depth_texture) {
 
 			auto lightPosition = directionalLightNode->GetDirectionalLight().direction;
 			lightPosition *= -1.0f;
@@ -82,13 +80,10 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 
 			_shader->SetUniform("lightPos", lightPosition);
 
-			glm::mat4 lightView = glm::lookAt(lightPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-			_shader->SetUniform("lightSpaceMatrix", lightSpaceMatrix);
+			_shader->SetUniform("lightSpaceMatrix", _shadow_map.light_space_matrix);
 			_shader->SetUniform("shadow_map", 1);
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, _depth_texture->GetTextureHandle());
+			glBindTexture(GL_TEXTURE_2D, _shadow_map.depth_texture->GetTextureHandle());
 		}
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(drawable->GetIB().GetNumFaces() * 3), GL_UNSIGNED_INT, nullptr);

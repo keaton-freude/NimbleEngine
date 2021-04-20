@@ -7,13 +7,13 @@ using namespace Nimble;
 
 ShadowPass::ShadowPass(size_t shadowWidth, size_t shadowHeight)
 : _shadow_width(shadowWidth), _shadow_height(shadowHeight) {
-	_depth_texture = std::make_shared<Texture2D>();
-	_depth_texture->Create(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT);
+	_shadow_map.depth_texture = std::make_shared<Texture2D>();
+	_shadow_map.depth_texture->Create(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT);
 	_shader = ResourceManager::Get().GetShader("shadow");
 	ASSERT(_shader, "Could not find shadow shader through resource manager");
 
 	_fbo.Bind();
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depth_texture->GetTextureHandle(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _shadow_map.depth_texture->GetTextureHandle(), 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	_fbo.Unbind();
@@ -41,7 +41,7 @@ void ShadowPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		sceneGraph.GetOneNodeByDerivedType<DirectionalLightNode>(SceneNodeType::DIRECTIONAL_LIGHT);
 
 	const float bounds = 100.0f;
-	glm::mat4 lightProjection = glm::ortho(-bounds, bounds, -bounds, bounds, 1.0f, 100.0f);
+	glm::mat4 lightProjection = glm::ortho(-bounds, bounds, -bounds, bounds, 1.0f, 200.0f);
 
 	auto lightPosition = directionalLightNode->GetDirectionalLight().direction;
 
@@ -51,6 +51,8 @@ void ShadowPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	glm::mat4 lightView = glm::lookAt(lightPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+	_shadow_map.light_space_matrix = lightSpaceMatrix;
 
 	for(const auto &drawable : drawables) {
 		if(drawable->GetMaterial()->GetCastsShadows().value() == false) {

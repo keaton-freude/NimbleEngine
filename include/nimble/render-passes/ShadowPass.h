@@ -9,10 +9,15 @@
 
 namespace Nimble {
 
+struct ShadowMap {
+	std::shared_ptr<Texture2D> depth_texture;
+	glm::mat4 light_space_matrix;
+};
+
 class ShadowPass : public RenderPass {
 private:
 	std::shared_ptr<ShaderProgram> _shader;
-	std::shared_ptr<Texture2D> _depth_texture;
+	ShadowMap _shadow_map;
 	FrameBuffer _fbo;
 	size_t _shadow_width;
 	size_t _shadow_height;
@@ -23,8 +28,8 @@ public:
 
 	void Draw(SceneState &state, const SceneGraph &sceneGraph) override;
 
-	std::shared_ptr<Texture2D> GetDepthTexture() {
-		return _depth_texture;
+	ShadowMap GetShadowMap() {
+		return _shadow_map;
 	}
 };
 

@@ -43,9 +43,9 @@ Engine::Engine(Window *window) : _window(window) {
 
 			// Translate the node..
 			glm::vec3 translation{};
-			translation.x = (i * DISTANCE_BETWEEN);
-			translation.y = 3.0f;
-			translation.z = (j * DISTANCE_BETWEEN);
+			translation.x = (i * DISTANCE_BETWEEN) * sin(rand());
+			translation.y = 8.0f;
+			translation.z = (j * DISTANCE_BETWEEN) * cos(rand());
 			_sceneGraph->Find(id).value()->Translate(translation);
 		}
 	}
@@ -62,8 +62,12 @@ Engine::Engine(Window *window) : _window(window) {
 
 	gridNode->Scale(glm::vec3(1000.0f, 1.0f, 1000.0f));
 
-	_shadow_pass = std::make_unique<ShadowPass>(4096, 4096);
+	_shadow_pass = std::make_unique<ShadowPass>(1024 * 2, 1024 * 2);
 	_phong_pass = std::make_unique<PhongPass>();
+
+#ifndef NDEBUG
+	_debug_pass = std::make_unique<DebugPass>();
+#endif
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -83,12 +87,15 @@ void Engine::RenderFrame(const Time &time) {
 	float speed = 10.0f;
 	glm::vec3 translation{};
 	translation.x = sin(total_time) * time.dt();
-	translation.y = sin(total_time) * time.dt();
 	translation.z = cos(total_time) * time.dt();
 	translation *= speed;
-	cubeHandleNode->Translate(translation);
+	// cubeHandleNode->Translate(translation);
 
 	_sceneGraph->Render();
+
+#ifndef NDEBUG
+	_debug_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
+#endif
 
 	// glCullFace(GL_FRONT);
 	_shadow_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
@@ -97,7 +104,7 @@ void Engine::RenderFrame(const Time &time) {
 	glViewport(0, 0, _window->GetWidth().get(), _window->GetHeight().get());
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	_phong_pass->SetDepthTexture(_shadow_pass->GetDepthTexture());
+	_phong_pass->SetShadowMap(_shadow_pass->GetShadowMap());
 	_phong_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
 
 	static bool vsyncEnabled = _window->IsVSyncEnabled();

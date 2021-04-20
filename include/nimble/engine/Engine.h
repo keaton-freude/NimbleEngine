@@ -17,6 +17,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <memory>
+#include <nimble/render-passes/DebugPass.h>
 #include <nimble/render-passes/PhongPass.h>
 #include <nimble/render-passes/ShadowPass.h>
 
@@ -52,6 +53,9 @@ private:
 	// TODO: Make this variable sized
 	std::unique_ptr<ShadowPass> _shadow_pass;
 	std::unique_ptr<PhongPass> _phong_pass;
+#ifndef NDEBUG
+	std::unique_ptr<DebugPass> _debug_pass;
+#endif
 };
 
 } // namespace Nimble
