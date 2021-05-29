@@ -7,6 +7,7 @@ DirectionalLightNode::DirectionalLightNode(DirectionalLight light) : _light(ligh
 }
 
 void DirectionalLightNode::Apply(SceneState &sceneState) {
+	static glm::vec3 direction {};
 	ImGui::SliderFloat3("Light Direction", &_light.direction.x, -1.0f, 1.0f);
-	//	_light.direction = glm::_light.direction);
+	_light.direction = glm::normalize(_light.direction);
 }

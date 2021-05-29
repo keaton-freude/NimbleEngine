@@ -28,10 +28,9 @@ Engine::Engine(Window *window) : _window(window) {
 	// Add a directional light to the scene
 	_rootTransformNode =
 		_sceneGraph
-			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(1.0f, -4.0f, -1.0f), glm::vec3(.3f, .3f, .3f))))
+			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(1.0f, -1.0f, -1.0f), glm::vec3(.3f, .3f, .3f))))
 			.second;
 
-	const auto NUM_NODES = 10;
 	const auto DISTANCE_BETWEEN = 5.0f;
 
 	auto cubeNodeId = _sceneGraph->AddChild(new NullNode(), _rootTransformNode);
@@ -43,9 +42,9 @@ Engine::Engine(Window *window) : _window(window) {
 
 			// Translate the node..
 			glm::vec3 translation{};
-			translation.x = (i * DISTANCE_BETWEEN) * sin(rand());
+			translation.x = i * DISTANCE_BETWEEN;
 			translation.y = 8.0f;
-			translation.z = (j * DISTANCE_BETWEEN) * cos(rand());
+			translation.z = j * DISTANCE_BETWEEN;
 			_sceneGraph->Find(id).value()->Translate(translation);
 		}
 	}
@@ -93,9 +92,6 @@ void Engine::RenderFrame(const Time &time) {
 
 	_sceneGraph->Render();
 
-#ifndef NDEBUG
-	_debug_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
-#endif
 
 	// glCullFace(GL_FRONT);
 	_shadow_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
@@ -104,6 +100,11 @@ void Engine::RenderFrame(const Time &time) {
 	glViewport(0, 0, _window->GetWidth().get(), _window->GetHeight().get());
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+#ifndef NDEBUG
+	_debug_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
+#endif
+
 	_phong_pass->SetShadowMap(_shadow_pass->GetShadowMap());
 	_phong_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
 
