@@ -3,6 +3,7 @@
 #include <nimble/render-passes/PhongPass.h>
 #include <nimble/render-passes/ShadowPass.h>
 #include <nimble/scene-graph/NullNode.h>
+#include <nimble/utility/ImGuiUtility.h>
 
 #include "glm/gtc/matrix_transform.hpp"
 #include "nimble/MeshTools.h"
@@ -113,10 +114,9 @@ void Engine::RenderFrame(const Time &time) {
 		_window->SetVSync(vsyncEnabled);
 	}
 
-	static float cameraRotateSpeed = static_cast<FreeFlyCamera *>(_camera.get())->GetRotateSpeed();
-	if(ImGui::SliderFloat("Camera Rotate Speed", &cameraRotateSpeed, 10.0f, 300.0f)) {
-		static_cast<FreeFlyCamera *>(_camera.get())->SetRotateSpeed(cameraRotateSpeed);
-	}
+	auto flyCamera = std::dynamic_pointer_cast<FreeFlyCamera>(_camera);
+	GUI_SLIDER_FLOAT1(float, cameraRotateSpeed, flyCamera->GetRotateSpeed(),
+					  10.0f, 300.0f, flyCamera->SetRotateSpeed);
 
 	// Horrible hacky way to limit FPS, does not take into account render time,
 	// so its pretty useless except quick testing with limited FPS

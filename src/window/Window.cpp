@@ -38,7 +38,7 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+	//glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
 	_window = glfwCreateWindow(static_cast<int>(width.get()), static_cast<int>(height.get()), title, nullptr, nullptr);
 
@@ -53,7 +53,6 @@ Nimble::Window::Window(Width width, Height height, const char *title)
 											 title)
 									 .c_str());
 	}
-
 	glfwMakeContextCurrent(_window);
 
 	SetVSync(_vsync_enabled);
@@ -70,7 +69,7 @@ void Nimble::Window::Initialize() const {
 }
 
 void Nimble::Window::SetVSync(bool enabled) {
-	glfwSwapInterval(enabled ? 1 : 0);
+	glfwSwapInterval(enabled ? 1 : -1);
 	_vsync_enabled = enabled;
 }
 
