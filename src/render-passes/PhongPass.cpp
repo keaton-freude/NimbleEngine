@@ -8,6 +8,17 @@ using namespace Nimble;
 PhongPass::PhongPass() {
 	_shader = ResourceManager::Get().GetShader("phong");
 	ASSERT(_shader, "Could not find phong shader through resource manager");
+
+	_model_uniform_location = _shader->GetUniformLocation("Model");
+	_view_uniform_location = _shader->GetUniformLocation("View");
+	_projection_uniform_location = _shader->GetUniformLocation("Projection");
+	_uv_multiplier_uniform_location = _shader->GetUniformLocation("UvMultiplier");
+	_view_pos_uniform_location = _shader->GetUniformLocation("viewPos");
+	_lighting_enabled_uniform_location = _shader->GetUniformLocation("lightingEnabled");
+	_diffuse_texture_uniform_location = _shader->GetUniformLocation("diffuse_texture");
+	_light_pos_uniform_location = _shader->GetUniformLocation("lightPos");
+	_light_space_matrix_uniform_location = _shader->GetUniformLocation("lightSpaceMatrix");
+	_shadow_map_uniform_location = _shader->GetUniformLocation("shadow_map");
 }
 
 void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
@@ -53,20 +64,20 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		auto uv_multiplier = drawable->GetMaterial()->GetUvMultiplier();
 
 		_shader->Use();
-		_shader->SetUniform("Model", transform.GetWorldMatrix());
-		_shader->SetUniform("View", state.GetCamera()->GetView());
-		_shader->SetUniform("Projection", *(state.GetProjectionMatrix()));
-		_shader->SetUniform("UvMultiplier", uv_multiplier.value());
+		_shader->SetUniform(_model_uniform_location, transform.GetWorldMatrix());
+		_shader->SetUniform(_view_uniform_location, state.GetCamera()->GetView());
+		_shader->SetUniform(_projection_uniform_location, *(state.GetProjectionMatrix()));
+		_shader->SetUniform(_uv_multiplier_uniform_location, uv_multiplier.value());
 
 		if(directionalLightNode && receives_lighting) {
 			auto light = directionalLightNode->GetDirectionalLight();
-			_shader->SetUniform("viewPos", state.GetCamera()->GetPosition());
-			_shader->SetUniform("lightingEnabled", true);
+			_shader->SetUniform(_view_pos_uniform_location, state.GetCamera()->GetPosition());
+			_shader->SetUniform(_lighting_enabled_uniform_location, true);
 		} else {
-			_shader->SetUniform("lightingEnabled", false);
+			_shader->SetUniform(_lighting_enabled_uniform_location, false);
 		}
 
-		_shader->SetUniform("diffuse_texture", 0);
+		_shader->SetUniform(_diffuse_texture_uniform_location, 0);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuse_texture_unit->texture->GetTextureHandle());
@@ -78,10 +89,10 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 			lightPosition *= -1.0f;
 			lightPosition *= 10.0f;
 
-			_shader->SetUniform("lightPos", lightPosition);
+			_shader->SetUniform(_light_pos_uniform_location, lightPosition);
 
-			_shader->SetUniform("lightSpaceMatrix", _shadow_map.light_space_matrix);
-			_shader->SetUniform("shadow_map", 1);
+			_shader->SetUniform(_light_space_matrix_uniform_location, _shadow_map.light_space_matrix);
+			_shader->SetUniform(_shadow_map_uniform_location, 1);
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, _shadow_map.depth_texture->GetTextureHandle());
 		}

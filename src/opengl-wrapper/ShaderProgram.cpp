@@ -134,3 +134,7 @@ void ShaderProgram::QueryUniformsAndAttributes() {
 
 	spdlog::info("ShaderInfo for Shader {}: {}", _name, _shaderInfo.ToString());
 }
+
+unsigned int ShaderProgram::GetUniformLocation(const string &name) {
+	return _shaderInfo.GetUniformPosition(name);
+}
