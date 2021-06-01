@@ -123,8 +123,13 @@ void ShaderProgram::QueryUniformsAndAttributes() {
 		glGetActiveUniform(_programHandle, (GLuint)uniform, bufSize, &length, &size, &type, &nameData[0]);
 		std::string name((char *)&nameData[0], length);
 
-		Uniform uniformStruct(name, type, GLenumToString(type), uniform);
-		_shaderInfo.uniforms.push_back(uniformStruct);
+		//Uniform uniformStruct(name, type, GLenumToString(type), uniform);
+		//_shaderInfo.uniforms.emplace(uniformStruct);
+		_shaderInfo.uniforms.emplace(
+			std::make_pair(name, Uniform(name, type, GLenumToString(type), uniform))
+		);
+
+		_shaderInfo.uniforms.emplace(std::make_pair((const char* const)"Key", Uniform()));
 	}
 
 	spdlog::info("ShaderInfo for Shader {}: {}", _name, _shaderInfo.ToString());

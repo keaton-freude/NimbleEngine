@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace Nimble {
 
@@ -24,6 +25,8 @@ struct Uniform {
 	GLenum type;
 	std::string typeName;
 	GLuint location;
+
+	Uniform() = default;
 
 	Uniform(const std::string &name, GLenum type, const std::string &typeName, GLuint location)
 	: name(name), type(type), typeName(typeName), location(location) {
@@ -53,7 +56,9 @@ struct Attribute {
 
 struct ShaderInfo {
 	std::vector<Attribute> attributes;
-	std::vector<Uniform> uniforms;
+	//std::vector<Uniform> uniforms;
+	std::unordered_map<std::string, Uniform> uniforms;
+
 
 	std::string ToString() {
 		// Dump all info from attributes & uniforms
@@ -66,17 +71,17 @@ struct ShaderInfo {
 
 		ss << "\nUniforms:\n";
 		for(const auto &uniform : uniforms) {
-			ss << uniform.ToString() << "\n";
+			ss << uniform.second.ToString() << "\n";
 		}
 
 		return ss.str();
 	}
 
 	GLuint GetUniformPosition(const std::string &name) {
-		for(const auto &uniform : uniforms) {
-			if(uniform.name == name) {
-				return uniform.location;
-			}
+		const auto& uniform = uniforms.find(name.c_str());
+
+		if (uniform != uniforms.end()) {
+			return uniform->second.location;
 		}
 
 		throw std::runtime_error(fmt::format("Failed to find uniform with name {}", name));
