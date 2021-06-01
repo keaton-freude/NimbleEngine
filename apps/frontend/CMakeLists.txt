@@ -8,10 +8,22 @@ set_target_properties(NimbleEngineFrontend PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/install
         RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/install)
 
+string( TOLOWER ${CMAKE_BUILD_TYPE} build_type_lower)
+if(${build_type_lower} STREQUAL "debug")
+    target_include_directories(NimbleEngineFrontend PRIVATE ${PROJECT_SOURCE_DIR}/extern/vld/include)
+    target_link_libraries(NimbleEngineFrontend PRIVATE ${PROJECT_SOURCE_DIR}/extern/vld/lib/Win64/vld.lib)
+endif()
+
 message("Copying resources to install")
 # Install the resources folder next to the frontend post-build
 add_custom_command(TARGET NimbleEngineFrontend POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/resources
         $<TARGET_FILE_DIR:NimbleEngineFrontend>/resources
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/extern/vld/bin/Win64/vld_x64.dll $<TARGET_FILE_DIR:NimbleEngineFrontend>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/extern/vld/bin/Win64/dbghelp.dll $<TARGET_FILE_DIR:NimbleEngineFrontend>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/extern/vld/bin/Win64/Microsoft.DTfW.DHL.manifest $<TARGET_FILE_DIR:NimbleEngineFrontend>
         )

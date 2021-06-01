@@ -89,7 +89,7 @@ private:
 	// file, or via CLI or something similar.
 	const std::string &GetResourceRoot() {
 		ASSERT_NE(_resourceRoot.size(), 0);
-
+		spdlog::debug("Resource Root: {}", _resourceRoot.c_str());
 		assert(std::filesystem::exists(_resourceRoot) && "RESOURCE_ROOT does not exist!");
 
 		return _resourceRoot;

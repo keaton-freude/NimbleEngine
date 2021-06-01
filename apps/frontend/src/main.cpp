@@ -1,9 +1,16 @@
+#ifdef _MSC_VER
+#ifndef NDEBUG
+
+#include <vld.h>
+
+#endif
+#endif
+
 #include <GL/glew.h>
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4005 )
 #endif
-#include <GLFW/glfw3.h>
 #include <cstdlib>
 #include <stdexcept>
 
@@ -25,10 +32,6 @@ int main(int argc, char** argv) {
 	try {
 		auto args = HandleCLIArgs(argc, argv);
 		spdlog::set_level(spdlog::level::debug);
-		// main application code here
-		if(!glfwInit()) {
-			throw std::runtime_error("Could not initialize GLFW");
-		}
 
 		Window w(Width(1920), Height(1080), "Test Title");
 		GLenum err = glewInit();
@@ -70,6 +73,10 @@ int main(int argc, char** argv) {
 	} catch(std::exception &ex) {
 		spdlog::critical("Unhandled exception with message: {}", ex.what());
 	}
+
+	ImGui_ImplGlfw_Shutdown();
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui::DestroyContext();
 
 	return 0;
 }

@@ -15,13 +15,12 @@ FileWatcherSubsystem::FileWatcherSubsystem(std::filesystem::path directory, Chan
 void FileWatcherSubsystem::OnCreate() {
 	spdlog::info("Watching for {0} events in {1}", ChangeTypeToString(_changeType),
 				 _monitoredDirectory.string().c_str());
-	_fileWatcherData.directoryHandle = new HANDLE;
 
-	_fileWatcherData.directoryHandle = CreateFileA((const char *)_monitoredDirectory.string().c_str(), GENERIC_READ,
+	_fileWatcherData.directoryHandle = UniqueHandle(CreateFileA((const char *)_monitoredDirectory.string().c_str(), GENERIC_READ,
 											 FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-											 OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL);
+											 OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL));
 
-	if (_fileWatcherData.directoryHandle == INVALID_HANDLE_VALUE) {
+	if (_fileWatcherData.directoryHandle.get() == INVALID_HANDLE_VALUE) {
 		spdlog::error("Failed to create watcher subsystem. Not able to open directory. Error: {}", GetLastError());
 	}
 
@@ -38,7 +37,7 @@ void FileWatcherSubsystem::OnTick(float dt) {
 
 	if (!_fileWatcherData.waitingForChanges) {
 
-		if(ReadDirectoryChangesW(_fileWatcherData.directoryHandle, _fileWatcherData.buffer, FileInfoBufferSize, true,
+		if(ReadDirectoryChangesW(_fileWatcherData.directoryHandle.get(), _fileWatcherData.buffer, FileInfoBufferSize, true,
 								 FILE_NOTIFY_CHANGE_SIZE, 0, &_fileWatcherData.overlap, completionHandler) != 0) {
 			_fileWatcherData.waitingForChanges = true;
 		} else {

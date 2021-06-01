@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <functional>
 #include <string>
+#include <memory>
 #include "nimble/core/Subject.h"
 
 namespace Nimble {
@@ -18,10 +19,19 @@ constexpr size_t FileInfoBufferSize = 16 * 1024;
 
 #include <Windows.h>
 
+struct HandleCloser {
+
+	void operator()(HANDLE handle) {
+		CloseHandle(handle);
+	}
+};
+
+using UniqueHandle = std::unique_ptr<std::remove_pointer_t<HANDLE>, HandleCloser>;
+
 // Platform-specific bits of information needed to implement the file watcher
 // functionality
 struct FileWatcherData {
-	HANDLE directoryHandle;
+	UniqueHandle directoryHandle;
 	OVERLAPPED overlap;
 	char buffer[FileInfoBufferSize];
 	bool waitingForChanges = false;

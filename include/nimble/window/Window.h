@@ -13,6 +13,7 @@ private:
 
 public:
 	explicit Window(Width width, Height height, const char *title);
+	~Window();
 
 	GLFWwindow *GetWindow() const {
 		return _window;

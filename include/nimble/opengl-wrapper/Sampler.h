@@ -16,17 +16,17 @@ enum TextureWrapMode {
 
 namespace SamplerConstants {
 
-static const std::string ClampToEdgeStr = std::string("ClampToEdge");
-static const std::string RepeatStr = std::string("Repeat");
-static const std::string MirroredRepeat = std::string("MirroredRepeat");
+extern const std::string ClampToEdgeStr;
+extern const std::string RepeatStr;
+extern const std::string MirroredRepeat;
 
-static const std::string NearestStr = std::string("Nearest");
-static const std::string LinearStr = std::string("Linear");
+extern const std::string NearestStr;
+extern const std::string LinearStr;
 
-static const std::string NearestMipmapNearestStr = std::string("NearestMipmapNearest");
-static const std::string LinearMipmapNearestStr = std::string("LinearMipmapNearest");
-static const std::string NearestMipmapLinearStr = std::string("NearestMipmapLinear");
-static const std::string LinearMipmapLinearStr = std::string("LinearMipmapLinear");
+extern const std::string NearestMipmapNearestStr;
+extern const std::string LinearMipmapNearestStr;
+extern const std::string NearestMipmapLinearStr;
+extern const std::string LinearMipmapLinearStr;
 }
 
 enum class TextureMagFilter {
