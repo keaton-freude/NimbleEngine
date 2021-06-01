@@ -8,11 +8,16 @@ set_target_properties(NimbleEngineFrontend PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/install
         RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/install)
 
-string( TOLOWER ${CMAKE_BUILD_TYPE} build_type_lower)
-if(${build_type_lower} STREQUAL "debug")
+message("LeakCheck: ${NIMBLE_LEAK_CHECK}")
+
+if(${NIMBLE_LEAK_CHECK})
+    message("Leak checking enabled")
     target_include_directories(NimbleEngineFrontend PRIVATE ${PROJECT_SOURCE_DIR}/extern/vld/include)
     target_link_libraries(NimbleEngineFrontend PRIVATE ${PROJECT_SOURCE_DIR}/extern/vld/lib/Win64/vld.lib)
+else()
+    message("Leak checking disabled")
 endif()
+
 
 message("Copying resources to install")
 # Install the resources folder next to the frontend post-build
