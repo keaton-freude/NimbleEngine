@@ -1,5 +1,5 @@
 #ifdef _MSC_VER
-#ifndef NDEBUG
+#ifdef NIMBLE_LEAK_CHECK
 
 #include <vld.h>
 
