@@ -57,7 +57,8 @@ inline void DIE(T str, Args... args) {
 
 #ifndef NDEBUG
 #define ASSERT(cond, format, ...) do { \
-    	cond ? (void)sizeof(cond) : INTERNAL_DIE(#cond, format, __FILE__, __LINE__, ## __VA_ARGS__);              \
+    	cond ? (void)sizeof(cond) : INTERNAL_DIE(#cond, format, __FILE__, __LINE__, ## __VA_ARGS__); \
+		(void)0;\
 	} while (0);
 #else
 #define ASSERT(cond, format, ...) do { \

@@ -101,35 +101,45 @@ void ShaderProgram::QueryUniformsAndAttributes() {
 	glGetProgramiv(_programHandle, GL_ACTIVE_ATTRIBUTES, &numActiveAttribs);
 	glGetProgramiv(_programHandle, GL_ACTIVE_UNIFORMS, &numActiveUniforms);
 
-	std::vector<GLchar> nameData(256);
-
-	const GLsizei bufSize = 64;
+	// Buffer to store attribute/uniform name
+	std::vector<GLchar> nameData(GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
+	// Max bytes OpenGL is allowed to write to the buffer
+	const GLsizei bufSize = GL_ACTIVE_ATTRIBUTE_MAX_LENGTH;
+	// Actual amount of bytes OpenGL wrote to the buffer
 	GLsizei length;
+	// Size of the attribute / uniform in units of "type"
 	GLint size;
+	// Type of the attribute / uniform
 	GLenum type;
 
-
 	for(int attrib = 0; attrib < numActiveAttribs; ++attrib) {
-
 		glGetActiveAttrib(_programHandle, (GLuint)attrib, bufSize, &length, &size, &type, &nameData[0]);
-		std::string name((char *)&nameData[0], length);
 
+		if(!length) {
+			// Any failure in glGetActiveAttrib results in a zero length
+			spdlog::warn("Failed to retrieve Attribute #{} for shader '{}'", attrib, _name);
+			continue;
+		}
+
+		std::string name((char *)&nameData[0], length);
 		Attribute attribute(name, type, GLenumToString(type));
 		_shaderInfo.attributes.push_back(attribute);
 	}
 
 	for(int uniform = 0; uniform < numActiveUniforms; ++uniform) {
-
 		glGetActiveUniform(_programHandle, (GLuint)uniform, bufSize, &length, &size, &type, &nameData[0]);
+
+		if(!length) {
+			// Any failure in glGetActiveUniform results in a zero length
+			spdlog::warn("Failed to retrieve Attribute #{} for shader '{}'", uniform, _name);
+			continue;
+		}
+
 		std::string name((char *)&nameData[0], length);
 
-		//Uniform uniformStruct(name, type, GLenumToString(type), uniform);
+		// Uniform uniformStruct(name, type, GLenumToString(type), uniform);
 		//_shaderInfo.uniforms.emplace(uniformStruct);
-		_shaderInfo.uniforms.emplace(
-			std::make_pair(name, Uniform(name, type, GLenumToString(type), uniform))
-		);
-
-		_shaderInfo.uniforms.emplace(std::make_pair((const char* const)"Key", Uniform()));
+		_shaderInfo.uniforms.emplace(std::make_pair(name, Uniform(name, type, GLenumToString(type), uniform)));
 	}
 
 	spdlog::info("ShaderInfo for Shader {}: {}", _name, _shaderInfo.ToString());

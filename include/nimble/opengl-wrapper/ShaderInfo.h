@@ -24,11 +24,11 @@ struct Uniform {
 	// Shape of the data, like vec2f, mat4x4, etc
 	GLenum type;
 	std::string typeName;
-	GLuint location;
+	GLint location;
 
 	Uniform() = default;
 
-	Uniform(const std::string &name, GLenum type, const std::string &typeName, GLuint location)
+	Uniform(const std::string &name, GLenum type, const std::string &typeName, GLint location)
 	: name(name), type(type), typeName(typeName), location(location) {
 	}
 
@@ -77,7 +77,7 @@ struct ShaderInfo {
 		return ss.str();
 	}
 
-	GLuint GetUniformPosition(const std::string &name) {
+	GLint GetUniformPosition(const std::string &name) {
 		const auto& uniform = uniforms.find(name.c_str());
 
 		if (uniform != uniforms.end()) {

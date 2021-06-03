@@ -23,7 +23,7 @@ private:
 	ShaderInfo _shaderInfo;
 
 public:
-	ShaderProgram(const std::string &name);
+	explicit ShaderProgram(const std::string &name);
 	~ShaderProgram();
 
 	void AddVertexShader(const char *text);
@@ -36,7 +36,7 @@ public:
 	// Bind the shader program to the pipeline
 	void Use() const;
 
-	const unsigned int ShaderHandle() const {
+	[[nodiscard]] unsigned int ShaderHandle() const {
 		return _programHandle;
 	}
 
@@ -44,12 +44,12 @@ public:
 
 	template <typename T>
 	void SetUniform(const std::string &name, const T &t) {
-		ASSERT(false, "SetUniform called with a type without a specialization. Type: {}", typeid(T).name());
+		DIE("SetUniform called with a type without a specialization. Type: {}", typeid(T).name());
 	}
 
 	template <typename T>
-	void SetUniform(unsigned int, const T &t) {
-		ASSERT(false, "SetUniform called with a type without a specialization. Type: {}", typeid(T).name());
+	void SetUniform(int, const T &t) {
+		DIE("SetUniform called with a type without a specialization. Type: {}", typeid(T).name());
 	}
 
 
@@ -149,80 +149,80 @@ inline void ShaderProgram::SetUniform<float>(const std::string &name, const floa
 	glUniform1f(location, t);
 }
 
-// ---------------- SET UNIFORM VIA PREKNOWN LOCATION ---------------
+// -- Set Uniform via already known location
 
 template <>
-inline void ShaderProgram::SetUniform<glm::vec3>(unsigned int location, const glm::vec3 &t) {
+inline void ShaderProgram::SetUniform<glm::vec3>(int location, const glm::vec3 &t) {
 	glUniform3fv(location, 1, &t[0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::vec2>(unsigned int location, const glm::vec2 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::vec2>(int location, const glm::vec2 &t) {
 	glUniform2fv(location, 1, &t[0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::vec4>(unsigned int location, const glm::vec4 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::vec4>(int location, const glm::vec4 &t) {
 	glUniform4fv(location, 1, &t[0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::mat4>(unsigned int location, const glm::mat4 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::mat4>(int location, const glm::mat4 &t) {
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(t));
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::mat4x2>(unsigned int location, const glm::mat4x2 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::mat4x2>(int location, const glm::mat4x2 &t) {
 	glUniformMatrix4x2fv(location, 1, GL_FALSE, &t[0][0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::mat4x3>(unsigned int location, const glm::mat4x3 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::mat4x3>(int location, const glm::mat4x3 &t) {
 	glUniformMatrix4x3fv(location, 1, GL_FALSE, &t[0][0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::mat3>(unsigned int location, const glm::mat3 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::mat3>(int location, const glm::mat3 &t) {
 	glUniformMatrix3fv(location, 1, GL_FALSE, &t[0][0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::mat3x2>(unsigned int location, const glm::mat3x2 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::mat3x2>(int location, const glm::mat3x2 &t) {
 	glUniformMatrix3x2fv(location, 1, GL_FALSE, &t[0][0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::mat3x4>(unsigned int location, const glm::mat3x4 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::mat3x4>(int location, const glm::mat3x4 &t) {
 	glUniformMatrix3x4fv(location, 1, GL_FALSE, &t[0][0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::mat2>(unsigned int location, const glm::mat2 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::mat2>(int location, const glm::mat2 &t) {
 	glUniformMatrix2fv(location, 1, GL_FALSE, &t[0][0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::mat2x3>(unsigned int location, const glm::mat2x3 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::mat2x3>(int location, const glm::mat2x3 &t) {
 	glUniformMatrix2x3fv(location, 1, GL_FALSE, &t[0][0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<glm::mat2x4>(unsigned int location, const glm::mat2x4 &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<glm::mat2x4>(int location, const glm::mat2x4 &t) {
 	glUniformMatrix2x4fv(location, 1, GL_FALSE, &t[0][0]);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<bool>(unsigned int location, const bool &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<bool>(int location, const bool &t) {
 	glUniform1i(location, t);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<int>(unsigned int location, const int &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<int>(int location, const int &t) {
 	glUniform1i(location, t);
 }
 
 template <>
-inline void ShaderProgram::SetUniform<float>(unsigned int location, const float &t) {
+[[maybe_unused]] inline void ShaderProgram::SetUniform<float>(int location, const float &t) {
 	glUniform1f(location, t);
 }
 
