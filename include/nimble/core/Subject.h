@@ -13,7 +13,7 @@ class Subscription;
 template <typename T>
 class Subject;
 
-class ISubject;
+//class ISubject;
 
 template <typename T>
 class Observer {
@@ -25,20 +25,20 @@ public:
 class ISubject {
 public:
 	~ISubject() = default;
-	virtual void Unsubscribe(Subscription s) = 0;
+	virtual void Unsubscribe(const Subscription& s) = 0;
 };
 
 class Subscription {
 public:
 	Subscription() = delete;
-	Subscription(size_t id, ISubject* subject)
+	[[maybe_unused]] Subscription(size_t id, ISubject* subject)
 		: _id(id), _subject(subject) {}
 
-	void Unsubscribe() {
+	[[maybe_unused]] void Unsubscribe() {
 		_subject->Unsubscribe(*this);
 	}
 
-	size_t GetID() const {
+	[[nodiscard]] size_t GetID() const {
 		return _id;
 	}
 private:
@@ -54,7 +54,7 @@ private:
 	std::list<Observer<T>> _observers{};
 public:
 	Subscription Subscribe(std::function<void(T)> observer);
-	void Unsubscribe(Subscription s) override {
+	void Unsubscribe(const Subscription& s) override {
 		_observers.remove_if([s](Observer<T> obs) {
 			return obs.id == s.GetID();
 		});

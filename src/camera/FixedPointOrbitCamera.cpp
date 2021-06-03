@@ -4,12 +4,12 @@
 using namespace Nimble;
 
 FixedPointOrbitCamera::FixedPointOrbitCamera()
-: _focusPoint(glm::vec3(0.f, 0.f, 0.f)), _rotation(0.f, 0.f), _position(0.0f, 0.0f, -3.0f), _rotateSpeed(1.0f) {
+: _focusPoint(glm::vec3(0.f, 0.f, 0.f)), _position(0.0f, 0.0f, -3.0f), _rotateSpeed(1.0f) {
 	_position = glm::vec3(0.0f, 0.0f, -2.0f);
 }
 
 FixedPointOrbitCamera::FixedPointOrbitCamera(glm::vec3 focusPoint, float rotateSpeed)
-: _focusPoint(focusPoint), _rotation(0.f, 0.f), _position(0.0f, 0.0f, -3.0f), _rotateSpeed(rotateSpeed) {
+: _focusPoint(focusPoint), _position(0.0f, 0.0f, -3.0f), _rotateSpeed(rotateSpeed) {
 	_quatRotation = glm::quat(0.0f, 0.0f, 1.0f, 0.0f);
 }
 

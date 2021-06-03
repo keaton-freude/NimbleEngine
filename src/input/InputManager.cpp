@@ -29,6 +29,7 @@ void Input::Update() {
 
 	assert(_windowPtr && "Can't check keyboard state if no GLFW window was given!");
 	for(auto &[key, value] : _scanCodeState) {
+		(void)key;
 		// Query GLFW for the state of this key and set it
 		auto state = glfwGetKey(_windowPtr, value.scanCode);
 		value.pressed = state == GLFW_PRESS;

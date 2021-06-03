@@ -35,7 +35,6 @@ Engine::Engine(Window *window) : _window(window) {
 	const auto DISTANCE_BETWEEN = 5.0f;
 
 	auto cubeNodeId = _sceneGraph->AddChild(new NullNode(), _rootTransformNode);
-	cubeHandleNode = _sceneGraph->Find(cubeNodeId).value();
 
 	for(int i = -5; i < 6; ++i) {
 		for(int j = -5; j < 6; ++j) {
@@ -74,29 +73,21 @@ Engine::Engine(Window *window) : _window(window) {
 }
 
 void Engine::RenderFrame(const Time &time) {
-
-	// glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	_camera->Update(time);
 	auto rootTransform = _sceneGraph->Find(_rootTransformNode);
 	static float total_time = 0.0f;
 	total_time += time.dt();
-	// cubeNode->Translate(glm::vec3(sin(total_time) * time.dt(), 0.0f, sin(total_time) * time.dt()));
 
 	float speed = 10.0f;
 	glm::vec3 translation{};
 	translation.x = sin(total_time) * time.dt();
 	translation.z = cos(total_time) * time.dt();
 	translation *= speed;
-	// cubeHandleNode->Translate(translation);
 
 	_sceneGraph->Render();
 
 
-	// glCullFace(GL_FRONT);
 	_shadow_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
-	// glCullFace(GL_BACK);
 
 	glViewport(0, 0, _window->GetWidth().get(), _window->GetHeight().get());
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -117,16 +108,6 @@ void Engine::RenderFrame(const Time &time) {
 	auto flyCamera = std::dynamic_pointer_cast<FreeFlyCamera>(_camera);
 	GUI_SLIDER_FLOAT1(float, cameraRotateSpeed, flyCamera->GetRotateSpeed(),
 					  10.0f, 300.0f, flyCamera->SetRotateSpeed);
-
-	// Horrible hacky way to limit FPS, does not take into account render time,
-	// so its pretty useless except quick testing with limited FPS
-	/*static int FPS = 60;
-	ImGui::SliderInt("FPS", &FPS, 1, 1000);
-	static size_t microseconds = 0;
-
-	microseconds = static_cast<size_t>(((1.0f / (float)FPS) * 1000.0f) * 1000.0f);
-
-	std::this_thread::sleep_for(std::chrono::microseconds(microseconds));*/
 }
 
 void Engine::SetLatestFPS(float FPS) {

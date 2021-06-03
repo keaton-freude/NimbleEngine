@@ -1,5 +1,4 @@
 #include "nimble/scene-graph/SceneNode.h"
-#include "spdlog/spdlog.h"
 
 #include <optional>
 
@@ -44,7 +43,8 @@ size_t SceneNode::GetID() const {
 
 size_t SceneNode::GenerateID() {
 	static size_t CurrentId = 0;
-	return CurrentId++;
+	CurrentId++;
+	return CurrentId;
 }
 
 std::optional<SceneNode *> SceneNode::Find(size_t id) {

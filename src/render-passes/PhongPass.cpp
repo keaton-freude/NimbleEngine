@@ -58,7 +58,6 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		auto diffuse_texture_unit = drawable->GetMaterial()->GetDiffuseTexture();
 		ASSERT(diffuse_texture_unit.has_value(), "Phong Pass requires a diffuse texture to be set!");
 
-		auto texture = diffuse_texture_unit->texture;
 		auto receives_lighting = drawable->GetMaterial()->GetReceivesLighting().value();
 		auto transform = drawable->GetTransformation();
 		auto uv_multiplier = drawable->GetMaterial()->GetUvMultiplier();

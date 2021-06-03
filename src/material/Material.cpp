@@ -60,8 +60,10 @@ static TextureUnit GetTextureUnitFromJson(const Value &texture_obj) {
 		}
 	}
 
-	// Even if user doesn't specify sampler settings, we'll just take the defaults we started with
-	return TextureUnit(texture, Sampler());
+	// When settings is created, it sets our engine-defined defaults
+	// So even if the user doesn't specify any override we end up with sensible
+	// defaults
+	return TextureUnit(texture, Sampler(settings));
 }
 
 void Material::LoadFromFile(const char *path) {

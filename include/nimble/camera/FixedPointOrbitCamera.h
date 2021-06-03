@@ -7,10 +7,6 @@ namespace Nimble {
 class FixedPointOrbitCamera : public ICamera {
 	// This is the location, in world-space, that we will be focusing on
 	glm::vec3 _focusPoint;
-	// This is our current rotation around the Focus Point
-	// where x is the rotation around the X axis (up & around, or down and around)
-	// and y is the rotation around the Y axis (left -> right, or right -> left movement)
-	glm::vec2 _rotation;
 
 	glm::vec3 _position;
 	glm::vec3 _rotatedPosition;

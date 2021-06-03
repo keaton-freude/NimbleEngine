@@ -28,6 +28,7 @@ void FileWatcherSubsystem::OnCreate() {
 }
 
 void FileWatcherSubsystem::OnTick(float dt) {
+	(void)dt;
 	ASSERT_NOT_NULL(_fileWatcherData.directoryHandle);
 
 	static auto completionHandler = [](DWORD errorCode, DWORD numBytes, LPOVERLAPPED overlapped) {

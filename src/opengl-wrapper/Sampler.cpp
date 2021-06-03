@@ -26,3 +26,6 @@ void Sampler::Bind() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _samplerSettings.TextureMinFilterGL());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _samplerSettings.TextureMagFilterGL());
 }
+Sampler::Sampler(SamplerSettings settings) {
+	SetSettings(settings);
+}

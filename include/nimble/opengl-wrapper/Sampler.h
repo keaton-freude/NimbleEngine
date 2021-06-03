@@ -93,7 +93,7 @@ struct SamplerSettings {
     TextureMagFilter textureMagFilter = TextureMagFilter::Linear;
     TextureMinFilter textureMinFilter = TextureMinFilter::NearestMipmapLinear;
 
-    NIMBLE_INLINE unsigned int TextureMapModeUGL() {
+    [[nodiscard]] NIMBLE_INLINE unsigned int TextureMapModeUGL() const {
         switch (textureWrapModeU) {
             case TextureWrapMode::ClampToEdge:
                 return GL_CLAMP_TO_EDGE;
@@ -109,7 +109,7 @@ struct SamplerSettings {
         }
     }
 
-    NIMBLE_INLINE unsigned int TextureMapModeVGL() {
+    [[nodiscard]] NIMBLE_INLINE unsigned int TextureMapModeVGL() const {
         switch (textureWrapModeV) {
             case TextureWrapMode::ClampToEdge:
                 return GL_CLAMP_TO_EDGE;
@@ -125,7 +125,7 @@ struct SamplerSettings {
         }
     }
 
-    NIMBLE_INLINE unsigned int TextureMagFilterGL() {
+    [[nodiscard]] NIMBLE_INLINE unsigned int TextureMagFilterGL() const {
         switch (textureMagFilter) {
             case TextureMagFilter::Linear:
                 return GL_LINEAR;
@@ -137,7 +137,7 @@ struct SamplerSettings {
         }
     }
 
-    NIMBLE_INLINE unsigned int TextureMinFilterGL() {
+    [[nodiscard]] NIMBLE_INLINE unsigned int TextureMinFilterGL() const {
         switch (textureMinFilter) {
             case TextureMinFilter::Linear:
                 return GL_LINEAR;
@@ -163,6 +163,7 @@ private:
     SamplerSettings _samplerSettings = {};
 public:
     Sampler() = default;
+	explicit Sampler(SamplerSettings settings);
 
     void SetSettings(SamplerSettings settings);
     void Bind();
