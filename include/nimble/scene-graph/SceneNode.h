@@ -4,6 +4,7 @@
 #include <optional>
 #include <spdlog/spdlog.h>
 #include <utility>
+#include <type_traits>
 #include <vector>
 
 #include "nimble/scene-graph/SceneState.h"
@@ -95,7 +96,7 @@ public:
 	// The transform which governs an entire character, or, the Render node we would like to tweak
 	// based on user input, etc
 	// Guaranteed to be unique!
-	size_t GetID() const;
+	[[nodiscard]] size_t GetID() const;
 
 	// Search ourself, and our children for the specific ID
 	// Returning a raw pointer, because we can't use references in std::optional
@@ -107,7 +108,7 @@ public:
 	void Rotate(glm::vec3 axis, float radians);
 	void Scale(glm::vec3 scale);
 
-	const Transformation &GetTransformation() const;
+	[[nodiscard]] const Transformation &GetTransformation() const;
 
 private:
 	static size_t GenerateID();

@@ -5,10 +5,10 @@
 
 using namespace Nimble;
 
-ShadowPass::ShadowPass(size_t shadowWidth, size_t shadowHeight)
+ShadowPass::ShadowPass(int shadowWidth, int shadowHeight)
 : _shadow_width(shadowWidth), _shadow_height(shadowHeight) {
 	_shadow_map.depth_texture = std::make_shared<Texture2D>();
-	_shadow_map.depth_texture->Create(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT);
+	_shadow_map.depth_texture->Create((int)shadowWidth, (int)shadowHeight, GL_DEPTH_COMPONENT);
 	_shader = ResourceManager::Get().GetShader("shadow");
 	ASSERT(_shader, "Could not find shadow shader through resource manager");
 
@@ -37,7 +37,7 @@ void ShadowPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	std::list<DrawableNode *> drawables = sceneGraph.GetNodesByDerivedType<DrawableNode>(SceneNodeType::DRAWABLE);
 
 	// We need a directional light
-	DirectionalLightNode *directionalLightNode =
+	auto *directionalLightNode =
 		sceneGraph.GetOneNodeByDerivedType<DirectionalLightNode>(SceneNodeType::DIRECTIONAL_LIGHT);
 
 	const float bounds = 100.0f;

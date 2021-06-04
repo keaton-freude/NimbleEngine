@@ -66,14 +66,12 @@ enum class ChangeType : unsigned int {
 	// File has been renamed
 	FILE_RENAMED = 8
 };
-
+namespace {
 constexpr ChangeType operator|(ChangeType a, ChangeType b) {
 	typedef std::underlying_type<ChangeType>::type enum_type;
 	return static_cast<ChangeType>(static_cast<enum_type>(a) | static_cast<enum_type>(b));
 }
-
-// Shape of the event emitted when a file change modification is detected
-using FileChangedEvent = std::function<void(ChangeType, std::string)>;
+}
 
 class FileWatcherSubsystem : public ISubsystem {
 public:
@@ -86,7 +84,7 @@ public:
 	Subject<std::filesystem::path> FileModifiedEvent{};
 
 private:
-	constexpr inline const char* ChangeTypeToString(ChangeType type) {
+	static constexpr inline const char* ChangeTypeToString(ChangeType type) {
 		switch (type) {
 		case ChangeType::FILE_CHANGED:
 			return "FILE_CHANGED";

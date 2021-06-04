@@ -90,6 +90,11 @@ endif()
 # Nimble Engine
 add_library(NimbleEngine ${PlatformIndependentSourceFiles})
 
+# MSVC complains about clang pragmas used by clang-tidy (through CLion)
+if (MSVC)
+    target_compile_options(NimbleEngine PUBLIC "/wd4068")
+endif()
+
 target_compile_features(NimbleEngine PUBLIC cxx_std_17)
 set_target_properties(NimbleEngine PROPERTIES CXX_EXTENSIONS OFF)
 

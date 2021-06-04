@@ -9,8 +9,11 @@ using std::unordered_map;
 void Input::Update() {
 	// Calculate the mouse delta
 	static bool firstRun = true;
-	if(firstRun) {
+	if (firstRun) {
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnusedValue"
 		firstRun = false;
+#pragma clang diagnostic pop
 		return;
 	}
 

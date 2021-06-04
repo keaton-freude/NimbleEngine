@@ -19,12 +19,12 @@ private:
 	std::shared_ptr<ShaderProgram> _shader;
 	ShadowMap _shadow_map;
 	FrameBuffer _fbo;
-	size_t _shadow_width;
-	size_t _shadow_height;
+	int _shadow_width;
+	int _shadow_height;
 
 public:
 	ShadowPass() = delete;
-	ShadowPass(size_t shadowWidth, size_t shadowHeight);
+	ShadowPass(int shadowWidth, int shadowHeight);
 
 	void Draw(SceneState &state, const SceneGraph &sceneGraph) override;
 

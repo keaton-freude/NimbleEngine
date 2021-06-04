@@ -52,7 +52,9 @@ struct SamplerSettingsUtil {
 		} else if (iequals(value, SamplerConstants::MirroredRepeat)) {
 			return TextureWrapMode::MirroredRepeat;
 		} else {
-			ASSERT_TRUE(false, fmt::format("Texture Wrap Mode String ({}) does not map to a known enum value", value).c_str());
+			DIE(fmt::format("Texture Wrap Mode String ({}) does not map to a known enum value", value).c_str());
+			// Silence silly warning
+			return TextureWrapMode::ClampToEdge;
 		}
 	}
 
@@ -62,7 +64,9 @@ struct SamplerSettingsUtil {
 		} else if (iequals(value, SamplerConstants::LinearStr)) {
 			return TextureMagFilter::Linear;
 		} else {
-			ASSERT_TRUE(false, fmt::format("Texture Mag Filter String ({}) does not map to a known enum value", value).c_str());
+			DIE(fmt::format("Texture Mag Filter String ({}) does not map to a known enum value", value).c_str());
+			// Silence silly warning
+			return TextureMagFilter::Linear;
 		}
 	}
 
@@ -94,35 +98,43 @@ struct SamplerSettings {
     TextureMinFilter textureMinFilter = TextureMinFilter::NearestMipmapLinear;
 
     [[nodiscard]] NIMBLE_INLINE unsigned int TextureMapModeUGL() const {
+		unsigned int result;
         switch (textureWrapModeU) {
             case TextureWrapMode::ClampToEdge:
-                return GL_CLAMP_TO_EDGE;
+                result = GL_CLAMP_TO_EDGE;
+				break;
             case TextureWrapMode::Repeat:
-                return GL_REPEAT;
+                result = GL_REPEAT;
                 break;
             case TextureWrapMode::MirroredRepeat:
-                return GL_MIRRORED_REPEAT;
+                result = GL_MIRRORED_REPEAT;
                 break;
             default:
                 assert(false);
-                return -1;
+                result = -1;
         }
+
+		return result;
     }
 
-    [[nodiscard]] NIMBLE_INLINE unsigned int TextureMapModeVGL() const {
+    [[nodiscard, maybe_unused]] NIMBLE_INLINE unsigned int TextureMapModeVGL() const {
+		unsigned int result;
         switch (textureWrapModeV) {
             case TextureWrapMode::ClampToEdge:
-                return GL_CLAMP_TO_EDGE;
+                result = GL_CLAMP_TO_EDGE;
+				break;
             case TextureWrapMode::Repeat:
-                return GL_REPEAT;
+                result = GL_REPEAT;
                 break;
             case TextureWrapMode::MirroredRepeat:
-                return GL_MIRRORED_REPEAT;
+                result = GL_MIRRORED_REPEAT;
                 break;
             default:
                 assert(false);
-                return -1;
+                result = -1;
         }
+
+		return result;
     }
 
     [[nodiscard]] NIMBLE_INLINE unsigned int TextureMagFilterGL() const {
