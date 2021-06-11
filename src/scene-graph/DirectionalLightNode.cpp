@@ -12,7 +12,7 @@ void DirectionalLightNode::Apply(SceneState &sceneState) {
 		GUI_SLIDER_FLOAT3(lightDirection, _light.direction, -1.0f, 1.0f);
 		_light.direction = glm::normalize(lightDirection);
 
-		GUI_SLIDER_FLOAT3(lightPosition, _light.position, -10.0f, 10.0f);
+		GUI_SLIDER_FLOAT3(lightPosition, _light.position, -100.0f, 100.0f);
 		_light.position = lightPosition;
 
 		GUI_SLIDER_FLOAT1(projectionWidth, _light.projection._right, -200.0f, 200.0f);

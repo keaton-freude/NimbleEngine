@@ -62,7 +62,7 @@ Engine::Engine(Window *window) : _window(window) {
 
 	gridNode->Scale(glm::vec3(1000.0f, 1.0f, 1000.0f));
 
-	_shadow_pass = std::make_unique<ShadowPass>(1024 * 2, 1024 * 2);
+	_shadow_pass = std::make_unique<ShadowPass>(1024 * 16, 1024 * 16);
 	_phong_pass = std::make_unique<PhongPass>();
 
 #ifndef NDEBUG
