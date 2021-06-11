@@ -16,6 +16,8 @@
 #include <memory>
 
 #include "nimble/camera/Camera.h"
+#include "nimble/core/OrthographicProjection.h"
+#include "nimble/core/ShadowCasterView.h"
 #include "nimble/light/DirectionalLight.h"
 #include "nimble/scene-graph/Transformation.h"
 

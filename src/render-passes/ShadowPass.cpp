@@ -5,8 +5,7 @@
 
 using namespace Nimble;
 
-ShadowPass::ShadowPass(int shadowWidth, int shadowHeight)
-: _shadow_width(shadowWidth), _shadow_height(shadowHeight) {
+ShadowPass::ShadowPass(int shadowWidth, int shadowHeight) : _shadow_width(shadowWidth), _shadow_height(shadowHeight) {
 	_shadow_map.depth_texture = std::make_shared<Texture2D>();
 	_shadow_map.depth_texture->Create((int)shadowWidth, (int)shadowHeight, GL_DEPTH_COMPONENT);
 	_shader = ResourceManager::Get().GetShader("shadow");
@@ -28,6 +27,8 @@ void ShadowPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	 *
 	 */
 
+	auto directionalLights = sceneGraph.GetNodesByDerivedType<DirectionalLightNode>(SceneNodeType::DIRECTIONAL_LIGHT);
+	ASSERT(directionalLights.size(), "ShadowPass requires at least one directional light");
 
 	glViewport(0, 0, _shadow_width, _shadow_height);
 	_fbo.Bind();
@@ -36,26 +37,12 @@ void ShadowPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	// Draw...
 	std::list<DrawableNode *> drawables = sceneGraph.GetNodesByDerivedType<DrawableNode>(SceneNodeType::DRAWABLE);
 
-	// We need a directional light
-	auto *directionalLightNode =
-		sceneGraph.GetOneNodeByDerivedType<DirectionalLightNode>(SceneNodeType::DIRECTIONAL_LIGHT);
-
-	const float bounds = 100.0f;
-	glm::mat4 lightProjection = glm::ortho(-bounds, bounds, -bounds, bounds, 1.0f, 200.0f);
-
-	auto lightPosition = directionalLightNode->GetDirectionalLight().direction;
-
-	lightPosition *= -1.0f;
-	lightPosition *= 10.0f;
-
-	glm::mat4 lightView = glm::lookAt(lightPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+	glm::mat4 lightSpaceMatrix = directionalLights.front()->GetDirectionalLight().GetLightSpaceMatrix();
 
 	_shadow_map.light_space_matrix = lightSpaceMatrix;
 
 	for(const auto &drawable : drawables) {
-		if(drawable->GetMaterial()->GetCastsShadows().value() == false) {
+		if(!drawable->GetMaterial()->GetCastsShadows().value()) {
 			continue;
 		}
 		drawable->GetVAO()->Bind();

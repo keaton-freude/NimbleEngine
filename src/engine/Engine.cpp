@@ -1,14 +1,10 @@
 #include <GL/glew.h>
 #include <nimble/camera/FreeFlyCamera.h>
 #include <nimble/render-passes/PhongPass.h>
-#include <nimble/render-passes/ShadowPass.h>
 #include <nimble/scene-graph/NullNode.h>
 #include <nimble/utility/ImGuiUtility.h>
 
-#include "glm/gtc/matrix_transform.hpp"
 #include "nimble/MeshTools.h"
-#include "nimble/camera/Camera.h"
-#include "nimble/camera/FixedPointOrbitCamera.h"
 #include "nimble/engine/Engine.h"
 #include "nimble/scene-graph/DirectionalLightNode.h"
 #include "nimble/scene-graph/DrawableNode.h"
@@ -26,11 +22,16 @@ Engine::Engine(Window *window) : _window(window) {
 
 	_sceneGraph = std::make_unique<SceneGraph>(_projectionMatrix, _camera);
 
+	glm::vec3 lightDirection = glm::vec3(1.0f, -1.0f, -1.0f);
+
 	// Add a directional light to the scene
-	_rootTransformNode =
-		_sceneGraph
-			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(glm::vec3(1.0f, -1.0f, -1.0f), glm::vec3(.3f, .3f, .3f))))
-			.second;
+	_rootTransformNode = _sceneGraph
+							 ->AddChildToRoot(new DirectionalLightNode(
+								 DirectionalLight(lightDirection,
+												  glm::vec3(.3f, .3f, .3f),
+												  glm::vec3(0.0f, 0.0f, 0.0f),
+												  OrthoProjection(100.0f, -100.0f, 100.0f, -100.0f, -0.1f, 100.0f))))
+							 .second;
 
 	const auto DISTANCE_BETWEEN = 5.0f;
 
@@ -89,7 +90,7 @@ void Engine::RenderFrame(const Time &time) {
 
 	_shadow_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
 
-	glViewport(0, 0, _window->GetWidth().get(), _window->GetHeight().get());
+	glViewport(0, 0, (int)_window->GetWidth().get(), (int)_window->GetHeight().get());
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -106,8 +107,7 @@ void Engine::RenderFrame(const Time &time) {
 	}
 
 	auto flyCamera = std::dynamic_pointer_cast<FreeFlyCamera>(_camera);
-	GUI_SLIDER_FLOAT1(float, cameraRotateSpeed, flyCamera->GetRotateSpeed(),
-					  10.0f, 300.0f, flyCamera->SetRotateSpeed);
+	GUI_SLIDER_FLOAT1_WITH_SETTER_FUNC(cameraRotateSpeed, flyCamera->GetRotateSpeed(), 10.0f, 300.0f, flyCamera->SetRotateSpeed);
 }
 
 void Engine::SetLatestFPS(float FPS) {

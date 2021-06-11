@@ -26,7 +26,7 @@ SceneNode::NodeIdRet SceneNode::AddChild(std::unique_ptr<SceneNode> &&node) {
 	return std::make_pair(_children.back().get(), _children.back()->GetID());
 }
 
-void SceneNode::Visit(SceneState sceneState) {
+void SceneNode::Visit(SceneState &sceneState) {
 	// Visit ourself first, passing ref
 	this->Apply(sceneState);
 

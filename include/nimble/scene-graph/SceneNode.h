@@ -50,11 +50,10 @@ public:
 	// Apply this SceneNodes specific transformation or action
 	// This function may modify the transformation, such that all child
 	// nodes will be affected, but parent nodes won't
-	// Because `Visit` is going to create copies, so they won't propagate back up
 	virtual void Apply(SceneState &sceneState) = 0;
 
 	// Traverse. First ourself, then our children. Only supporting pre-order traversal for now
-	void Visit(SceneState sceneState);
+	void Visit(SceneState &sceneState);
 
 	static SceneNodeType SCENE_NODE_TYPE() {
 		return SceneNodeType::UNKNOWN;
