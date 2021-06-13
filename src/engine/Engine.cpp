@@ -29,8 +29,8 @@ Engine::Engine(Window *window) : _window(window) {
 							 ->AddChildToRoot(new DirectionalLightNode(
 								 DirectionalLight(lightDirection,
 												  glm::vec3(.3f, .3f, .3f),
-												  glm::vec3(0.0f, 0.0f, 0.0f),
-												  OrthoProjection(100.0f, -100.0f, 100.0f, -100.0f, -0.1f, 100.0f))))
+												  glm::vec3(10.0f, 10.0f, 0.0f),
+												  OrthoProjection(10.0f, -10.0f, 10.0f, -10.0f, 0.0f, 100.0f))))
 							 .second;
 
 	const auto DISTANCE_BETWEEN = 5.0f;

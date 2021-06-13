@@ -8,6 +8,11 @@
 
 using namespace Nimble;
 
+DebugPass::DebugPass()
+: _shadow_frustum_node(DrawableNode(ResourceManager::Get().GetMesh("cube.fbx").get(), "debug_frustum")),
+  _shadow_frustum_vao(VertexArrayObject(PositionColor::SetVertexAttribPointers)) {
+}
+
 void DebugPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	// Variety of optional features which can help in debugging issues
 	GUI_CHECKBOX(renderNormals, false);
@@ -71,50 +76,70 @@ void DebugPass::DrawShadowFrustrum(SceneState &state, const SceneGraph &sceneGra
 	auto directionalLights = sceneGraph.GetNodesByDerivedType<DirectionalLightNode>(SceneNodeType::DIRECTIONAL_LIGHT);
 
 	for(const auto &light : directionalLights) {
-		// shorthand for the frustums dimensions used to construct all vertices
-		const auto L = light->GetDirectionalLight().projection._left;
-		const auto R = light->GetDirectionalLight().projection._right;
-		const auto T = light->GetDirectionalLight().projection._top;
-		const auto B = light->GetDirectionalLight().projection._bottom;
-		const auto N = light->GetDirectionalLight().projection._near;
-		const auto F = light->GetDirectionalLight().projection._far;
+		_shadow_frustum_node.GetVAO()->Bind();
+		_shadow_frustum_node.GetVB().Bind();
+		_shadow_frustum_node.GetIB().Bind();
 
-		// FACE 1
+		const auto pos = light->GetDirectionalLight().position;
+		const auto dir = light->GetDirectionalLight().direction;
+		const auto proj = light->GetDirectionalLight().projection;
+		const auto center = (pos + dir);
 
-		// Indices
-		std::vector<unsigned int> indices = { 0, 2, 1, 1, 2, 3 };
+		// Translate & Rotate such that we are at the lights position and pointing along
+		// the lights direction
+		// auto model = glm::inverse(glm::lookAt(pos, pos + dir, glm::vec3(0.0f, 1.0f, 0.0f)));
+		auto scale = glm::scale(glm::vec3(proj._right, proj._top, proj._far));
 
-		std::shared_ptr<VertexArrayObject> vao = std::make_shared<VertexArrayObject>(PositionColor::SetVertexAttribPointers);
+		glm::vec3 const f(glm::normalize(center - pos));
+		glm::vec3 const s(glm::normalize(glm::cross(f, glm::vec3(0.0f, 1.0f, 0.0f))));
+		glm::vec3 const u(cross(s, f));
 
-		Mesh<PositionColor> mesh(std::vector<PositionColor>({ { glm::vec3(L, T, N), { 1.0f, 1.0f, 1.0f, 1.0f } },
-															  { glm::vec3(R, T, N), { 1.0f, 1.0f, 1.0f, 1.0f } },
-															  { glm::vec3(L, B, N), { 1.0f, 1.0f, 1.0f, 1.0f } },
-															  { glm::vec3(R, B, N), { 1.0f, 1.0f, 1.0f, 1.0f } } }),
-								 indices,
-								 2,
-								 vao);
+		glm::mat4 rotation(1);
+		rotation[0][0] = s.x;
+		rotation[1][0] = s.y;
+		rotation[2][0] = s.z;
+		rotation[0][1] = u.x;
+		rotation[1][1] = u.y;
+		rotation[2][1] = u.z;
+		rotation[0][2] = f.x;
+		rotation[1][2] = f.y;
+		rotation[2][2] = f.z;
+		/*rotation[3][0] = -glm::dot(s, pos);
+		rotation[3][1] = -glm::dot(u, pos);
+		rotation[3][2] = glm::dot(f, pos);*/
+		rotation[3][0] = 0.0f;
+		rotation[3][1] = 0.0f;
+		rotation[3][2] = 0.0f;
 
-		DrawableNode drawable(&mesh, "debug_frustum");
+		rotation = glm::inverse(rotation);
 
-		drawable.GetVAO()->Bind();
-		drawable.GetVB().Bind();
-		drawable.GetIB().Bind();
 
-		// Model identity
-		glm::mat4 model(1.0f);
+		// Scale to match frustum dimensions -- assumes that, for both width and height, they are inverses of
+		// each other. ex: If `left` is 200 units, then `right` must be 200 units as well, same for top & bottom
+
+		GUI_SLIDER_FLOAT1(testValue, 0001.0f, 0.000f, 0.025f);
+		auto offset = pos + ((dir * proj._far - proj._near) / 2.0f);
+		offset *= testValue;
+
+		// model *= glm::translate(offset);
+
+		auto translation = glm::translate(pos + (dir * proj._far));
+
+		auto model = translation * rotation * scale;
 		auto shader = ResourceManager::Get().GetShader("color");
 		ASSERT(shader, "Could not find color shader");
 
 		shader->Use();
-		shader->SetUniform("Model", light->GetDirectionalLight().GetLightView());
+		// shader->SetUniform("Model", light->GetDirectionalLight().GetLightView());
+		shader->SetUniform("Model", model);
 		shader->SetUniform("View", state.GetCamera()->GetView());
 		shader->SetUniform("Projection", *(state.GetProjectionMatrix()));
 		GLint polygonMode;
 		glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawElements(GL_TRIANGLES, mesh.GetNumFaces() * 3, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, _shadow_frustum_node.GetIB().GetNumFaces() * 3, GL_UNSIGNED_INT, nullptr);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		drawable.GetVAO()->Unbind();
+		_shadow_frustum_node.GetVAO()->Unbind();
 	}
 }
