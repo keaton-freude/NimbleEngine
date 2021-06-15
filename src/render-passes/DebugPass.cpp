@@ -10,7 +10,9 @@ using namespace Nimble;
 
 DebugPass::DebugPass()
 : _shadow_frustum_node(DrawableNode(ResourceManager::Get().GetMesh("cube.fbx").get(), "debug_frustum")),
-  _shadow_frustum_vao(VertexArrayObject(PositionColor::SetVertexAttribPointers)) {
+  _shadow_frustum_vao(VertexArrayObject(PositionColor::SetVertexAttribPointers)),
+  _color_shader(ResourceManager::Get().GetShader("color")) {
+	ASSERT(_color_shader, "Could not find color shader");
 }
 
 void DebugPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
@@ -87,8 +89,7 @@ void DebugPass::DrawShadowFrustrum(SceneState &state, const SceneGraph &sceneGra
 
 		// Translate & Rotate such that we are at the lights position and pointing along
 		// the lights direction
-		// auto model = glm::inverse(glm::lookAt(pos, pos + dir, glm::vec3(0.0f, 1.0f, 0.0f)));
-		auto scale = glm::scale(glm::vec3(proj._right, proj._top, proj._far));
+		auto scale = glm::scale(glm::vec3(proj.width / 2.f, proj.height / 2.f, proj.depth / 2.f));
 
 		glm::vec3 const f(glm::normalize(center - pos));
 		glm::vec3 const s(glm::normalize(glm::cross(f, glm::vec3(0.0f, 1.0f, 0.0f))));
@@ -104,39 +105,23 @@ void DebugPass::DrawShadowFrustrum(SceneState &state, const SceneGraph &sceneGra
 		rotation[0][2] = f.x;
 		rotation[1][2] = f.y;
 		rotation[2][2] = f.z;
-		/*rotation[3][0] = -glm::dot(s, pos);
-		rotation[3][1] = -glm::dot(u, pos);
-		rotation[3][2] = glm::dot(f, pos);*/
 		rotation[3][0] = 0.0f;
 		rotation[3][1] = 0.0f;
 		rotation[3][2] = 0.0f;
 
 		rotation = glm::inverse(rotation);
 
-
-		// Scale to match frustum dimensions -- assumes that, for both width and height, they are inverses of
-		// each other. ex: If `left` is 200 units, then `right` must be 200 units as well, same for top & bottom
-
-		GUI_SLIDER_FLOAT1(testValue, 0001.0f, 0.000f, 0.025f);
-		auto offset = pos + ((dir * proj._far - proj._near) / 2.0f);
-		offset *= testValue;
-
-		// model *= glm::translate(offset);
-
-		auto translation = glm::translate(pos + (dir * proj._far));
+		auto translation = glm::translate(pos + (dir * proj.depth / 2.f));
 
 		auto model = translation * rotation * scale;
-		auto shader = ResourceManager::Get().GetShader("color");
-		ASSERT(shader, "Could not find color shader");
 
-		shader->Use();
-		// shader->SetUniform("Model", light->GetDirectionalLight().GetLightView());
-		shader->SetUniform("Model", model);
-		shader->SetUniform("View", state.GetCamera()->GetView());
-		shader->SetUniform("Projection", *(state.GetProjectionMatrix()));
+		_color_shader->Use();
+		_color_shader->SetUniform("Model", model);
+		_color_shader->SetUniform("View", state.GetCamera()->GetView());
+		_color_shader->SetUniform("Projection", *(state.GetProjectionMatrix()));
+
 		GLint polygonMode;
 		glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
-
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawElements(GL_TRIANGLES, _shadow_frustum_node.GetIB().GetNumFaces() * 3, GL_UNSIGNED_INT, nullptr);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

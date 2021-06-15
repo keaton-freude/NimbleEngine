@@ -10,22 +10,22 @@ namespace Nimble {
 // Beyond rendering, useful for shadow-mapping directional lights
 struct OrthoProjection {
 
-	// Wow. MSVC apparently used to use `near` and `far` as keywords, so we can't use
-	// them so adding underscores to everything...
-	float _right = 0.0f;
-	float _left = 0.0f;
-	float _top = 0.0f;
-	float _bottom = 0.0f;
-	float _near = 0.0f;
-	float _far = 0.0f;
+	// Restricting the OrthoProjection to having equal-sized values across their dimension
+	// So (abs(left) == abs(right)) and (abs(left) + abs(right) == width)
+	// Applies to width and height.
+	float width = 0.0f;
+	float height = 0.0f;
+	// Maybe we need to add a bias factor to scoot the near-portion up a bit (or just have a constant bias)
+	// in case of any rendering artifacts
+	float depth = 0.0f;
 
 	OrthoProjection() = default;
 
-	OrthoProjection(float right, float left, float top, float bottom, float near, float far)
-	: _right(right), _left(left), _top(top), _bottom(bottom), _near(near), _far(far) {}
+	OrthoProjection(float width, float height, float depth) : width(width), height(height), depth(depth) {
+	}
 
 	[[nodiscard]] glm::mat4 CreateProjection() const {
-		return glm::ortho(_left, _right, _bottom, _top, _near, _far);
+		return glm::ortho(-(width / 2.f), width / 2.f, -(height / 2.f), height / 2.f, 0.0f, depth);
 	}
 };
 } // namespace Nimble

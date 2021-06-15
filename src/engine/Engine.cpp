@@ -25,13 +25,11 @@ Engine::Engine(Window *window) : _window(window) {
 	glm::vec3 lightDirection = glm::vec3(1.0f, -1.0f, -1.0f);
 
 	// Add a directional light to the scene
-	_rootTransformNode = _sceneGraph
-							 ->AddChildToRoot(new DirectionalLightNode(
-								 DirectionalLight(lightDirection,
-												  glm::vec3(.3f, .3f, .3f),
-												  glm::vec3(10.0f, 10.0f, 0.0f),
-												  OrthoProjection(10.0f, -10.0f, 10.0f, -10.0f, 0.0f, 100.0f))))
-							 .second;
+	_rootTransformNode =
+		_sceneGraph
+			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(
+				lightDirection, glm::vec3(.3f, .3f, .3f), glm::vec3(10.0f, 10.0f, 0.0f), OrthoProjection(20.f, 20.f, 100.f))))
+			.second;
 
 	const auto DISTANCE_BETWEEN = 5.0f;
 

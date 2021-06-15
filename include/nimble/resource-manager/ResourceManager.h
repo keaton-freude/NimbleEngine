@@ -22,12 +22,12 @@
 
 #include "nimble/IMesh.h"
 #include "nimble/Mesh.h"
+#include "nimble/core/Assert.h"
+#include "nimble/core/Subject.h"
 #include "nimble/material/Material.h"
 #include "nimble/opengl-wrapper/Shader.h"
 #include "nimble/opengl-wrapper/ShaderProgram.h"
 #include "nimble/utility/Singleton.h"
-#include "nimble/core/Subject.h"
-#include "nimble/core/Assert.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -50,18 +50,16 @@ public:
 	ResourceManager() {
 	}
 
-	std::string GetResourceDirectoryByName(const std::string& resourceType) {
+	std::string GetResourceDirectoryByName(const std::string &resourceType) {
 		std::filesystem::path subDir = std::filesystem::path(GetResourceRoot()) / resourceType;
 		return subDir.string();
 	}
 
-	void RegisterFileChange(Subject<std::filesystem::path>& fileModifiedEvent) {
-		fileModifiedEvent.Subscribe([this](std::filesystem::path path){
-			this->ReloadShader(path.filename().string());
-		});
+	void RegisterFileChange(Subject<std::filesystem::path> &fileModifiedEvent) {
+		fileModifiedEvent.Subscribe([this](std::filesystem::path path) { this->ReloadShader(path.filename().string()); });
 	}
 
-	void SetResourceRoot(const std::string& resourceRoot) {
+	void SetResourceRoot(const std::string &resourceRoot) {
 		// Convert to an absolute path
 		std::filesystem::path p(resourceRoot);
 
@@ -117,7 +115,7 @@ public:
 		}
 
 		const auto _scene =
-		importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals | aiProcess_FlipUVs);
+			importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals | aiProcess_FlipUVs);
 		if(!_scene) {
 			const auto error = importer.GetErrorString();
 			spdlog::error("Failed to load model from path: {}\nError: {}", path, error);
@@ -134,10 +132,10 @@ public:
 		return mesh;
 	}
 
-	std::shared_ptr<Texture2D> GetTexture2D(const std::string& name) {
+	std::shared_ptr<Texture2D> GetTexture2D(const std::string &name) {
 		auto path = GetPathFromName("textures", name);
 		auto cachedTexture = _texture2DCache.find(path);
-		if (cachedTexture != _texture2DCache.end()) {
+		if(cachedTexture != _texture2DCache.end()) {
 			return cachedTexture->second;
 		}
 
@@ -149,20 +147,21 @@ public:
 	}
 
 	void ReloadShaders() {
-		for(const auto& [k, v] : _shaderCache) {
+		for(const auto &[k, v] : _shaderCache) {
 			// We look for shaders relative to the resource root in a shaders folder
 			std::filesystem::path shadersDir = std::filesystem::path(GetResourceRoot()) / "shaders";
 
 			std::filesystem::path vertexShaderSource = shadersDir / fmt::format("{}.vert", k.c_str());
 			std::filesystem::path fragmentShaderSource = shadersDir / fmt::format("{}.frag", k.c_str());
 
-			v->Reload(FileReadAllText(vertexShaderSource.string()).c_str(), FileReadAllText(fragmentShaderSource.string()).c_str());
+			v->Reload(FileReadAllText(vertexShaderSource.string()).c_str(),
+					  FileReadAllText(fragmentShaderSource.string()).c_str());
 		}
 	}
 
-	void ReloadShader(const std::string& shaderName) {
-		for(const auto& [k, v] : _shaderCache) {
-			if (shaderName.rfind(k, 0)) {
+	void ReloadShader(const std::string &shaderName) {
+		for(const auto &[k, v] : _shaderCache) {
+			if(shaderName.rfind(k, 0)) {
 				continue;
 			}
 			// We look for shaders relative to the resource root in a shaders folder
@@ -171,7 +170,8 @@ public:
 			std::filesystem::path vertexShaderSource = shadersDir / fmt::format("{}.vert", k.c_str());
 			std::filesystem::path fragmentShaderSource = shadersDir / fmt::format("{}.frag", k.c_str());
 
-			v->Reload(FileReadAllText(vertexShaderSource.string()).c_str(), FileReadAllText(fragmentShaderSource.string()).c_str());
+			v->Reload(FileReadAllText(vertexShaderSource.string()).c_str(),
+					  FileReadAllText(fragmentShaderSource.string()).c_str());
 		}
 	}
 };
