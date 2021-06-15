@@ -41,6 +41,7 @@ struct PositionColor {
 
 	glm::vec3 position;
 	glm::vec4 color;
+	PositionColor() = default;
 	PositionColor(glm::vec3 position, glm::vec4 color) : position(position), color(color) {
 	}
 };
@@ -90,7 +91,7 @@ struct PositionNormal {
 
 struct PositionNormalUv {
 	static constexpr size_t SizeInBytes() {
-		//return sizeof(PositionNormalUv);
+		// return sizeof(PositionNormalUv);
 		return sizeof(glm::vec3) + sizeof(glm::vec3) + sizeof(glm::vec2);
 	}
 

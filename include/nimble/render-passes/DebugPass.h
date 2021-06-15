@@ -10,7 +10,6 @@ namespace Nimble {
 class DebugPass : public RenderPass {
 private:
 	DrawableNode _shadow_frustum_node;
-	VertexArrayObject _shadow_frustum_vao;
 	std::shared_ptr<ShaderProgram> _color_shader = nullptr;
 
 	void DrawLights(SceneState &state, const SceneGraph &sceneGraph);

@@ -1,16 +1,11 @@
 #include "nimble/render-passes/DebugPass.h"
-#include <nimble/Mesh.h>
-#include <nimble/opengl-wrapper/IndexBuffer.h>
-#include <nimble/opengl-wrapper/VertexBuffer.h>
 #include <nimble/scene-graph/DirectionalLightNode.h>
-#include <nimble/scene-graph/DrawableNode.h>
 #include <nimble/utility/ImGuiUtility.h>
 
 using namespace Nimble;
 
 DebugPass::DebugPass()
-: _shadow_frustum_node(DrawableNode(ResourceManager::Get().GetMesh("cube.fbx").get(), "debug_frustum")),
-  _shadow_frustum_vao(VertexArrayObject(PositionColor::SetVertexAttribPointers)),
+: _shadow_frustum_node(DrawableNode(ResourceManager::Get().GetMesh<PositionColor>("cube.fbx", "frustum_cube").get(), "debug_frustum")),
   _color_shader(ResourceManager::Get().GetShader("color")) {
 	ASSERT(_color_shader, "Could not find color shader");
 }

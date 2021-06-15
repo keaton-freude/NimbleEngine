@@ -14,5 +14,5 @@ void main() {
     // colors are garbage. Fix the resource manager (and add the ability to
     // clone meshes so their contents can be modified) and then revert this to using
     // vertex colors
-    FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    FragColor = vertColor;
 }

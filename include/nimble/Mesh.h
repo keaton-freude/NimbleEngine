@@ -137,6 +137,27 @@ private:
 		return std::make_shared<Mesh<PositionNormal>>(verts, indices, mesh->mNumFaces, Mesh<PositionNormal>::CreateVao());
 	}
 
+	static std::shared_ptr<Mesh<PositionColor>> BuildMesh_PositionColor(const aiMesh *mesh) {
+		spdlog::info("[PositionColor]: Building mesh with {} verts and {} faces", mesh->mNumVertices, mesh->mNumFaces);
+		std::vector<PositionColor> verts(mesh->mNumVertices);
+
+		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
+			PositionColor p;
+			p.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+			p.color = glm::vec4(mesh->mColors[0][i].r, mesh->mColors[0][i].g, mesh->mColors[0][i].b, mesh->mColors[0][i].a);
+			verts[i] = p;
+		}
+
+		std::vector<unsigned int> indices;
+		for(size_t i = 0; i < mesh->mNumFaces; ++i) {
+			for(size_t j = 0; j < mesh->mFaces[i].mNumIndices; ++j) {
+				indices.push_back(mesh->mFaces[i].mIndices[j]);
+			}
+		}
+
+		return std::make_shared<Mesh<PositionColor>>(verts, indices, mesh->mNumFaces, Mesh<PositionColor>::CreateVao());
+	}
+
 	static std::shared_ptr<Mesh<PositionNormalUv>> BuildMesh_PositionNormalUv(const aiMesh *mesh) {
 		spdlog::info("[PositionNormalUv]: Building mesh with {} verts and {} faces", mesh->mNumVertices, mesh->mNumFaces);
 
@@ -160,19 +181,30 @@ private:
 	}
 };
 
+// Tag for mesh loading to fall back to querying mesh details to try and figure
+// out the type of the underlying data which is more expensive and potentially impossible
+// to do correctly
+struct AutoDetectVertexType;
+
 class MeshFactory {
 public:
 	// Factory
+	template <typename VertexType = AutoDetectVertexType>
 	static std::shared_ptr<IMesh> FromFile(const aiMesh *mesh) {
-		// We assume a Mesh should always have position data, along with
-		// index data. From there, we go from the more specific combinations
-		// and work down to the Position/Index only
-
-		// TODO: Add more attributes as we need them
-		if(mesh->HasNormals() && mesh->HasTextureCoords(0)) {
+		if constexpr(std::is_same_v<VertexType, PositionNormalUv>) {
 			return Mesh<PositionNormalUv>::BuildMesh_PositionNormalUv(mesh);
-		} else if(mesh->HasNormals()) {
+		} else if constexpr(std::is_same_v<VertexType, PositionNormal>) {
 			return Mesh<PositionNormal>::BuildMesh_PositionNormal(mesh);
+		} else if constexpr(std::is_same_v<VertexType, PositionColor>) {
+			return Mesh<PositionColor>::BuildMesh_PositionColor(mesh);
+		} else if constexpr(std::is_same_v<VertexType, AutoDetectVertexType>) {
+			if(mesh->HasNormals() && mesh->HasTextureCoords(0)) {
+				return Mesh<PositionNormalUv>::BuildMesh_PositionNormalUv(mesh);
+			} else if(mesh->HasNormals()) {
+				return Mesh<PositionNormal>::BuildMesh_PositionNormal(mesh);
+			} else {
+				return Mesh<Position>::BuildMesh_Position(mesh);
+			}
 		} else {
 			return Mesh<Position>::BuildMesh_Position(mesh);
 		}

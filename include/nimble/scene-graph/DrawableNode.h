@@ -82,7 +82,8 @@ public:
 
 private:
 	void InitFromFilenames(const std::string &meshName, const std::string &materialName) {
-		auto mesh = ResourceManager::Get().GetMesh(meshName);
+		// TODO: Fix this hack: Should be somehow computing or requiring the mesh cache key
+		auto mesh = ResourceManager::Get().GetMesh(meshName, meshName);
 		ASSERT_NOT_NULL(mesh);
 
 		_vao = mesh->GetVao();

@@ -104,12 +104,12 @@ public:
 	// compiled code, allowing hot reload and easy testing & manipulation of materials
 	void LoadMaterialsFromDisk();
 
-	// Mesh
-	std::shared_ptr<IMesh> GetMesh(const std::string &name) {
+	template <typename VertexType = AutoDetectVertexType>
+	std::shared_ptr<IMesh> GetMesh(const std::string &resourceName, const std::string &cacheKey) {
 		Assimp::Importer importer;
-		auto path = GetPathFromName("models", name);
+		auto path = GetPathFromName("models", resourceName);
 
-		auto cachedMesh = _meshCache.find(path);
+		auto cachedMesh = _meshCache.find(cacheKey);
 		if(cachedMesh != _meshCache.end()) {
 			return cachedMesh->second;
 		}
@@ -127,8 +127,8 @@ public:
 			spdlog::error("No meshes found for the model: {}", path);
 			return nullptr;
 		}
-		auto mesh = MeshFactory::FromFile(_scene->mMeshes[0]);
-		_meshCache[path] = mesh;
+		auto mesh = MeshFactory::FromFile<VertexType>(_scene->mMeshes[0]);
+		_meshCache[cacheKey] = mesh;
 		return mesh;
 	}
 
