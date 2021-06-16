@@ -28,14 +28,14 @@ Engine::Engine(Window *window) : _window(window) {
 	_rootTransformNode =
 		_sceneGraph
 			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(
-				lightDirection, glm::vec3(.3f, .3f, .3f), glm::vec3(10.0f, 10.0f, 0.0f), OrthoProjection(20.f, 20.f, 100.f))))
+				lightDirection, glm::vec3(.3f, .3f, .3f), glm::vec3(-62.5f, 22.5f, 15.0f), OrthoProjection(225.f, 150.f, 120.f))))
 			.second;
 
 	const auto DISTANCE_BETWEEN = 5.0f;
 
 	auto cubeNodeId = _sceneGraph->AddChild(new NullNode(), _rootTransformNode);
 
-	for(int i = -5; i < 6; ++i) {
+	/*for(int i = -5; i < 6; ++i) {
 		for(int j = -5; j < 6; ++j) {
 			auto id = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube"), cubeNodeId);
 
@@ -46,7 +46,12 @@ Engine::Engine(Window *window) : _window(window) {
 			translation.z = j * DISTANCE_BETWEEN;
 			_sceneGraph->Find(id).value()->Translate(translation);
 		}
-	}
+	}*/
+
+	auto id = _sceneGraph->AddChild(new DrawableNode("rock_1.fbx", "rock_1"), cubeNodeId);
+	auto rockNode = _sceneGraph->Find(id).value();
+	rockNode->Scale(glm::vec3(.1f, .1f, .1f));
+	rockNode->Translate(glm::vec3(0.0f, 5.0f, 0.0f));
 
 	auto plane = MeshTools::CreateTexturedPlane(1024.0f);
 	auto gridNodeId = _sceneGraph->AddChild(new DrawableNode(&plane, "grid"), _rootTransformNode);

@@ -1,4 +1,5 @@
 #include "nimble/camera/FreeFlyCamera.h"
+#include "imgui.h"
 #include "nimble/input/InputManager.h"
 
 #include <glm/glm.hpp>
@@ -35,6 +36,13 @@ float Lerp(T v0, T v1, T t) {
 }
 
 void FreeFlyCamera::Update(const Time &time) {
+#ifndef NDEBUG
+	if(ImGui::TreeNode("Camera")) {
+		ImGui::Text("%s", fmt::format("Position: ({:.2f}, {:.2f}, {:.2f})", _position.x, _position.y, _position.z).c_str());
+		ImGui::Text("%s", fmt::format("Yaw: ({:.2f} Pitch: {:.2f} Roll: {:.2f})", yaw, pitch, roll).c_str());
+		ImGui::TreePop();
+	}
+#endif
 	if(Input::Get().IsMouseRightDown()) {
 		auto mouseDelta = Input::Get().GetMouseMovement();
 		targetYaw += mouseDelta.x * _rotateSpeed * time.dt();
