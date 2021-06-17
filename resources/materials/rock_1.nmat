@@ -4,5 +4,8 @@
   "diffuse_texture": {
     "texture_uri": "rock_1_diffuse.tga"
   },
+  "normal_texture": {
+    "texture_uri": "rock_1_normal.tga"
+  },
   "uv_multiplier": 1.0
 }

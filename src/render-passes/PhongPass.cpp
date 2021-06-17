@@ -19,6 +19,8 @@ PhongPass::PhongPass() {
 	_light_pos_uniform_location = _shader->GetUniformLocation("lightPos");
 	_light_space_matrix_uniform_location = _shader->GetUniformLocation("lightSpaceMatrix");
 	_shadow_map_uniform_location = _shader->GetUniformLocation("shadow_map");
+	_normal_texture_uniform_location = _shader->GetUniformLocation("normal_texture");
+	_normal_map_enabled_uniform_location = _shader->GetUniformLocation("normalTextureEnabled");
 }
 
 void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
@@ -58,6 +60,8 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		auto diffuse_texture_unit = drawable->GetMaterial()->GetDiffuseTexture();
 		ASSERT(diffuse_texture_unit.has_value(), "Phong Pass requires a diffuse texture to be set!");
 
+		auto normal_texture_unit = drawable->GetMaterial()->GetNormalTexture();
+
 		auto receives_lighting = drawable->GetMaterial()->GetReceivesLighting().value();
 		auto transform = drawable->GetTransformation();
 		auto uv_multiplier = drawable->GetMaterial()->GetUvMultiplier();
@@ -67,6 +71,16 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		_shader->SetUniform(_view_uniform_location, state.GetCamera()->GetView());
 		_shader->SetUniform(_projection_uniform_location, *(state.GetProjectionMatrix()));
 		_shader->SetUniform(_uv_multiplier_uniform_location, uv_multiplier.value());
+
+		if(normal_texture_unit.has_value()) {
+			_shader->SetUniform(_diffuse_texture_uniform_location, 1);
+			_shader->SetUniform(_normal_map_enabled_uniform_location, true);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, normal_texture_unit->texture->GetTextureHandle());
+		} else {
+			_shader->SetUniform(_normal_map_enabled_uniform_location, false);
+		}
+
 
 		if(directionalLightNode && receives_lighting) {
 			auto light = directionalLightNode->GetDirectionalLight();
@@ -91,8 +105,8 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 			_shader->SetUniform(_light_pos_uniform_location, lightPosition);
 
 			_shader->SetUniform(_light_space_matrix_uniform_location, _shadow_map.light_space_matrix);
-			_shader->SetUniform(_shadow_map_uniform_location, 1);
-			glActiveTexture(GL_TEXTURE1);
+			_shader->SetUniform(_shadow_map_uniform_location, 2);
+			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, _shadow_map.depth_texture->GetTextureHandle());
 		}
 

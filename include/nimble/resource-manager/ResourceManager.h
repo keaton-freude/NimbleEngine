@@ -114,8 +114,9 @@ public:
 			return cachedMesh->second;
 		}
 
-		const auto _scene =
-			importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals | aiProcess_FlipUVs);
+		const auto _scene = importer.ReadFile(path,
+											  aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
+												  aiProcess_GenNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		if(!_scene) {
 			const auto error = importer.GetErrorString();
 			spdlog::error("Failed to load model from path: {}\nError: {}", path, error);

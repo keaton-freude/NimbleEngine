@@ -1,7 +1,7 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
-#include <stdint.h>
 
 // IMesh is an interface over the Mesh class where
 // the underlying templated type is hidden from the user
@@ -30,14 +30,14 @@
 namespace Nimble {
 class IMesh {
 public:
-	virtual size_t GetNumBytes() const = 0;
-	virtual const void *GetData() const = 0;
+	[[nodiscard]] virtual size_t GetNumBytes() const = 0;
+	[[nodiscard]] virtual const void *GetData() const = 0;
 
-	virtual size_t GetNumFaces() const = 0;
-	virtual size_t GetFacesNumBytes() const = 0;
-	virtual const void *GetFaceData() const = 0;
+	[[nodiscard]] virtual size_t GetNumFaces() const = 0;
+	[[nodiscard]] virtual size_t GetFacesNumBytes() const = 0;
+	[[nodiscard]] virtual const void *GetFaceData() const = 0;
 
-	virtual std::shared_ptr<VertexArrayObject> GetVao() const = 0;
+	[[nodiscard]] virtual std::shared_ptr<VertexArrayObject> GetVao() const = 0;
 
 	virtual ~IMesh() = default;
 };

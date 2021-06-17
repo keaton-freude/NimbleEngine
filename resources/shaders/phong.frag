@@ -10,6 +10,9 @@ in vec4 FragPosLightSpace;
 uniform sampler2D diffuse_texture;
 uniform sampler2D shadow_map;
 
+uniform bool normalTextureEnabled;
+uniform sampler2D normal_texture;
+
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -47,7 +50,13 @@ void main()
 {
     if (lightingEnabled) {
         vec3 color = texture(diffuse_texture, TexCoord * UvMultiplier).rgb;
-        vec3 normal = normalize(Normal);
+        vec3 normal;
+        if (normalTextureEnabled) {
+            normal = texture(normal_texture, TexCoord * UvMultiplier).rgb;
+        } else {
+            normal = normalize(Normal);
+        }
+        normal = normalize(normal);
         vec3 lightColor = vec3(0.3);
         vec3 ambient = 0.2 * color;
 

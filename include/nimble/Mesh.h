@@ -4,6 +4,7 @@
 #include <memory>
 #include <stddef.h>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <assimp/scene.h>
@@ -24,17 +25,17 @@ public:
 private:
 	VertexStorage _vertices;
 	IndexStorage _indices;
-	size_t _numFaces;
+	size_t _numFaces{};
 	std::shared_ptr<VertexArrayObject> _vao;
 
 public:
 	// support numFaces, so we could draw lines or points if we want
 	Mesh(VertexStorage vertices, IndexStorage indices, size_t numFaces, std::shared_ptr<VertexArrayObject> vao)
-	: _vertices(vertices), _indices(indices), _numFaces(numFaces), _vao(vao) {
+	: _vertices(vertices), _indices(std::move(indices)), _numFaces(numFaces), _vao(std::move(vao)) {
 	}
 
 	Mesh(std::initializer_list<float> vertices, std::initializer_list<unsigned int> indices, std::shared_ptr<VertexArrayObject> vao)
-	: _vertices(vertices), _indices(indices), _vao(vao) {
+	: _vertices(vertices), _indices(indices), _vao(std::move(vao)) {
 	}
 
 	const VertexStorage &VertexData() {
@@ -121,7 +122,7 @@ private:
 		std::vector<PositionNormal> verts(mesh->mNumVertices);
 
 		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
-			PositionNormal p;
+			PositionNormal p{};
 			p.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 			p.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
 			verts[i] = p;
@@ -142,7 +143,7 @@ private:
 		std::vector<PositionColor> verts(mesh->mNumVertices);
 
 		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
-			PositionColor p;
+			PositionColor p{};
 			p.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 			p.color = glm::vec4(mesh->mColors[0][i].r, mesh->mColors[0][i].g, mesh->mColors[0][i].b, mesh->mColors[0][i].a);
 			verts[i] = p;
