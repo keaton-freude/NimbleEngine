@@ -119,4 +119,43 @@ struct PositionNormalUv {
 	}
 };
 
+struct PositionNormalUvTangentBitangent {
+	static constexpr size_t SizeInBytes() {
+		return sizeof(glm::vec3) + sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(glm::vec3) + sizeof(glm::vec3);
+	}
+
+	static void SetVertexAttribPointers() {
+		// Position
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)0);
+
+		// Normal
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)12);
+
+		// UV
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)24);
+
+		// Tangent
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)32);
+
+		// Bitangent
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)46);
+	}
+
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 texture;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+
+	PositionNormalUvTangentBitangent() = default;
+	PositionNormalUvTangentBitangent(glm::vec3 position, glm::vec3 normal, glm::vec2 texture, glm::vec3 tangent, glm::vec3 bitangent)
+	: position(position), normal(normal), texture(texture), tangent(tangent), bitangent(bitangent) {
+	}
+};
+
 } // namespace Nimble

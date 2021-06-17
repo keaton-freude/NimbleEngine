@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cstddef>
 #include <initializer_list>
 #include <memory>
-#include <stddef.h>
 #include <string>
 #include <utility>
 #include <vector>
@@ -180,6 +180,34 @@ private:
 
 		return std::make_shared<Mesh<PositionNormalUv>>(verts, indices, mesh->mNumFaces, Mesh<PositionNormalUv>::CreateVao());
 	}
+
+	static std::shared_ptr<Mesh<PositionNormalUvTangentBitangent>> BuildMesh_PositionNormalUvTangentBitangent(const aiMesh *mesh) {
+		spdlog::info("[PositionNormalUvTangentBitangent]: Building mesh with {} verts and {} faces", mesh->mNumVertices, mesh->mNumFaces);
+
+		std::vector<PositionNormalUvTangentBitangent> verts;
+		verts.resize(mesh->mNumVertices);
+
+		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
+			verts[i] = PositionNormalUvTangentBitangent(
+				glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z),
+				glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z),
+				glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y),
+				glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z),
+				glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z));
+		}
+
+		std::vector<unsigned int> indices;
+		for(size_t i = 0; i < mesh->mNumFaces; ++i) {
+			for(size_t j = 0; j < mesh->mFaces[i].mNumIndices; ++j) {
+				indices.push_back(mesh->mFaces[i].mIndices[j]);
+			}
+		}
+
+		return std::make_shared<Mesh<PositionNormalUvTangentBitangent>>(verts,
+																		indices,
+																		mesh->mNumFaces,
+																		Mesh<PositionNormalUvTangentBitangent>::CreateVao());
+	}
 };
 
 // Tag for mesh loading to fall back to querying mesh details to try and figure
@@ -198,8 +226,12 @@ public:
 			return Mesh<PositionNormal>::BuildMesh_PositionNormal(mesh);
 		} else if constexpr(std::is_same_v<VertexType, PositionColor>) {
 			return Mesh<PositionColor>::BuildMesh_PositionColor(mesh);
+		} else if constexpr(std::is_same_v<VertexType, PositionNormalUvTangentBitangent>) {
+			return Mesh<PositionNormalUvTangentBitangent>::BuildMesh_PositionNormalUvTangentBitangent(mesh);
 		} else if constexpr(std::is_same_v<VertexType, AutoDetectVertexType>) {
-			if(mesh->HasNormals() && mesh->HasTextureCoords(0)) {
+			if(mesh->HasNormals() && mesh->HasTextureCoords(0) && mesh->HasTangentsAndBitangents()) {
+				return Mesh<PositionNormalUvTangentBitangent>::BuildMesh_PositionNormalUvTangentBitangent(mesh);
+			} else if(mesh->HasNormals() && mesh->HasTextureCoords(0)) {
 				return Mesh<PositionNormalUv>::BuildMesh_PositionNormalUv(mesh);
 			} else if(mesh->HasNormals()) {
 				return Mesh<PositionNormal>::BuildMesh_PositionNormal(mesh);

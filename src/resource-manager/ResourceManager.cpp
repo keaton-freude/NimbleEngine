@@ -16,7 +16,7 @@ std::shared_ptr<ShaderProgram> ResourceManager::GetShader(const std::string &nam
 
 	// Basic, we need to find the .frag and .vert components, create a shader
 	// program, link and check it. If all is good, return the ShaderProgram to user
-	ShaderProgram *program = new ShaderProgram(name);
+	auto program = std::make_shared<ShaderProgram>(name);
 
 	// We look for shaders relative to the resource root in a shaders folder
 	std::filesystem::path shadersDir = std::filesystem::path(GetResourceRoot()) / "shaders";
@@ -42,11 +42,9 @@ std::shared_ptr<ShaderProgram> ResourceManager::GetShader(const std::string &nam
 		throw std::runtime_error("Failed to link shaders of name " + name);
 	}
 
-	std::shared_ptr<ShaderProgram> programToReturn(program);
+	_shaderCache[name] = program;
 
-	_shaderCache[name] = programToReturn;
-
-	return programToReturn;
+	return program;
 }
 
 std::shared_ptr<Material> ResourceManager::GetMaterial(const std::string &name) {

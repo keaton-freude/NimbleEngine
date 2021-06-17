@@ -6,6 +6,7 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoord;
 in vec4 FragPosLightSpace;
+in mat3 TBN;
 
 uniform sampler2D diffuse_texture;
 uniform sampler2D shadow_map;
@@ -53,11 +54,13 @@ void main()
         vec3 normal;
         if (normalTextureEnabled) {
             normal = texture(normal_texture, TexCoord * UvMultiplier).rgb;
+            normal = normal * 2.0 - 1.0;
+            normal = normalize(TBN * normal);
         } else {
             normal = normalize(Normal);
         }
         normal = normalize(normal);
-        vec3 lightColor = vec3(0.3);
+        vec3 lightColor = vec3(0.6);
         vec3 ambient = 0.2 * color;
 
         vec3 lightDir = normalize(lightPos - FragPos);

@@ -96,7 +96,7 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		glBindTexture(GL_TEXTURE_2D, diffuse_texture_unit->texture->GetTextureHandle());
 		diffuse_texture_unit->sampler.Bind();
 
-		if(_shadow_map.depth_texture) {
+		/*if(_shadow_map.depth_texture) {
 
 			auto lightPosition = directionalLightNode->GetDirectionalLight().direction;
 			lightPosition *= -1.0f;
@@ -108,7 +108,7 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 			_shader->SetUniform(_shadow_map_uniform_location, 2);
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, _shadow_map.depth_texture->GetTextureHandle());
-		}
+		}*/
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(drawable->GetIB().GetNumFaces() * 3), GL_UNSIGNED_INT, nullptr);
 		drawable->GetVAO()->Unbind();

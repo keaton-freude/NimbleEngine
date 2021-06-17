@@ -118,7 +118,7 @@ void DebugPass::DrawShadowFrustrum(SceneState &state, const SceneGraph &sceneGra
 		GLint polygonMode;
 		glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawElements(GL_TRIANGLES, _shadow_frustum_node.GetIB().GetNumFaces() * 3, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, (int)_shadow_frustum_node.GetIB().GetNumFaces() * 3, GL_UNSIGNED_INT, nullptr);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		_shadow_frustum_node.GetVAO()->Unbind();
 	}
