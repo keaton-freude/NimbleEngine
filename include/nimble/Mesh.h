@@ -99,10 +99,7 @@ private:
 		std::vector<Position> verts(mesh->mNumVertices);
 
 		for(size_t i = 0; i < mesh->mNumVertices; ++i) {
-			Position p{};
-			p.x = mesh->mVertices[i].x;
-			p.y = mesh->mVertices[i].y;
-			p.z = mesh->mVertices[i].z;
+			Position p(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 			verts[i] = p;
 		}
 

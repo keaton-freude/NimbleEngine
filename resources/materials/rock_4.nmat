@@ -1,0 +1,11 @@
+{
+  "name": "rock_4",
+  "material_type": "phong",
+  "diffuse_texture": {
+    "texture_uri": "rock_4_diffuse.tga"
+  },
+  "normal_texture": {
+    "texture_uri": "rock_4_normal.tga"
+  },
+  "uv_multiplier": 1.0
+}

@@ -50,8 +50,14 @@ Engine::Engine(Window *window) : _window(window) {
 
 	auto id = _sceneGraph->AddChild(new DrawableNode("rock_1.fbx", "rock_1"), cubeNodeId);
 	auto rockNode = _sceneGraph->Find(id).value();
+	// rockNode->Scale(glm::vec3(2.f, 2.f, 2.f));
 	rockNode->Scale(glm::vec3(.1f, .1f, .1f));
 	rockNode->Translate(glm::vec3(0.0f, 5.0f, 0.0f));
+
+	auto id2 = _sceneGraph->AddChild(new DrawableNode("rock_4.fbx", "rock_4"), cubeNodeId);
+	auto rockNode2 = _sceneGraph->Find(id2).value();
+	rockNode2->Scale(glm::vec3(.1f, .1f, .1f));
+	rockNode2->Translate(glm::vec3(30.0f, 5.0f, 10.0f));
 
 	auto plane = MeshTools::CreateTexturedPlane(1024.0f);
 	auto gridNodeId = _sceneGraph->AddChild(new DrawableNode(&plane, "grid"), _rootTransformNode);

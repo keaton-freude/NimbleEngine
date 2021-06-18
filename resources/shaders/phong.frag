@@ -59,8 +59,7 @@ void main()
         } else {
             normal = normalize(Normal);
         }
-        normal = normalize(normal);
-        vec3 lightColor = vec3(0.6);
+        vec3 lightColor = vec3(0.3);
         vec3 ambient = 0.2 * color;
 
         vec3 lightDir = normalize(lightPos - FragPos);

@@ -24,6 +24,11 @@ PhongPass::PhongPass() {
 }
 
 void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
+	static bool normal_mapping_enabled = true;
+#ifndef NDEBUG
+	if(ImGui::Checkbox("Enable Normal Mapping", &normal_mapping_enabled)) {
+	}
+#endif
 	// Find all drawable nodes
 	std::list<DrawableNode *> drawables = sceneGraph.GetNodesByDerivedType<DrawableNode>(SceneNodeType::DRAWABLE);
 
@@ -72,8 +77,8 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		_shader->SetUniform(_projection_uniform_location, *(state.GetProjectionMatrix()));
 		_shader->SetUniform(_uv_multiplier_uniform_location, uv_multiplier.value());
 
-		if(normal_texture_unit.has_value()) {
-			_shader->SetUniform(_diffuse_texture_uniform_location, 1);
+		if(normal_texture_unit.has_value() && normal_mapping_enabled) {
+			_shader->SetUniform(_normal_texture_uniform_location, 1);
 			_shader->SetUniform(_normal_map_enabled_uniform_location, true);
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, normal_texture_unit->texture->GetTextureHandle());
@@ -96,19 +101,14 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		glBindTexture(GL_TEXTURE_2D, diffuse_texture_unit->texture->GetTextureHandle());
 		diffuse_texture_unit->sampler.Bind();
 
-		/*if(_shadow_map.depth_texture) {
+		_shader->SetUniform(_light_pos_uniform_location, directionalLightNode->GetDirectionalLight().position);
 
-			auto lightPosition = directionalLightNode->GetDirectionalLight().direction;
-			lightPosition *= -1.0f;
-			lightPosition *= 10.0f;
-
-			_shader->SetUniform(_light_pos_uniform_location, lightPosition);
-
+		if(_shadow_map.depth_texture) {
 			_shader->SetUniform(_light_space_matrix_uniform_location, _shadow_map.light_space_matrix);
 			_shader->SetUniform(_shadow_map_uniform_location, 2);
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, _shadow_map.depth_texture->GetTextureHandle());
-		}*/
+		}
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(drawable->GetIB().GetNumFaces() * 3), GL_UNSIGNED_INT, nullptr);
 		drawable->GetVAO()->Unbind();

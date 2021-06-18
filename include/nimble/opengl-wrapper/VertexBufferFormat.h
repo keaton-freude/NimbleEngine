@@ -4,22 +4,67 @@
 #include "glm/glm.hpp"
 #include "glm/vec3.hpp"
 
+namespace {
+
+template <typename T>
+static int __NimbleGetOpenGLType() {
+	if constexpr(std::is_same_v<T, float>) {
+		return GL_FLOAT;
+	} else if constexpr(std::is_same_v<T, int>) {
+		return GL_INT;
+	}
+	return 0;
+	// etc...
+}
+
+template <typename First, typename... Rest>
+static void __DoNimbleSetVertexAttribPointers(int &index, uintptr_t &offset, int stride) {
+	glEnableVertexAttribArray(index);
+	glVertexAttribPointer(index,
+						  sizeof(First) / sizeof(First::value_type),
+						  __NimbleGetOpenGLType<typename First::value_type>(),
+						  GL_FALSE,
+						  stride,
+						  reinterpret_cast<void *>(offset));
+
+	if constexpr(sizeof...(Rest) > 0) {
+		index++;
+		offset += sizeof(First);
+		__DoNimbleSetVertexAttribPointers<Rest...>(index, offset, stride);
+	}
+}
+
+template <typename First, typename... Rest>
+static int __NimbleGetStride() {
+	if constexpr(sizeof...(Rest) == 0) {
+		return sizeof(First);
+	} else {
+		return sizeof(First) + __NimbleGetStride<Rest...>();
+	}
+}
+
+template <typename First, typename... Rest>
+static void __NimbleSetVertexAttribPointers() {
+	int index = 0;
+	uintptr_t offset = 0;
+	__DoNimbleSetVertexAttribPointers<First, Rest...>(index, offset, __NimbleGetStride<First, Rest...>());
+}
+} // namespace
+
 namespace Nimble {
+
 struct Position {
 	static constexpr size_t SizeInBytes() {
-		return sizeof(float) * 3;
+		return sizeof(glm::vec3);
 	}
-	float x;
-	float y;
-	float z;
+	glm::vec3 position;
 
 	static void SetVertexAttribPointers() {
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)Position::SizeInBytes(), (void *)0);
+		__NimbleSetVertexAttribPointers<glm::vec3>();
 	}
 
 	Position() = default;
-	Position(float x, float y, float z) : x(x), y(y), z(z) {
+	Position(float x, float y, float z) : position(x, y, z) {
 	}
 };
 
@@ -29,14 +74,7 @@ struct PositionColor {
 	}
 
 	static void SetVertexAttribPointers() {
-		// Position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)PositionColor::SizeInBytes(), (void *)0);
-
-		// Color
-		// Offset is 12 bytes to account for 3 floats of position
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, (int)PositionColor::SizeInBytes(), (void *)12);
+		__NimbleSetVertexAttribPointers<glm::vec3, glm::vec4>();
 	}
 
 	glm::vec3 position;
@@ -52,14 +90,7 @@ struct PositionUv {
 	}
 
 	static void SetVertexAttribPointers() {
-		// Position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)PositionUv::SizeInBytes(), (void *)0);
-
-		// UV
-		// Offset is 12 bytes to account for 3 floats of position
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, (int)PositionUv::SizeInBytes(), (void *)12);
+		__NimbleSetVertexAttribPointers<glm::vec3, glm::vec2>();
 	}
 
 	glm::vec3 position;
@@ -74,12 +105,7 @@ struct PositionNormal {
 	}
 
 	static void SetVertexAttribPointers() {
-		// Position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)PositionNormal::SizeInBytes(), (void *)0);
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (int)PositionNormal::SizeInBytes(), (void *)12);
+		__NimbleSetVertexAttribPointers<glm::vec3, glm::vec3>();
 	}
 
 	glm::vec3 position;
@@ -91,22 +117,11 @@ struct PositionNormal {
 
 struct PositionNormalUv {
 	static constexpr size_t SizeInBytes() {
-		// return sizeof(PositionNormalUv);
 		return sizeof(glm::vec3) + sizeof(glm::vec3) + sizeof(glm::vec2);
 	}
 
 	static void SetVertexAttribPointers() {
-		// Position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUv::SizeInBytes(), (void *)0);
-
-		// Normal
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUv::SizeInBytes(), (void *)12);
-
-		// UV
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (int)PositionNormalUv::SizeInBytes(), (void *)24);
+		__NimbleSetVertexAttribPointers<glm::vec3, glm::vec3, glm::vec2>();
 	}
 
 	glm::vec3 position;
@@ -125,25 +140,7 @@ struct PositionNormalUvTangentBitangent {
 	}
 
 	static void SetVertexAttribPointers() {
-		// Position
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)0);
-
-		// Normal
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)12);
-
-		// UV
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)24);
-
-		// Tangent
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)32);
-
-		// Bitangent
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, (int)PositionNormalUvTangentBitangent::SizeInBytes(), (void *)46);
+		__NimbleSetVertexAttribPointers<glm::vec3, glm::vec3, glm::vec2, glm::vec3, glm::vec3>();
 	}
 
 	glm::vec3 position;
