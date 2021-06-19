@@ -2,6 +2,7 @@
 #include "nimble/scene-graph/DirectionalLightNode.h"
 #include "nimble/scene-graph/DrawableNode.h"
 #include "nimble/scene-graph/SceneGraph.h"
+#include "nimble/utility/ImGuiUtility.h"
 
 using namespace Nimble;
 
@@ -16,7 +17,7 @@ PhongPass::PhongPass() {
 	_view_pos_uniform_location = _shader->GetUniformLocation("viewPos");
 	_lighting_enabled_uniform_location = _shader->GetUniformLocation("lightingEnabled");
 	_diffuse_texture_uniform_location = _shader->GetUniformLocation("diffuse_texture");
-	_light_pos_uniform_location = _shader->GetUniformLocation("lightPos");
+	_light_dir_uniform_location = _shader->GetUniformLocation("lightDir");
 	_light_space_matrix_uniform_location = _shader->GetUniformLocation("lightSpaceMatrix");
 	_shadow_map_uniform_location = _shader->GetUniformLocation("shadow_map");
 	_normal_texture_uniform_location = _shader->GetUniformLocation("normal_texture");
@@ -24,11 +25,9 @@ PhongPass::PhongPass() {
 }
 
 void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
-	static bool normal_mapping_enabled = true;
-#ifndef NDEBUG
-	if(ImGui::Checkbox("Enable Normal Mapping", &normal_mapping_enabled)) {
-	}
-#endif
+	GUI_CHECKBOX(normal_mapping_enabled, true);
+	GUI_CHECKBOX(shadow_mapping_enabled, true);
+
 	// Find all drawable nodes
 	std::list<DrawableNode *> drawables = sceneGraph.GetNodesByDerivedType<DrawableNode>(SceneNodeType::DRAWABLE);
 
@@ -101,13 +100,16 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		glBindTexture(GL_TEXTURE_2D, diffuse_texture_unit->texture->GetTextureHandle());
 		diffuse_texture_unit->sampler.Bind();
 
-		_shader->SetUniform(_light_pos_uniform_location, directionalLightNode->GetDirectionalLight().position);
+		_shader->SetUniform(_light_dir_uniform_location, directionalLightNode->GetDirectionalLight().direction);
 
-		if(_shadow_map.depth_texture) {
+		if(_shadow_map.depth_texture && shadow_mapping_enabled) {
+			_shader->SetUniform("shadowMappingEnabled", true);
 			_shader->SetUniform(_light_space_matrix_uniform_location, _shadow_map.light_space_matrix);
 			_shader->SetUniform(_shadow_map_uniform_location, 2);
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, _shadow_map.depth_texture->GetTextureHandle());
+		} else {
+			_shader->SetUniform("shadowMappingEnabled", false);
 		}
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(drawable->GetIB().GetNumFaces() * 3), GL_UNSIGNED_INT, nullptr);
