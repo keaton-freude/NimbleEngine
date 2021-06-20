@@ -10,6 +10,9 @@ in mat3 TBN;
 
 uniform sampler2D diffuse_texture;
 
+uniform bool specularTextureEnabled;
+uniform sampler2D specular_texture;
+
 uniform bool shadowMappingEnabled;
 uniform sampler2D shadow_map;
 
@@ -65,7 +68,7 @@ void main()
         } else {
             normal = normalize(Normal);
         }
-        vec3 lightColor = vec3(0.3);
+        vec3 lightColor = vec3(0.6);
         vec3 ambient = 0.2 * color;
 
         vec3 reversedLightDir = -lightDir;
@@ -78,6 +81,11 @@ void main()
         vec3 halfwayDir = normalize(reversedLightDir + viewDir);
         spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
         vec3 specular = spec * lightColor;
+
+        if (specularTextureEnabled) {
+            //specular *= length(texture2D(specular_texture, TexCoord * UvMultiplier).rgb);
+            specular = vec3(texture(specular_texture, TexCoord * UvMultiplier)) * spec * lightColor;
+        }
 
         float bias = max(0.05 * (1.0 - dot(normal, reversedLightDir)), 0.005);
         float shadow = shadow_calculation(FragPosLightSpace, bias);

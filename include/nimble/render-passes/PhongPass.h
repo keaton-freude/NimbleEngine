@@ -14,7 +14,8 @@ private:
 	unsigned int _model_uniform_location, _view_uniform_location, _projection_uniform_location,
 		_uv_multiplier_uniform_location, _view_pos_uniform_location, _lighting_enabled_uniform_location,
 		_diffuse_texture_uniform_location, _light_dir_uniform_location, _light_space_matrix_uniform_location,
-		_shadow_map_uniform_location, _normal_texture_uniform_location, _normal_map_enabled_uniform_location;
+		_shadow_map_uniform_location, _normal_texture_uniform_location, _normal_map_enabled_uniform_location,
+		_specular_texture_uniform_location, _specular_enabled_uniform_location;
 
 public:
 	PhongPass();

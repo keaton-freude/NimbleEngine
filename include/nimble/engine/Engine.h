@@ -49,6 +49,7 @@ private:
 	std::shared_ptr<glm::mat4> _projectionMatrix;
 	std::unique_ptr<SceneGraph> _sceneGraph;
 	size_t _rootTransformNode;
+	SceneNode *_rockNode;
 	SceneNode *cubeHandleNode;
 	// TODO: Make this variable sized
 	std::unique_ptr<ShadowPass> _shadow_pass;

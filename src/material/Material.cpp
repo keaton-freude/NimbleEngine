@@ -89,6 +89,11 @@ void Material::LoadFromFile(const char *path) {
 		_normal_texture = GetTextureUnitFromJson(document["normal_texture"].GetObject());
 	}
 
+	if(document.HasMember("specular_texture")) {
+		ASSERT(document["specular_texture"].IsObject(), "Specular Texture element is not an object. Check the schema.");
+		_specular_texture = GetTextureUnitFromJson(document["specular_texture"].GetObject());
+	}
+
 	if(document.HasMember("receives_lighting")) {
 		ASSERT(document["receives_lighting"].IsBool(), "receives_lighting key must be a boolean");
 		_receives_lighting = document["receives_lighting"].GetBool();
@@ -125,6 +130,10 @@ std::optional<TextureUnit> Material::GetDiffuseTexture() const {
 
 std::optional<TextureUnit> Material::GetNormalTexture() const {
 	return _normal_texture;
+}
+
+std::optional<TextureUnit> Material::GetSpecularTexture() const {
+	return _specular_texture;
 }
 
 std::optional<float> Material::GetUvMultiplier() const {

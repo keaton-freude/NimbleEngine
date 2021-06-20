@@ -58,6 +58,7 @@ private:
 
 	std::optional<TextureUnit> _diffuse_texture{};
 	std::optional<TextureUnit> _normal_texture{};
+	std::optional<TextureUnit> _specular_texture{};
 	std::optional<float> _uv_multiplier{};
 	std::optional<bool> _casts_shadows{};
 
@@ -79,6 +80,7 @@ public:
 	[[nodiscard]] std::optional<bool> GetReceivesLighting() const;
 	[[nodiscard]] std::optional<TextureUnit> GetDiffuseTexture() const;
 	[[nodiscard]] std::optional<TextureUnit> GetNormalTexture() const;
+	[[nodiscard]] std::optional<TextureUnit> GetSpecularTexture() const;
 	[[nodiscard]] std::optional<float> GetUvMultiplier() const;
 	[[nodiscard]] std::optional<bool> GetCastsShadows() const;
 

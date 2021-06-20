@@ -48,16 +48,21 @@ Engine::Engine(Window *window) : _window(window) {
 		}
 	}*/
 
-	auto id = _sceneGraph->AddChild(new DrawableNode("rock_1.fbx", "rock_1"), cubeNodeId);
+	/*auto id = _sceneGraph->AddChild(new DrawableNode("rock_1.fbx", "rock_1"), cubeNodeId);
 	auto rockNode = _sceneGraph->Find(id).value();
 	// rockNode->Scale(glm::vec3(2.f, 2.f, 2.f));
 	rockNode->Scale(glm::vec3(.1f, .1f, .1f));
-	rockNode->Translate(glm::vec3(0.0f, 5.0f, 0.0f));
+	rockNode->Translate(glm::vec3(0.0f, 5.0f, 0.0f));*/
 
-	auto id2 = _sceneGraph->AddChild(new DrawableNode("rock_4.fbx", "rock_4"), cubeNodeId);
-	auto rockNode2 = _sceneGraph->Find(id2).value();
-	rockNode2->Scale(glm::vec3(.1f, .1f, .1f));
-	rockNode2->Translate(glm::vec3(30.0f, 5.0f, 10.0f));
+	auto id2 = _sceneGraph->AddChild(new DrawableNode("rock_3.fbx", "rock_3"), cubeNodeId);
+	_rockNode = _sceneGraph->Find(id2).value();
+	_rockNode->Scale(glm::vec3(.03f, .03f, .03f));
+	_rockNode->Translate(glm::vec3(0.0f, 15.0f, 0.0f));
+
+	/*auto id = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube"), cubeNodeId);
+	auto cubeNode = _sceneGraph->Find(id).value();
+	cubeNode->Scale(glm::vec3(3.0f, 3.0f, 3.0f));
+	cubeNode->Translate(glm::vec3(0.f, 5.0f, 0.f));*/
 
 	auto plane = MeshTools::CreateTexturedPlane(1024.0f);
 	auto gridNodeId = _sceneGraph->AddChild(new DrawableNode(&plane, "grid"), _rootTransformNode);
@@ -88,11 +93,7 @@ void Engine::RenderFrame(const Time &time) {
 	static float total_time = 0.0f;
 	total_time += time.dt();
 
-	float speed = 10.0f;
-	glm::vec3 translation{};
-	translation.x = sin(total_time) * time.dt();
-	translation.z = cos(total_time) * time.dt();
-	translation *= speed;
+	_rockNode->Rotate(glm::vec3(0.f, 1.f, 0.f), glm::radians(20.f * time.dt()));
 
 	_sceneGraph->Render();
 

@@ -22,11 +22,14 @@ PhongPass::PhongPass() {
 	_shadow_map_uniform_location = _shader->GetUniformLocation("shadow_map");
 	_normal_texture_uniform_location = _shader->GetUniformLocation("normal_texture");
 	_normal_map_enabled_uniform_location = _shader->GetUniformLocation("normalTextureEnabled");
+	_specular_texture_uniform_location = _shader->GetUniformLocation("specular_texture");
+	_specular_enabled_uniform_location = _shader->GetUniformLocation("specularTextureEnabled");
 }
 
 void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	GUI_CHECKBOX(normal_mapping_enabled, true);
 	GUI_CHECKBOX(shadow_mapping_enabled, true);
+	GUI_CHECKBOX(specular_enabled, true);
 
 	// Find all drawable nodes
 	std::list<DrawableNode *> drawables = sceneGraph.GetNodesByDerivedType<DrawableNode>(SceneNodeType::DRAWABLE);
@@ -65,6 +68,7 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		ASSERT(diffuse_texture_unit.has_value(), "Phong Pass requires a diffuse texture to be set!");
 
 		auto normal_texture_unit = drawable->GetMaterial()->GetNormalTexture();
+		auto specular_texture_unit = drawable->GetMaterial()->GetSpecularTexture();
 
 		auto receives_lighting = drawable->GetMaterial()->GetReceivesLighting().value();
 		auto transform = drawable->GetTransformation();
@@ -85,6 +89,14 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 			_shader->SetUniform(_normal_map_enabled_uniform_location, false);
 		}
 
+		if(specular_texture_unit.has_value() && specular_enabled) {
+			_shader->SetUniform(_specular_enabled_uniform_location, true);
+			_shader->SetUniform(_specular_texture_uniform_location, 3);
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, specular_texture_unit->texture->GetTextureHandle());
+		} else {
+			_shader->SetUniform(_specular_enabled_uniform_location, false);
+		}
 
 		if(directionalLightNode && receives_lighting) {
 			auto light = directionalLightNode->GetDirectionalLight();
@@ -111,6 +123,7 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		} else {
 			_shader->SetUniform("shadowMappingEnabled", false);
 		}
+
 
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(drawable->GetIB().GetNumFaces() * 3), GL_UNSIGNED_INT, nullptr);
 		drawable->GetVAO()->Unbind();

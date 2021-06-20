@@ -7,5 +7,8 @@
   "normal_texture": {
     "texture_uri": "rock_1_normal.tga"
   },
+  "specular_texture": {
+    "texture_uri": "rock_1_specular.tga"
+  },
   "uv_multiplier": 1.0
 }
