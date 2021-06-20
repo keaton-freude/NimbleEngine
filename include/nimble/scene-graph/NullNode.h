@@ -12,6 +12,9 @@ namespace Nimble {
 class NullNode : public SceneNode {
 private:
 public:
+	NullNode() : SceneNode("null_node") {
+	}
+
 	void Apply(SceneState &sceneState) override {
 	}
 

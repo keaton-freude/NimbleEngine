@@ -4,7 +4,7 @@
 
 using namespace Nimble;
 
-SceneNode::SceneNode() {
+SceneNode::SceneNode(const std::string &name) : _node_name(name) {
 	_id = SceneNode::GenerateID();
 }
 
@@ -37,8 +37,16 @@ void SceneNode::Visit(SceneState &sceneState) {
 	}
 }
 
+const SceneNode::ChildrenStorageTy &SceneNode::GetChildren() {
+	return _children;
+}
+
 size_t SceneNode::GetID() const {
 	return _id;
+}
+
+const std::string &SceneNode::GetNodeName() const {
+	return _node_name;
 }
 
 size_t SceneNode::GenerateID() {
@@ -98,6 +106,17 @@ void SceneNode::Rotate(glm::vec3 axis, float radians) {
 
 void SceneNode::Scale(glm::vec3 scale) {
 	PropagateScale(scale);
+}
+
+void SceneNode::SetTranslation(glm::vec3 translation) {
+	// Hmm, probably should add a way to propagate a "set transform"
+	// series of calls, instead of this hack
+
+	// Undo existing translation
+	PropagateTranslation(-_transform.GetTranslation());
+
+	// Now apply the requested translation
+	PropagateTranslation(translation);
 }
 
 const Transformation &SceneNode::GetTransformation() const {

@@ -18,7 +18,7 @@ public:
 	// require user to give us a light at construction time
 	DirectionalLightNode() = delete;
 
-	DirectionalLightNode(DirectionalLight light);
+	DirectionalLightNode(DirectionalLight light, const std::string &name);
 
 	void Apply(SceneState &sceneState) override;
 

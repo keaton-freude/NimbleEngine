@@ -5,7 +5,9 @@
 using namespace Nimble;
 
 DebugPass::DebugPass()
-: _shadow_frustum_node(DrawableNode(ResourceManager::Get().GetMesh<PositionColor>("cube.fbx", "frustum_cube").get(), "debug_frustum")),
+: _shadow_frustum_node(DrawableNode(ResourceManager::Get().GetMesh<PositionColor>("cube.fbx", "frustum_cube").get(),
+									"debug_frustum",
+									"debug_shadow_frustum")),
   _color_shader(ResourceManager::Get().GetShader("color")) {
 	ASSERT(_color_shader, "Could not find color shader");
 }
@@ -42,7 +44,7 @@ void DebugPass::DrawLights(SceneState &state, const SceneGraph &sceneGraph) {
 								 1,
 								 vao);
 
-		DrawableNode drawable(&mesh, "debug_line");
+		DrawableNode drawable(&mesh, "debug_line", "debug_light_line");
 
 		drawable.GetVAO()->Bind();
 		drawable.GetVB().Bind();

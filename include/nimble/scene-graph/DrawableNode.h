@@ -17,6 +17,7 @@
 #include "nimble/scene-graph/Transformation.h"
 
 #include "nimble/core/Assert.h"
+#include "nimble/utility/ImGuiUtility.h"
 #include <memory>
 
 
@@ -35,25 +36,30 @@ private:
 
 public:
 	// Drawable node from pre-existing resources
-	DrawableNode(const IMesh *mesh, std::shared_ptr<Material> material)
-	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(material) {
+	DrawableNode(const IMesh *mesh, std::shared_ptr<Material> material, const std::string &name)
+	: SceneNode(name), _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(material) {
 		_vao->Bind();
 		_vb.LoadFromMesh(mesh);
 		_ib.LoadFromMesh(mesh);
 	}
 
-	DrawableNode(const IMesh *mesh, const std::string &materialName)
-	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(nullptr) {
+	DrawableNode(const IMesh *mesh, const std::string &materialName, const std::string &name)
+	: SceneNode(name), _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(mesh->GetVao()), _material(nullptr) {
 		InitFromFilenames(mesh, materialName);
 	}
 
 	// Drawable node with resource names
-	DrawableNode(const std::string &meshName, const std::string &materialName)
-	: _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(nullptr), _material(nullptr) {
+	DrawableNode(const std::string &meshName, const std::string &materialName, const std::string &name)
+	: SceneNode(name), _vb(BufferUsageType::Static), _ib(BufferUsageType::Static), _vao(nullptr), _material(nullptr) {
 		InitFromFilenames(meshName, materialName);
 	}
 
 	void Apply(SceneState &sceneState) override {
+		if(ImGui::TreeNode(GetNodeName().c_str())) {
+			GUI_SLIDER_FLOAT3(newTransformPosition, GetTransformation().GetTranslation(), -50.f, 50.f);
+			SetTranslation(newTransformPosition);
+			ImGui::TreePop();
+		}
 	}
 
 	std::shared_ptr<VertexArrayObject> GetVAO() const {

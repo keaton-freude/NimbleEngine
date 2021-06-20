@@ -25,11 +25,13 @@ Engine::Engine(Window *window) : _window(window) {
 	glm::vec3 lightDirection = glm::vec3(1.0f, -1.0f, -1.0f);
 
 	// Add a directional light to the scene
-	_rootTransformNode =
-		_sceneGraph
-			->AddChildToRoot(new DirectionalLightNode(DirectionalLight(
-				lightDirection, glm::vec3(.3f, .3f, .3f), glm::vec3(-62.5f, 22.5f, 15.0f), OrthoProjection(225.f, 150.f, 120.f))))
-			.second;
+	_rootTransformNode = _sceneGraph
+							 ->AddChildToRoot(new DirectionalLightNode(DirectionalLight(lightDirection,
+																						glm::vec3(.3f, .3f, .3f),
+																						glm::vec3(-62.5f, 22.5f, 15.0f),
+																						OrthoProjection(225.f, 150.f, 120.f)),
+																	   "directional_light"))
+							 .second;
 
 	const auto DISTANCE_BETWEEN = 5.0f;
 
@@ -54,7 +56,7 @@ Engine::Engine(Window *window) : _window(window) {
 	rockNode->Scale(glm::vec3(.1f, .1f, .1f));
 	rockNode->Translate(glm::vec3(0.0f, 5.0f, 0.0f));*/
 
-	auto id2 = _sceneGraph->AddChild(new DrawableNode("rock_3.fbx", "rock_3"), cubeNodeId);
+	auto id2 = _sceneGraph->AddChild(new DrawableNode("rock_3.fbx", "rock_3", "rock_3"), cubeNodeId);
 	_rockNode = _sceneGraph->Find(id2).value();
 	_rockNode->Scale(glm::vec3(.03f, .03f, .03f));
 	_rockNode->Translate(glm::vec3(0.0f, 15.0f, 0.0f));
@@ -65,10 +67,10 @@ Engine::Engine(Window *window) : _window(window) {
 	cubeNode->Translate(glm::vec3(0.f, 5.0f, 0.f));*/
 
 	auto plane = MeshTools::CreateTexturedPlane(1024.0f);
-	auto gridNodeId = _sceneGraph->AddChild(new DrawableNode(&plane, "grid"), _rootTransformNode);
+	auto gridNodeId = _sceneGraph->AddChild(new DrawableNode(&plane, "grid", "grid"), _rootTransformNode);
 	auto gridNode = _sceneGraph->Find(gridNodeId).value();
 
-	auto floorId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "floor"), _rootTransformNode);
+	auto floorId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "floor", "floor"), _rootTransformNode);
 	auto floorNode = _sceneGraph->Find(floorId).value();
 
 	floorNode->Scale(glm::vec3(50.0f, 0.01f, 50.0f));
@@ -93,7 +95,7 @@ void Engine::RenderFrame(const Time &time) {
 	static float total_time = 0.0f;
 	total_time += time.dt();
 
-	_rockNode->Rotate(glm::vec3(0.f, 1.f, 0.f), glm::radians(20.f * time.dt()));
+	_rockNode->Rotate(glm::vec3(0.f, 1.f, 0.f), glm::radians(30.f * time.dt()));
 
 	_sceneGraph->Render();
 

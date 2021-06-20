@@ -3,8 +3,9 @@
 #include <memory>
 #include <optional>
 #include <spdlog/spdlog.h>
-#include <utility>
+#include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "nimble/scene-graph/SceneState.h"
@@ -33,6 +34,7 @@ private:
 
 	// Every scene node has a transform
 	Transformation _transform{};
+	std::string _node_name;
 
 	void PropagateTranslation(const glm::vec3 &translation);
 	void PropagateRotation(const glm::vec3 &axis, float rotation);
@@ -40,7 +42,8 @@ private:
 
 protected:
 public:
-	SceneNode();
+	SceneNode() = delete;
+	SceneNode(const std::string &name);
 	virtual ~SceneNode() = default;
 
 	// The storage type of the Node's ID
@@ -69,7 +72,7 @@ public:
 	NodeIdRet AddChild(NodeTy &&node);
 
 	template <typename T, typename... Args>
-	inline NodeIdRet AddChild(Args &&... args) {
+	inline NodeIdRet AddChild(Args &&...args) {
 		std::unique_ptr<SceneNode> child = new std::unique_ptr<T>(args...);
 		child->_transform *= _transform;
 		_children.push_back(new T(args...));
@@ -86,9 +89,7 @@ public:
 		((AddChild(args)), ...);
 	}
 
-	const ChildrenStorageTy &GetChildren() {
-		return _children;
-	}
+	const ChildrenStorageTy &GetChildren();
 
 	// Users should call GetID() on important nodes before they are giving over to the scene graph
 	// This allows your systems to keep track of where important nodes are like:
@@ -96,6 +97,8 @@ public:
 	// based on user input, etc
 	// Guaranteed to be unique!
 	[[nodiscard]] size_t GetID() const;
+
+	[[nodiscard]] const std::string &GetNodeName() const;
 
 	// Search ourself, and our children for the specific ID
 	// Returning a raw pointer, because we can't use references in std::optional
@@ -106,6 +109,7 @@ public:
 	void Translate(glm::vec3 translation);
 	void Rotate(glm::vec3 axis, float radians);
 	void Scale(glm::vec3 scale);
+	void SetTranslation(glm::vec3 translation);
 
 	[[nodiscard]] const Transformation &GetTransformation() const;
 

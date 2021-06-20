@@ -3,7 +3,8 @@
 
 using namespace Nimble;
 
-DirectionalLightNode::DirectionalLightNode(DirectionalLight light) : _light(light) {
+DirectionalLightNode::DirectionalLightNode(DirectionalLight light, const std::string &name)
+: SceneNode(name), _light(light) {
 	_light.direction = glm::normalize(light.direction);
 	_light.enabled = true;
 }

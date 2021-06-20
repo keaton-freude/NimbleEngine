@@ -26,7 +26,7 @@ private:
 	TestState *_state;
 
 public:
-	TestSceneNode(int value, TestState *state) : _value(value), _state(state) {
+	TestSceneNode(int value, TestState *state) : SceneNode("test_node"), _value(value), _state(state) {
 	}
 
 	void Apply(SceneState &sceneState) override {
