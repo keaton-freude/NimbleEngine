@@ -39,21 +39,26 @@ public:
 #endif
 		// calculate the world matrix based on the current state
 		// return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
-		return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
+		// return glm::mat4_cast(_rotation) * glm::translate(_position) * glm::scale(_scale);
+		return glm::translate(_position) * glm::mat4_cast(_rotation) * glm::scale(_scale);
 		//		glm::mat4 model = glm::mat4(1.0f);
 		//		model =
 	}
 
-	void Rotate(glm::vec3 axis, float radians) {
-		_rotation = glm::angleAxis(radians, axis) * _rotation;
+	void Rotate(const glm::quat &rotation) {
+		_rotation = rotation * _rotation;
 	}
 
-	void SetRotation(glm::vec3 axis, float radians) {
-		_rotation = glm::angleAxis(radians, axis);
+	void SetRotation(const glm::quat &rotation) {
+		_rotation = rotation;
 	}
 
 	void Translate(glm::vec3 amount) {
 		_position += amount;
+	}
+
+	void SetTranslation(glm::vec3 translation) {
+		_position = translation;
 	}
 
 	void Scale(glm::vec3 amount) {

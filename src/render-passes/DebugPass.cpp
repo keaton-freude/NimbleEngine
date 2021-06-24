@@ -1,4 +1,5 @@
 #include "nimble/render-passes/DebugPass.h"
+#include <nimble/core/Colors.h>
 #include <nimble/scene-graph/DirectionalLightNode.h>
 #include <nimble/utility/ImGuiUtility.h>
 
@@ -13,16 +14,27 @@ DebugPass::DebugPass()
 }
 
 void DebugPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
-	// Variety of optional features which can help in debugging issues
-	GUI_CHECKBOX(renderNormals, false);
-	GUI_CHECKBOX(showLights, false);
-	GUI_CHECKBOX(showShadowFrustrum, false);
+	if(ImGui::TreeNode("Debug Settings")) {
+		// Variety of optional features which can help in debugging issues
+		GUI_CHECKBOX_WITH_SETTER_FUNC(renderNormals, _renderNormals, [this](bool value) { this->_renderNormals = value; });
+		GUI_CHECKBOX_WITH_SETTER_FUNC(showLights, _showLights, [this](bool value) { this->_showLights = value; });
+		GUI_CHECKBOX_WITH_SETTER_FUNC(showAxis, _showAxis, [this](bool value) { this->_showAxis = value; });
+		GUI_CHECKBOX_WITH_SETTER_FUNC(showShadowFrustrum, _showShadowFrustum, [this](bool value) {
+			this->_showShadowFrustum = value;
+		});
+		ImGui::TreePop();
+	}
 
-	if(showLights) {
+	if(_showLights) {
 		DrawLights(state, sceneGraph);
 	}
-	if(showShadowFrustrum) {
+	if(_showShadowFrustum) {
 		DrawShadowFrustrum(state, sceneGraph);
+	}
+
+	if(_showAxis) {
+		glClear(GL_DEPTH_BUFFER_BIT);
+		DrawAxis(state, sceneGraph);
 	}
 }
 void DebugPass::DrawLights(SceneState &state, const SceneGraph &sceneGraph) {
@@ -124,4 +136,41 @@ void DebugPass::DrawShadowFrustrum(SceneState &state, const SceneGraph &sceneGra
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		_shadow_frustum_node.GetVAO()->Unbind();
 	}
+}
+void DebugPass::DrawAxis(SceneState &state, const SceneGraph &sceneGraph) {
+	const auto LINE_LENGTH = 20.0f;
+	std::shared_ptr<VertexArrayObject> vao = std::make_shared<VertexArrayObject>(PositionColor::SetVertexAttribPointers);
+	glm::vec3 origin = glm::vec3(0.f);
+	const glm::vec3 x_end = glm::vec3(1.0f, 0.0f, 0.0f) * LINE_LENGTH;
+	const glm::vec3 y_end = glm::vec3(0.0f, 1.0f, 0.0f) * LINE_LENGTH;
+	const glm::vec3 z_end = glm::vec3(0.0f, 0.0f, 1.0f) * LINE_LENGTH;
+
+	Mesh<PositionColor> mesh(std::vector<PositionColor>{ { origin, Colors::RED },
+														 { x_end, Colors::RED },
+														 { origin, Colors::GREEN },
+														 { y_end, Colors::GREEN },
+														 { origin, Colors::BLUE },
+														 { z_end, Colors::BLUE } },
+							 { 0, 1, 2, 3, 4, 5 },
+							 3,
+							 vao);
+
+	DrawableNode x_axis(&mesh, "debug_line", "debug_axis");
+
+	x_axis.GetVAO()->Bind();
+	x_axis.GetVB().Bind();
+	x_axis.GetIB().Bind();
+
+	// Model identity
+	glm::mat4 model(1.0f);
+	auto shader = ResourceManager::Get().GetShader("color");
+	ASSERT(shader, "Could not find color shader");
+
+	shader->Use();
+	shader->SetUniform("Model", model);
+	shader->SetUniform("View", state.GetCamera()->GetView());
+	shader->SetUniform("Projection", *(state.GetProjectionMatrix()));
+
+	glDrawElements(GL_LINES, 6, GL_UNSIGNED_INT, nullptr);
+	x_axis.GetVAO()->Unbind();
 }

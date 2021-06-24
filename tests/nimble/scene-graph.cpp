@@ -33,6 +33,9 @@ public:
 		_state->values.push_back(_value);
 	}
 
+	void DrawGuiElements() override {
+	}
+
 	SceneNodeType GetSceneNodeType() override {
 		return SceneNodeType::UNKNOWN;
 	}
@@ -274,10 +277,10 @@ TEST_CASE("Apply Transformations", "[transform]") {
 	Transformation transform2;
 
 	// Rotate along the x-axis 90 degrees...
-	transform1.SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), glm::radians(90.0f));
+	transform1.SetRotation(glm::angleAxis(glm::radians(90.f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	// Rotate the other along the y-axis 90 degrees..
-	transform2.SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(90.0f));
+	transform2.SetRotation(glm::angleAxis(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 	// Create a new transform from the result of applying transform2 to transform1
 	// Which should result in a rotation which is 90 degrees around the x-axis, and 90 degrees around the y-axis
@@ -353,18 +356,18 @@ TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
 	REQUIRE(testNode6->GetTransformation() == expectedTransform2);
 
 	testNode1->Scale(glm::vec3(0.5f, 0.5f, 0.5f));
-	testNode1->Rotate(glm::vec3(1.0f, 1.0f, 0.0f), 45.0f);
+	testNode1->Rotate(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
 	testNode1->Translate(glm::vec3(10.0f, 10.0f, 10.0f));
 
 	Transformation expectedTransform3 = expectedTransform1;
 	Transformation expectedTransform4 = expectedTransform2;
 
 	expectedTransform3.Scale(glm::vec3(0.5f, 0.5f, 0.5f));
-	expectedTransform3.Rotate(glm::vec3(1.0f, 1.0f, 0.0f), 45.0f);
+	expectedTransform3.Rotate(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
 	expectedTransform3.Translate(glm::vec3(10.0f, 10.0f, 10.0f));
 
 	expectedTransform4.Scale(glm::vec3(0.5f, 0.5f, 0.5f));
-	expectedTransform4.Rotate(glm::vec3(1.0f, 1.0f, 0.0f), 45.0f);
+	expectedTransform4.Rotate(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.f)));
 	expectedTransform4.Translate(glm::vec3(10.0f, 10.0f, 10.0f));
 
 	REQUIRE(testNode1->GetTransformation() == expectedTransform3);

@@ -12,8 +12,16 @@ private:
 	DrawableNode _shadow_frustum_node;
 	std::shared_ptr<ShaderProgram> _color_shader = nullptr;
 
+	// Holds current debug settings state, those of which exposed via GUI
+	// TODO: Maybe revisit the ImGui macros at some point to handle one-off flags
+	bool _renderNormals = false;
+	bool _showLights = false;
+	bool _showShadowFrustum = false;
+	bool _showAxis = true;
+
 	void DrawLights(SceneState &state, const SceneGraph &sceneGraph);
 	void DrawShadowFrustrum(SceneState &state, const SceneGraph &sceneGraph);
+	void DrawAxis(SceneState &state, const SceneGraph &sceneGraph);
 
 public:
 	DebugPass();

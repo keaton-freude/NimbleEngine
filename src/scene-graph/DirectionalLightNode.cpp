@@ -10,21 +10,21 @@ DirectionalLightNode::DirectionalLightNode(DirectionalLight light, const std::st
 }
 
 void DirectionalLightNode::Apply(SceneState &sceneState) {
-	if(ImGui::TreeNode("Directional Light")) {
-		GUI_SLIDER_FLOAT3(lightDirection, _light.direction, -1.0f, 1.0f);
-		_light.direction = glm::normalize(lightDirection);
+}
 
-		GUI_SLIDER_FLOAT3(lightPosition, _light.position, -100.0f, 100.0f);
-		_light.position = lightPosition;
+void DirectionalLightNode::DrawGuiElements() {
+	GUI_SLIDER_FLOAT3(direction, _light.direction, -1.0f, 1.0f);
+	_light.direction = glm::normalize(direction);
 
-		GUI_SLIDER_FLOAT1(projectionWidth, _light.projection.width, -400.0f, 400.0f);
-		_light.projection.width = projectionWidth;
+	GUI_SLIDER_FLOAT3(position, _light.position, -100.0f, 100.0f);
+	_light.position = position;
 
-		GUI_SLIDER_FLOAT1(projectionHeight, _light.projection.height, -400.0f, 400.0f);
-		_light.projection.height = projectionHeight;
+	GUI_SLIDER_FLOAT1(projWidth, _light.projection.width, -400.0f, 400.0f);
+	_light.projection.width = projWidth;
 
-		GUI_SLIDER_FLOAT1(projectionDepth, _light.projection.depth, 10.f, 1000.0f);
-		_light.projection.depth = projectionDepth;
-		ImGui::TreePop();
-	}
+	GUI_SLIDER_FLOAT1(projHeight, _light.projection.height, -400.0f, 400.0f);
+	_light.projection.height = projHeight;
+
+	GUI_SLIDER_FLOAT1(projDepth, _light.projection.depth, 10.f, 1000.0f);
+	_light.projection.depth = projDepth;
 }

@@ -69,6 +69,7 @@ Engine::Engine(Window *window) : _window(window) {
 	auto plane = MeshTools::CreateTexturedPlane(1024.0f);
 	auto gridNodeId = _sceneGraph->AddChild(new DrawableNode(&plane, "grid", "grid"), _rootTransformNode);
 	auto gridNode = _sceneGraph->Find(gridNodeId).value();
+	gridNode->Translate(glm::vec3(0.0f, -1.0f, 0.0f));
 
 	auto floorId = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "floor", "floor"), _rootTransformNode);
 	auto floorNode = _sceneGraph->Find(floorId).value();
@@ -95,8 +96,9 @@ void Engine::RenderFrame(const Time &time) {
 	static float total_time = 0.0f;
 	total_time += time.dt();
 
-	_rockNode->Rotate(glm::vec3(0.f, 1.f, 0.f), glm::radians(30.f * time.dt()));
+	//_rockNode->Rotate(glm::vec3(0.f, 1.f, 0.f), glm::radians(30.f * time.dt()));
 
+	_sceneGraph->RenderGui();
 	_sceneGraph->Render();
 
 
@@ -106,12 +108,13 @@ void Engine::RenderFrame(const Time &time) {
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#ifndef NDEBUG
-	_debug_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
-#endif
 
 	_phong_pass->SetShadowMap(_shadow_pass->GetShadowMap());
 	_phong_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
+
+#ifndef NDEBUG
+	_debug_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
+#endif
 
 	static bool vsyncEnabled = _window->IsVSyncEnabled();
 	if(ImGui::Checkbox("VSync Enabled", &vsyncEnabled)) {

@@ -37,6 +37,13 @@ public:
 		this->Visit(_sceneState);
 	}
 
+	void RenderGui() {
+		this->VisitGui(_sceneState);
+	}
+
+	void DrawGuiElements() override {
+	}
+
 	void Apply(SceneState &sceneState) override {
 		// Does nothing, because this is the root node
 	}

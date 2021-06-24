@@ -30,6 +30,8 @@ private:
 	VertexBuffer _vb;
 	IndexBuffer _ib;
 	std::shared_ptr<VertexArrayObject> _vao;
+	float _rotation_degrees = 0.0f;
+	glm::vec3 _rotation_angle = glm::vec3(0.f, 0.f, 0.f);
 
 	// Material slot, required
 	std::shared_ptr<Material> _material;
@@ -55,11 +57,23 @@ public:
 	}
 
 	void Apply(SceneState &sceneState) override {
-		if(ImGui::TreeNode(GetNodeName().c_str())) {
+		/*if(ImGui::TreeNode(GetNodeName().c_str())) {
 			GUI_SLIDER_FLOAT3(newTransformPosition, GetTransformation().GetTranslation(), -50.f, 50.f);
 			SetTranslation(newTransformPosition);
 			ImGui::TreePop();
-		}
+		}*/
+	}
+
+	void DrawGuiElements() override {
+		GUI_SLIDER_FLOAT3(translation, GetTransformation().GetTranslation(), -50.f, 50.f);
+		SetTranslation(translation);
+
+		auto currRotation = GetTransformation().GetRotation();
+		GUI_SLIDER_FLOAT3(rotationAngle, _rotation_angle, -1.f, 1.f);
+		_rotation_angle = rotationAngle;
+		GUI_SLIDER_FLOAT1(rotationDegrees, _rotation_degrees, 0.f, 360.f);
+		_rotation_degrees = rotationDegrees;
+		SetRotation(glm::angleAxis(glm::radians(rotationDegrees), rotationAngle));
 	}
 
 	std::shared_ptr<VertexArrayObject> GetVAO() const {

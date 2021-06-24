@@ -37,7 +37,7 @@ private:
 	std::string _node_name;
 
 	void PropagateTranslation(const glm::vec3 &translation);
-	void PropagateRotation(const glm::vec3 &axis, float rotation);
+	void PropagateRotation(const glm::quat &rotation);
 	void PropagateScale(const glm::vec3 &scale);
 
 protected:
@@ -57,6 +57,11 @@ public:
 
 	// Traverse. First ourself, then our children. Only supporting pre-order traversal for now
 	void Visit(SceneState &sceneState);
+
+	// Scene State may not be necessary, but this is the GUIs opportunity
+	// to gather node info and draw something
+	void VisitGui(SceneState &sceneState);
+	virtual void DrawGuiElements() = 0;
 
 	static SceneNodeType SCENE_NODE_TYPE() {
 		return SceneNodeType::UNKNOWN;
@@ -107,10 +112,11 @@ public:
 	std::optional<SceneNode *> Find(size_t id);
 
 	void Translate(glm::vec3 translation);
-	void Rotate(glm::vec3 axis, float radians);
+	void Rotate(const glm::quat &rotation);
 	void Scale(glm::vec3 scale);
 	void SetTranslation(glm::vec3 translation);
-
+	void SetScale(glm::vec3 scale);
+	void SetRotation(glm::quat rotation);
 	[[nodiscard]] const Transformation &GetTransformation() const;
 
 private:

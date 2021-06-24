@@ -1,4 +1,5 @@
 #include "nimble/scene-graph/SceneNode.h"
+#include "glm/glm.hpp"
 
 #include <optional>
 
@@ -27,13 +28,23 @@ SceneNode::NodeIdRet SceneNode::AddChild(std::unique_ptr<SceneNode> &&node) {
 }
 
 void SceneNode::Visit(SceneState &sceneState) {
-	// Visit ourself first, passing ref
 	this->Apply(sceneState);
 
 	// Visit each of our children
 	for(auto &child : _children) {
 		// pass copies
 		child->Visit(sceneState);
+	}
+}
+
+void SceneNode::VisitGui(SceneState &sceneState) {
+	if(ImGui::TreeNode(GetNodeName().c_str())) {
+		this->DrawGuiElements();
+		// Visit ourself first, passing ref
+		for(auto &child : _children) {
+			child->VisitGui(sceneState);
+		}
+		ImGui::TreePop();
 	}
 }
 
@@ -80,11 +91,11 @@ void SceneNode::PropagateTranslation(const glm::vec3 &translation) {
 	}
 }
 
-void SceneNode::PropagateRotation(const glm::vec3 &axis, float rotation) {
-	_transform.Rotate(axis, rotation);
+void SceneNode::PropagateRotation(const glm::quat &rotation) {
+	_transform.Rotate(rotation);
 
 	for(auto &child : _children) {
-		child->PropagateRotation(axis, rotation);
+		child->PropagateRotation(rotation);
 	}
 }
 
@@ -100,8 +111,8 @@ void SceneNode::Translate(glm::vec3 translation) {
 	PropagateTranslation(translation);
 }
 
-void SceneNode::Rotate(glm::vec3 axis, float radians) {
-	PropagateRotation(axis, radians);
+void SceneNode::Rotate(const glm::quat &rotation) {
+	PropagateRotation(rotation);
 }
 
 void SceneNode::Scale(glm::vec3 scale) {
@@ -117,6 +128,29 @@ void SceneNode::SetTranslation(glm::vec3 translation) {
 
 	// Now apply the requested translation
 	PropagateTranslation(translation);
+}
+
+void SceneNode::SetScale(glm::vec3 scale) {
+	// Find the delta, which can be multiplied throughout the children
+	glm::vec3 delta = scale / _transform.GetScale();
+	Scale(delta);
+}
+
+void SceneNode::SetRotation(glm::quat rotation) {
+	/*glm::quat delta = rotation;
+	glm::quat old = _transform.GetRotation();
+	delta /= old;*/
+
+	// Due to floating point errors, we can't rely on the same
+	// rotations being applied and getting the exact same set of results
+	// below. Early out if the requested rotation is nearly identical to the existing
+	// rotation
+
+	glm::mat4 current = (glm::mat4)_transform.GetRotation();
+	glm::mat4 nu = (glm::mat4)rotation;
+	glm::mat4 delta = nu / current;
+	Rotate((glm::quat)delta);
+	Rotate(rotation);
 }
 
 const Transformation &SceneNode::GetTransformation() const {

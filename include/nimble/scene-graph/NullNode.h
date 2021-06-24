@@ -18,6 +18,9 @@ public:
 	void Apply(SceneState &sceneState) override {
 	}
 
+	void DrawGuiElements() override {
+	}
+
 	static SceneNodeType SCENE_NODE_TYPE() {
 		return SceneNodeType::NULL_NODE;
 	}

@@ -10,6 +10,10 @@ void SceneGraph::Render() {
 	_rootNode->Render();
 }
 
+void SceneGraph::RenderGui() {
+	_rootNode->RenderGui();
+}
+
 SceneNode::NodeIdRet SceneGraph::AddChildToRoot(SceneNode *node) {
 	return _rootNode->AddChild(node);
 }

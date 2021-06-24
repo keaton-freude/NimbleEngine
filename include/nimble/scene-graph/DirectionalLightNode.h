@@ -22,6 +22,8 @@ public:
 
 	void Apply(SceneState &sceneState) override;
 
+	void DrawGuiElements() override;
+
 	static SceneNodeType SCENE_NODE_TYPE() {
 		return SceneNodeType::DIRECTIONAL_LIGHT;
 	}
