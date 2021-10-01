@@ -149,8 +149,17 @@ void SceneNode::SetRotation(glm::quat rotation) {
 	glm::mat4 current = (glm::mat4)_transform.GetRotation();
 	glm::mat4 nu = (glm::mat4)rotation;
 	glm::mat4 delta = nu / current;
-	Rotate((glm::quat)delta);
+	ResetRotation();
 	Rotate(rotation);
+	spdlog::info("{}, {}, {}, {}", rotation.x, rotation.y, rotation.z, rotation.w);
+}
+
+void SceneNode::ResetRotation() {
+	_transform.SetRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+
+	for(auto &child : _children) {
+		child->ResetRotation();
+	}
 }
 
 const Transformation &SceneNode::GetTransformation() const {

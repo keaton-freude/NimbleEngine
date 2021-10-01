@@ -37,6 +37,7 @@ private:
 	std::string _node_name;
 
 	void PropagateTranslation(const glm::vec3 &translation);
+	void PropagateResetRotation();
 	void PropagateRotation(const glm::quat &rotation);
 	void PropagateScale(const glm::vec3 &scale);
 
@@ -113,6 +114,8 @@ public:
 
 	void Translate(glm::vec3 translation);
 	void Rotate(const glm::quat &rotation);
+	void ResetRotation();
+
 	void Scale(glm::vec3 scale);
 	void SetTranslation(glm::vec3 translation);
 	void SetScale(glm::vec3 scale);

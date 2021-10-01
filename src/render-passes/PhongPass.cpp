@@ -44,6 +44,8 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 
 	// TODO: Only draw nodes with a Phong material attached
 
+	glCullFace(GL_BACK);
+
 	for(const auto &drawable : drawables) {
 		/*
 		 * We require the following to draw via this pass:

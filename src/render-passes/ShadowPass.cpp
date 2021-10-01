@@ -26,7 +26,7 @@ void ShadowPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 	 * 	- Every drawable in the scene which casts shadows
 	 *
 	 */
-
+	glCullFace(GL_FRONT);
 	auto directionalLights = sceneGraph.GetNodesByDerivedType<DirectionalLightNode>(SceneNodeType::DIRECTIONAL_LIGHT);
 	ASSERT(directionalLights.size(), "ShadowPass requires at least one directional light");
 
