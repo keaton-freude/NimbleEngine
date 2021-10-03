@@ -62,6 +62,11 @@ Engine::Engine(Window *window) : _window(window) {
 	_rockNode->Scale(glm::vec3(3.f, 3.f, 3.f));
 	_rockNode->Translate(glm::vec3(0.0f, 15.0f, 0.0f));
 
+	auto id3 = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube", "cube"), id2);
+	_rockNode2 = _sceneGraph->Find(id3).value();
+	_rockNode2->Scale(glm::vec3(3.f, 3.f, 3.f));
+	_rockNode2->Translate(glm::vec3(0.0f, 25.0f, 0.0f));
+
 	/*auto id = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube"), cubeNodeId);
 	auto cubeNode = _sceneGraph->Find(id).value();
 	cubeNode->Scale(glm::vec3(3.0f, 3.0f, 3.0f));

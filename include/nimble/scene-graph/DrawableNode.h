@@ -65,16 +65,6 @@ public:
 	}
 
 	void DrawGuiElements() override {
-		/*GUI_SLIDER_FLOAT3(translation, GetTransformation().GetTranslation(), -50.f, 50.f);
-		SetTranslation(translation);
-
-		auto currRotation = GetTransformation().GetRotation();
-		GUI_SLIDER_FLOAT3(rotationAngle, _rotation_angle, -1.f, 1.f);
-		_rotation_angle = rotationAngle;
-		GUI_SLIDER_FLOAT1(rotationDegrees, _rotation_degrees, 0.f, 360.f);
-		_rotation_degrees = rotationDegrees;
-		SetRotation(glm::angleAxis(glm::radians(rotationDegrees), rotationAngle));*/
-
 		bool modified = false;
 
 		glm::vec3 translation = GetTransformation().GetTranslation();
@@ -101,6 +91,8 @@ public:
 		if(modified) {
 			SetRotation(glm::angleAxis(glm::radians(rotationDegrees), glm::normalize(rotationAngle)));
 		}
+
+		glm::vec3 scale = GetTransformation().GetScale();
 	}
 
 	std::shared_ptr<VertexArrayObject> GetVAO() const {

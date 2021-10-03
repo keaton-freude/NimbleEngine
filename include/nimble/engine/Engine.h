@@ -50,6 +50,7 @@ private:
 	std::unique_ptr<SceneGraph> _sceneGraph;
 	size_t _rootTransformNode;
 	SceneNode *_rockNode;
+	SceneNode *_rockNode2;
 	SceneNode *cubeHandleNode;
 	// TODO: Make this variable sized
 	std::unique_ptr<ShadowPass> _shadow_pass;

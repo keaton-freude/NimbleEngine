@@ -131,27 +131,13 @@ void SceneNode::SetTranslation(glm::vec3 translation) {
 }
 
 void SceneNode::SetScale(glm::vec3 scale) {
-	// Find the delta, which can be multiplied throughout the children
 	glm::vec3 delta = scale / _transform.GetScale();
 	Scale(delta);
 }
 
 void SceneNode::SetRotation(glm::quat rotation) {
-	/*glm::quat delta = rotation;
-	glm::quat old = _transform.GetRotation();
-	delta /= old;*/
-
-	// Due to floating point errors, we can't rely on the same
-	// rotations being applied and getting the exact same set of results
-	// below. Early out if the requested rotation is nearly identical to the existing
-	// rotation
-
-	glm::mat4 current = (glm::mat4)_transform.GetRotation();
-	glm::mat4 nu = (glm::mat4)rotation;
-	glm::mat4 delta = nu / current;
-	ResetRotation();
+	Rotate(glm::inverse(_transform.GetRotation()));
 	Rotate(rotation);
-	spdlog::info("{}, {}, {}, {}", rotation.x, rotation.y, rotation.z, rotation.w);
 }
 
 void SceneNode::ResetRotation() {
