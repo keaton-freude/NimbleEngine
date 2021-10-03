@@ -13,21 +13,19 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include "implot.h"
-
 
 using namespace Nimble;
 
 RenderLoop::RenderLoop(std::shared_ptr<Engine> engine, ExitCondition exitCondition)
 : _exitCondition(std::move(exitCondition)), _engine(std::move(engine)) {
-	auto& system = _subsystems.emplace_back(std::unique_ptr<ISubsystem>(
-	new FileWatcherSubsystem(ResourceManager::Get().GetResourceDirectoryByName("shaders"), ChangeType::FILE_CHANGED)));
+	auto &system = _subsystems.emplace_back(std::unique_ptr<ISubsystem>(
+		new FileWatcherSubsystem(ResourceManager::Get().GetResourceDirectoryByName("shaders"), ChangeType::FILE_CHANGED)));
 
-	ResourceManager::Get().RegisterFileChange(static_cast<FileWatcherSubsystem*>(system.get())->FileModifiedEvent);
+	ResourceManager::Get().RegisterFileChange(static_cast<FileWatcherSubsystem *>(system.get())->FileModifiedEvent);
 }
 
 void RenderLoop::Run() {
-	for (const auto& subsystem : _subsystems) {
+	for(const auto &subsystem : _subsystems) {
 		subsystem->OnCreate();
 	}
 	while(!_exitCondition()) {
@@ -37,7 +35,7 @@ void RenderLoop::Run() {
 
 		accumulated_time += _time.dt();
 
-		if (accumulated_time >= (1.0f / 60.0f)) {
+		if(accumulated_time >= (1.0f / 60.0f)) {
 			accumulated_time -= (1.0f / 60.0f);
 			FixedUpdate();
 		}
@@ -91,7 +89,7 @@ void RenderLoop::Run() {
 #endif
 	}
 
-	for (const auto& subsystem : _subsystems) {
+	for(const auto &subsystem : _subsystems) {
 		subsystem->OnDestroy();
 	}
 }

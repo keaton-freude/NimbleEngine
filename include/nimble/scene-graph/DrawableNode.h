@@ -57,45 +57,39 @@ public:
 	}
 
 	void Apply(SceneState &sceneState) override {
-		/*if(ImGui::TreeNode(GetNodeName().c_str())) {
-			GUI_SLIDER_FLOAT3(newTransformPosition, GetTransformation().GetTranslation(), -50.f, 50.f);
-			SetTranslation(newTransformPosition);
-			ImGui::TreePop();
-		}*/
 	}
 
 	void DrawGuiElements() override {
-		bool modified = false;
+		bool rotationModified = false;
 
 		glm::vec3 translation = GetTransformation().GetTranslation();
 		if(ImGui::SliderFloat3("translation", &translation[0], -50.f, 50.f)) {
-			modified = true;
+			SetTranslation(translation);
 		}
-
-		SetTranslation(translation);
 
 		glm::vec3 rotationAngle = _rotation_angle;
 		if(ImGui::SliderFloat3("rotationAngle", &rotationAngle[0], -1.f, 1.f)) {
-			modified = true;
+			rotationModified = true;
+			_rotation_angle = rotationAngle;
 		}
-
-		_rotation_angle = rotationAngle;
 
 		float rotationDegrees = _rotation_degrees;
 		if(ImGui::SliderFloat("rotationDegrees", &rotationDegrees, 0.f, 360.f)) {
-			modified = true;
+			rotationModified = true;
+			_rotation_degrees = rotationDegrees;
 		}
 
-		_rotation_degrees = rotationDegrees;
-
-		if(modified) {
-			SetRotation(glm::angleAxis(glm::radians(rotationDegrees), glm::normalize(rotationAngle)));
+		if(rotationModified) {
+			SetRotation(glm::angleAxis(glm::radians(_rotation_degrees), glm::normalize(_rotation_angle)));
 		}
 
 		glm::vec3 scale = GetTransformation().GetScale();
+		if(ImGui::SliderFloat3("scale", &scale[0], 0.001f, 10.f, nullptr, ImGuiSliderFlags_Logarithmic)) {
+			SetScale(scale);
+		}
 	}
 
-	std::shared_ptr<VertexArrayObject> GetVAO() const {
+	[[nodiscard]] std::shared_ptr<VertexArrayObject> GetVAO() const {
 		return _vao;
 	}
 

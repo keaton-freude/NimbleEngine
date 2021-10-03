@@ -11,7 +11,6 @@
 #include <chrono>
 #include <vector>
 
-#include "implot.h"
 #include "spdlog/spdlog.h"
 
 namespace Nimble {
@@ -41,8 +40,8 @@ class Time {
 
 public:
 	Time()
-	: _currentTime(std::chrono::steady_clock::now()), _totalFramesCounted(0), _totalTime(0),
-	  _framesCounted(0), _fpsTime(0), _lastCalculatedFps(0.0f), _frameTime(0) {
+	: _currentTime(std::chrono::steady_clock::now()), _totalFramesCounted(0), _totalTime(0), _framesCounted(0),
+	  _fpsTime(0), _lastCalculatedFps(0.0f), _frameTime(0) {
 	}
 
 	// call this as soon as a frame starts

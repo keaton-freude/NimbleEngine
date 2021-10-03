@@ -22,11 +22,11 @@ find_package(assimp CONFIG REQUIRED)
 
 # Fixes broken include directory export from libassimp debian package
 # Remove once new version is published (or we consume some other way)
-if(TARGET assimp::assimp)
+if (TARGET assimp::assimp)
     get_property(assimp_INTERFACE_INCLUDE_DIRECTORIES
             TARGET assimp::assimp
             PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-    if(assimp_INTERFACE_INCLUDE_DIRECTORIES MATCHES "/usr/lib/include")
+    if (assimp_INTERFACE_INCLUDE_DIRECTORIES MATCHES "/usr/lib/include")
         string(REPLACE "/usr/lib/include" "/usr/include" assimp_INTERFACE_INCLUDE_DIRECTORIES "${assimp_INTERFACE_INCLUDE_DIRECTORIES}")
         set_property(TARGET assimp::assimp
                 PROPERTY INTERFACE_INCLUDE_DIRECTORIES
@@ -37,8 +37,8 @@ if(TARGET assimp::assimp)
         set_property(TARGET assimp::assimp
                 PROPERTY IMPORTED_LOCATION
                 "${assimp_LOCATION_RELEASE}")
-    endif()
-endif()
+    endif ()
+endif ()
 
 add_subdirectory(extern/imgui)
 
@@ -73,19 +73,17 @@ set(PlatformIndependentSourceFiles
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render-passes/PhongPass.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render-passes/ShadowPass.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/render-passes/DebugPass.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/stb_stub.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/extern/implot-0.3/implot_demo.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/stb_stub.cpp)
 
 if (CMAKE_SYSTEM_NAME MATCHES Windows)
     LIST(APPEND PlatformIndependentSourceFiles
             ${CMAKE_CURRENT_SOURCE_DIR}/src/subsystem/windows/FileWatcherSubsystem.cpp
             )
-elseif(CMAKE_SYSTEM_NAME MATCHES Linux)
+elseif (CMAKE_SYSTEM_NAME MATCHES Linux)
     LIST(APPEND PlatformIndependentSourceFiles
             ${CMAKE_CURRENT_SOURCE_DIR}/src/subsystem/linux/FileWatcherSubsystem.cpp
             )
-endif()
+endif ()
 
 # Nimble Engine
 add_library(NimbleEngine ${PlatformIndependentSourceFiles})
@@ -93,18 +91,16 @@ add_library(NimbleEngine ${PlatformIndependentSourceFiles})
 # MSVC complains about clang pragmas used by clang-tidy (through CLion)
 if (MSVC)
     target_compile_options(NimbleEngine PUBLIC "/wd4068")
-endif()
+endif ()
 
 target_compile_features(NimbleEngine PUBLIC cxx_std_17)
 set_target_properties(NimbleEngine PROPERTIES CXX_EXTENSIONS OFF)
 
 target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/extern/implot-0.3)
-target_include_directories(NimbleEngine PRIVATE ${CMAKE_CURRENT_LIST_DIR}/extern/simdjson/include)
 target_include_directories(NimbleEngine PRIVATE ${CMAKE_CURRENT_LIST_DIR}/extern/stb)
 target_include_directories(NimbleEngine PUBLIC ${GLM_INCLUDE_DIRS})
 target_include_directories(NimbleEngine PUBLIC ${CMAKE_CURRENT_LIST_DIR}/extern/cxxopts/include)
-add_subdirectory(extern/simdjson EXCLUDE_FROM_ALL)
 target_link_libraries(NimbleEngine PUBLIC ImGui)
 target_link_libraries(NimbleEngine PRIVATE ${OPENGL_LIBRARIES})
 target_link_libraries(NimbleEngine PRIVATE fmt::fmt)
@@ -113,7 +109,6 @@ target_link_libraries(NimbleEngine PUBLIC glfw)
 target_link_libraries(NimbleEngine PUBLIC spdlog::spdlog)
 #target_link_libraries(NimbleEngine INTERFACE glm)
 target_link_libraries(NimbleEngine PRIVATE assimp::assimp)
-target_link_libraries(NimbleEngine PUBLIC simdjson)
 # Front end app
 add_subdirectory(apps)
 add_subdirectory(tests/nimble)
