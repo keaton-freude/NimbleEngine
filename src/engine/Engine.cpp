@@ -37,26 +37,6 @@ Engine::Engine(Window *window) : _window(window) {
 
 	auto cubeNodeId = _sceneGraph->AddChild(new NullNode(), _rootTransformNode);
 
-	/*for(int i = -5; i < 6; ++i) {
-		for(int j = -5; j < 6; ++j) {
-			auto id = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube"), cubeNodeId);
-
-			// Translate the node..
-			glm::vec3 translation{};
-			translation.x = i * DISTANCE_BETWEEN;
-			translation.y = 8.0f;
-			translation.z = j * DISTANCE_BETWEEN;
-			_sceneGraph->Find(id).value()->Translate(translation);
-		}
-	}*/
-
-	/*auto id = _sceneGraph->AddChild(new DrawableNode("rock_1.fbx", "rock_1"), cubeNodeId);
-	auto rockNode = _sceneGraph->Find(id).value();
-	// rockNode->Scale(glm::vec3(2.f, 2.f, 2.f));
-	rockNode->Scale(glm::vec3(.1f, .1f, .1f));
-	rockNode->Translate(glm::vec3(0.0f, 5.0f, 0.0f));*/
-
-	// auto id2 = _sceneGraph->AddChild(new DrawableNode("rock_3.fbx", "rock_3", "rock_3"), cubeNodeId);
 	auto id2 = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube", "cube"), cubeNodeId);
 	_rockNode = _sceneGraph->Find(id2).value();
 	_rockNode->Scale(glm::vec3(3.f, 3.f, 3.f));
@@ -66,11 +46,6 @@ Engine::Engine(Window *window) : _window(window) {
 	_rockNode2 = _sceneGraph->Find(id3).value();
 	_rockNode2->Scale(glm::vec3(3.f, 3.f, 3.f));
 	_rockNode2->Translate(glm::vec3(0.0f, 25.0f, 0.0f));
-
-	/*auto id = _sceneGraph->AddChild(new DrawableNode("cube.fbx", "cube"), cubeNodeId);
-	auto cubeNode = _sceneGraph->Find(id).value();
-	cubeNode->Scale(glm::vec3(3.0f, 3.0f, 3.0f));
-	cubeNode->Translate(glm::vec3(0.f, 5.0f, 0.f));*/
 
 	auto plane = MeshTools::CreateTexturedPlane(1024.0f);
 	auto gridNodeId = _sceneGraph->AddChild(new DrawableNode(&plane, "grid", "grid"), _rootTransformNode);
@@ -102,18 +77,14 @@ void Engine::RenderFrame(const Time &time) {
 	static float total_time = 0.0f;
 	total_time += time.dt();
 
-	//_rockNode->Rotate(glm::vec3(0.f, 1.f, 0.f), glm::radians(30.f * time.dt()));
-
 	_sceneGraph->RenderGui();
 	_sceneGraph->Render();
-
 
 	_shadow_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);
 
 	glViewport(0, 0, (int)_window->GetWidth().get(), (int)_window->GetHeight().get());
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
 	_phong_pass->SetShadowMap(_shadow_pass->GetShadowMap());
 	_phong_pass->Draw(_sceneGraph->GetRootNode()->GetSceneState(), *_sceneGraph);

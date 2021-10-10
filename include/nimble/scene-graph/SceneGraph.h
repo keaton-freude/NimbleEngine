@@ -3,7 +3,7 @@
 /*
 	NOTE: All of this subject to change
 
-	A scene graph is a way of organzing translations, rotations, animations, rendering,
+	A scene graph is a way of organizing translations, rotations, animations, rendering,
 	object attachment and much more in a 3D scene.
 
 	We have a variety of different Node Types

@@ -37,9 +37,6 @@
 
 #include <optional>
 
-#include "simdjson.h"
-
-
 namespace Nimble {
 
 struct TextureUnit {

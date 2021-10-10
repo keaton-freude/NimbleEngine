@@ -40,7 +40,6 @@ void RenderLoop::Run() {
 			FixedUpdate();
 		}
 
-
 		// Start the ImGui Frame, from here on, any component in our game loop
 		// can add to the debug window
 		ImGui_ImplOpenGL3_NewFrame();
@@ -67,7 +66,6 @@ void RenderLoop::Run() {
 		// ImPlot::ShowDemoWindow();
 
 		ImGui::End();
-
 
 		// Collect all ImGui generated renderables and draw
 		ImGui::Render();

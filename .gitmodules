@@ -1,6 +1,3 @@
-[submodule "extern/simdjson"]
-	path = extern/simdjson
-	url = https://github.com/simdjson/simdjson.git
 [submodule "extern/cxxopts"]
 	path = extern/cxxopts
 	url = https://github.com/jarro2783/cxxopts
