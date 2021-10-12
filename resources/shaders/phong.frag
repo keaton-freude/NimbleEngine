@@ -1,5 +1,10 @@
 #version 330 core
 
+struct DirectionalLight {
+    vec3 direction;
+    bool enabled;
+};
+
 out vec4 FragColor;
 
 in vec3 FragPos;
@@ -19,11 +24,10 @@ uniform sampler2D shadow_map;
 uniform bool normalTextureEnabled;
 uniform sampler2D normal_texture;
 
-uniform vec3 lightDir;
 uniform vec3 viewPos;
-
-uniform bool lightingEnabled;
 uniform float UvMultiplier;
+
+uniform DirectionalLight directionalLight;
 
 float shadow_calculation(vec4 fragPosLightSpace, float bias) {
     if (shadowMappingEnabled) {
@@ -41,8 +45,8 @@ float shadow_calculation(vec4 fragPosLightSpace, float bias) {
         float shadow = 0.0;
         vec2 texelSize = 1.0 / textureSize(shadow_map, 0);
 
-        for(int x = -1; x <= 1; ++x) {
-            for(int y = -1; y <= 1; ++y) {
+        for (int x = -1; x <= 1; ++x) {
+            for (int y = -1; y <= 1; ++y) {
                 float pcfDepth = texture(shadow_map, projCoords.xy + vec2(x, y) * texelSize).r;
                 shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
             }
@@ -58,7 +62,7 @@ float shadow_calculation(vec4 fragPosLightSpace, float bias) {
 
 void main()
 {
-    if (lightingEnabled) {
+    if (directionalLight.enabled) {
         vec3 color = texture(diffuse_texture, TexCoord * UvMultiplier).rgb;
         vec3 normal;
         if (normalTextureEnabled) {
@@ -71,7 +75,7 @@ void main()
         vec3 lightColor = vec3(0.6);
         vec3 ambient = 0.2 * color;
 
-        vec3 reversedLightDir = -lightDir;
+        vec3 reversedLightDir = -directionalLight.direction;
         float diff = max(dot(reversedLightDir, normal), 0.0);
         vec3 diffuse = diff * lightColor;
 

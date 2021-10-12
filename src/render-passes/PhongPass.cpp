@@ -15,9 +15,9 @@ PhongPass::PhongPass() {
 	_projection_uniform_location = _shader->GetUniformLocation("Projection");
 	_uv_multiplier_uniform_location = _shader->GetUniformLocation("UvMultiplier");
 	_view_pos_uniform_location = _shader->GetUniformLocation("viewPos");
-	_lighting_enabled_uniform_location = _shader->GetUniformLocation("lightingEnabled");
+	_directional_light_enabled_uniform_location = _shader->GetUniformLocation("directionalLight.enabled");
 	_diffuse_texture_uniform_location = _shader->GetUniformLocation("diffuse_texture");
-	_light_dir_uniform_location = _shader->GetUniformLocation("lightDir");
+	_directional_light_dir_uniform_location = _shader->GetUniformLocation("directionalLight.direction");
 	_light_space_matrix_uniform_location = _shader->GetUniformLocation("lightSpaceMatrix");
 	_shadow_map_uniform_location = _shader->GetUniformLocation("shadow_map");
 	_normal_texture_uniform_location = _shader->GetUniformLocation("normal_texture");
@@ -103,9 +103,9 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		if(directionalLightNode && receives_lighting) {
 			auto light = directionalLightNode->GetDirectionalLight();
 			_shader->SetUniform(_view_pos_uniform_location, state.GetCamera()->GetPosition());
-			_shader->SetUniform(_lighting_enabled_uniform_location, true);
+			_shader->SetUniform(_directional_light_enabled_uniform_location, true);
 		} else {
-			_shader->SetUniform(_lighting_enabled_uniform_location, false);
+			_shader->SetUniform(_directional_light_enabled_uniform_location, false);
 		}
 
 		_shader->SetUniform(_diffuse_texture_uniform_location, 0);
@@ -114,7 +114,7 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		glBindTexture(GL_TEXTURE_2D, diffuse_texture_unit->texture->GetTextureHandle());
 		diffuse_texture_unit->sampler.Bind();
 
-		_shader->SetUniform(_light_dir_uniform_location, directionalLightNode->GetDirectionalLight().direction);
+		_shader->SetUniform(_directional_light_dir_uniform_location, directionalLightNode->GetDirectionalLight().direction);
 
 		if(_shadow_map.depth_texture && shadow_mapping_enabled) {
 			_shader->SetUniform("shadowMappingEnabled", true);
