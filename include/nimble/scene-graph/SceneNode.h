@@ -32,8 +32,11 @@ private:
 	// A unique, continually increasing ID
 	size_t _id;
 
-	// Every scene node has a transform
-	Transformation _transform{};
+	// Every scene node has a local transform which represents its transformation relative to its parent
+	Transformation _local_transform{};
+	// and a global transform. A global transform is the combination of the local transform
+	// and each of its parents local transforms
+	Transformation _global_transform{};
 	std::string _node_name;
 
 	void PropagateTranslation(const glm::vec3 &translation);
@@ -80,7 +83,7 @@ public:
 	template <typename T, typename... Args>
 	inline NodeIdRet AddChild(Args &&...args) {
 		std::unique_ptr<SceneNode> child = new std::unique_ptr<T>(args...);
-		child->_transform *= _transform;
+		child->_global_transform *= _global_transform;
 		_children.push_back(new T(args...));
 
 		return std::make_pair(_children.back().get(), _children.back()->GetID());
@@ -120,7 +123,8 @@ public:
 	void SetTranslation(glm::vec3 translation);
 	void SetScale(glm::vec3 scale);
 	void SetRotation(glm::quat rotation);
-	[[nodiscard]] const Transformation &GetTransformation() const;
+	[[nodiscard]] const Transformation &GetGlobalTransformation() const;
+	[[nodiscard]] const Transformation &GetLocalTransformation() const;
 
 private:
 	static size_t GenerateID();

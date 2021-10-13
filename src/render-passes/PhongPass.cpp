@@ -73,7 +73,7 @@ void PhongPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		auto specular_texture_unit = drawable->GetMaterial()->GetSpecularTexture();
 
 		auto receives_lighting = drawable->GetMaterial()->GetReceivesLighting().value();
-		auto transform = drawable->GetTransformation();
+		auto transform = drawable->GetGlobalTransformation();
 		auto uv_multiplier = drawable->GetMaterial()->GetUvMultiplier();
 
 		_shader->Use();

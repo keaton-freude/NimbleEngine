@@ -1,3 +1,11 @@
+#include <fmt/format.h>
+#include <glm/glm.hpp>
+#include <iostream>
+std::ostream &operator<<(std::ostream &os, glm::vec3 const &value) {
+	os << fmt::format("({}, {}, {})", value.x, value.y, value.z).c_str();
+	return os;
+}
+
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
@@ -319,12 +327,12 @@ TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
 	testNode3->AddChild(testNode6);
 
 	// Check that we're starting with default transforms on all entries
-	REQUIRE(testNode1->GetTransformation() == Transformation::Default());
-	REQUIRE(testNode2->GetTransformation() == Transformation::Default());
-	REQUIRE(testNode3->GetTransformation() == Transformation::Default());
-	REQUIRE(testNode4->GetTransformation() == Transformation::Default());
-	REQUIRE(testNode5->GetTransformation() == Transformation::Default());
-	REQUIRE(testNode6->GetTransformation() == Transformation::Default());
+	REQUIRE(testNode1->GetGlobalTransformation() == Transformation::Default());
+	REQUIRE(testNode2->GetGlobalTransformation() == Transformation::Default());
+	REQUIRE(testNode3->GetGlobalTransformation() == Transformation::Default());
+	REQUIRE(testNode4->GetGlobalTransformation() == Transformation::Default());
+	REQUIRE(testNode5->GetGlobalTransformation() == Transformation::Default());
+	REQUIRE(testNode6->GetGlobalTransformation() == Transformation::Default());
 
 	// Modify root...
 	testNode1->Translate(glm::vec3(10.0f, 0.0f, 0.0f));
@@ -333,12 +341,12 @@ TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
 	Transformation expectedTransform1 = Transformation::Default();
 	expectedTransform1.Translate(glm::vec3(10.0f, 0.0f, 0.0f));
 
-	REQUIRE(testNode1->GetTransformation() == expectedTransform1);
-	REQUIRE(testNode2->GetTransformation() == expectedTransform1);
-	REQUIRE(testNode3->GetTransformation() == expectedTransform1);
-	REQUIRE(testNode4->GetTransformation() == expectedTransform1);
-	REQUIRE(testNode5->GetTransformation() == expectedTransform1);
-	REQUIRE(testNode6->GetTransformation() == expectedTransform1);
+	REQUIRE(testNode1->GetGlobalTransformation() == expectedTransform1);
+	REQUIRE(testNode2->GetGlobalTransformation() == expectedTransform1);
+	REQUIRE(testNode3->GetGlobalTransformation() == expectedTransform1);
+	REQUIRE(testNode4->GetGlobalTransformation() == expectedTransform1);
+	REQUIRE(testNode5->GetGlobalTransformation() == expectedTransform1);
+	REQUIRE(testNode6->GetGlobalTransformation() == expectedTransform1);
 
 	// Now transform a node lower in the hierarchy
 	testNode3->Translate(glm::vec3(5.0f, 10.0f, 0.0f));
@@ -346,14 +354,14 @@ TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
 	expectedTransform2.Translate(glm::vec3(5.0f, 10.0f, 0.0f));
 
 	// Should not be modified
-	REQUIRE(testNode1->GetTransformation() == expectedTransform1);
-	REQUIRE(testNode2->GetTransformation() == expectedTransform1);
+	REQUIRE(testNode1->GetGlobalTransformation() == expectedTransform1);
+	REQUIRE(testNode2->GetGlobalTransformation() == expectedTransform1);
 
 	// Should be modified
-	REQUIRE(testNode3->GetTransformation() == expectedTransform2);
-	REQUIRE(testNode4->GetTransformation() == expectedTransform2);
-	REQUIRE(testNode5->GetTransformation() == expectedTransform2);
-	REQUIRE(testNode6->GetTransformation() == expectedTransform2);
+	REQUIRE(testNode3->GetGlobalTransformation() == expectedTransform2);
+	REQUIRE(testNode4->GetGlobalTransformation() == expectedTransform2);
+	REQUIRE(testNode5->GetGlobalTransformation() == expectedTransform2);
+	REQUIRE(testNode6->GetGlobalTransformation() == expectedTransform2);
 
 	testNode1->Scale(glm::vec3(0.5f, 0.5f, 0.5f));
 	testNode1->Rotate(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
@@ -370,14 +378,14 @@ TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
 	expectedTransform4.Rotate(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.f)));
 	expectedTransform4.Translate(glm::vec3(10.0f, 10.0f, 10.0f));
 
-	REQUIRE(testNode1->GetTransformation() == expectedTransform3);
-	REQUIRE(testNode2->GetTransformation() == expectedTransform3);
+	REQUIRE(testNode1->GetGlobalTransformation() == expectedTransform3);
+	REQUIRE(testNode2->GetGlobalTransformation() == expectedTransform3);
 
 	// Should be modified
-	REQUIRE(testNode3->GetTransformation() == expectedTransform4);
-	REQUIRE(testNode4->GetTransformation() == expectedTransform4);
-	REQUIRE(testNode5->GetTransformation() == expectedTransform4);
-	REQUIRE(testNode6->GetTransformation() == expectedTransform4);
+	REQUIRE(testNode3->GetGlobalTransformation() == expectedTransform4);
+	REQUIRE(testNode4->GetGlobalTransformation() == expectedTransform4);
+	REQUIRE(testNode5->GetGlobalTransformation() == expectedTransform4);
+	REQUIRE(testNode6->GetGlobalTransformation() == expectedTransform4);
 }
 
 TEST_CASE("Apply Transformations to Scene Graph Edge Cases", "[scenegraph]") {
@@ -412,14 +420,14 @@ TEST_CASE("Apply Transformations to Scene Graph Edge Cases", "[scenegraph]") {
 	expectedTransform1.Translate(glm::vec3(10.0f, 0.0f, 0.0f));
 
 	// Ensure the nodes transform has changed..
-	REQUIRE(sceneNode2->GetTransformation() == expectedTransform1);
+	REQUIRE(sceneNode2->GetGlobalTransformation() == expectedTransform1);
 
 
 	// .. and the rest have not
-	REQUIRE(sceneNode1->GetTransformation() == Transformation::Default());
-	REQUIRE(sceneNode3->GetTransformation() == Transformation::Default());
-	REQUIRE(sceneNode4->GetTransformation() == Transformation::Default());
-	REQUIRE(sceneNode5->GetTransformation() == Transformation::Default());
+	REQUIRE(sceneNode1->GetGlobalTransformation() == Transformation::Default());
+	REQUIRE(sceneNode3->GetGlobalTransformation() == Transformation::Default());
+	REQUIRE(sceneNode4->GetGlobalTransformation() == Transformation::Default());
+	REQUIRE(sceneNode5->GetGlobalTransformation() == Transformation::Default());
 
 	sceneNode2->Translate(glm::vec3(-10.0f, 0.0f, 0.0f));
 	expectedTransform1.Translate(glm::vec3(-10.0f, 0.0f, 0.0f));
@@ -428,12 +436,12 @@ TEST_CASE("Apply Transformations to Scene Graph Edge Cases", "[scenegraph]") {
 	sceneNode3->Translate(glm::vec3(0.0f, 5.0f, 0.0f));
 	expectedTransform1.Translate(glm::vec3(0.0f, 5.0f, 0.0f));
 
-	REQUIRE(sceneNode3->GetTransformation() == expectedTransform1);
-	REQUIRE(sceneNode4->GetTransformation() == expectedTransform1);
-	REQUIRE(sceneNode5->GetTransformation() == expectedTransform1);
+	REQUIRE(sceneNode3->GetGlobalTransformation() == expectedTransform1);
+	REQUIRE(sceneNode4->GetGlobalTransformation() == expectedTransform1);
+	REQUIRE(sceneNode5->GetGlobalTransformation() == expectedTransform1);
 
-	REQUIRE(sceneNode1->GetTransformation() == Transformation::Default());
-	REQUIRE(sceneNode2->GetTransformation() == Transformation::Default());
+	REQUIRE(sceneNode1->GetGlobalTransformation() == Transformation::Default());
+	REQUIRE(sceneNode2->GetGlobalTransformation() == Transformation::Default());
 }
 
 TEST_CASE("Add Children", "[scenegraph]") {
@@ -507,4 +515,37 @@ TEST_CASE("Get Nodes By Type", "[scenegraph]") {
 		return node->GetSceneNodeType() == Nimble::SceneNodeType::DIRECTIONAL_LIGHT &&
 			   dynamic_cast<TestSceneNode2 *>(node)->GetValue() == 5;
 	}));
+}
+
+TEST_CASE("Parent Child Scaling", "[scenegraph]") {
+	// Test a simple parent -> child -> grand child, graph with scaling operations
+	// applied locally on each node. Ensuring that their global scale matches expected result
+	SceneGraph graph = SceneGraph(nullptr, nullptr);
+	auto parent = graph.AddChildToRoot(new TestSceneNode(1, nullptr)).first;
+	REQUIRE(parent != nullptr);
+	auto child = parent->AddChild(new TestSceneNode(2, nullptr)).first;
+	REQUIRE(child != nullptr);
+	auto grandchild = child->AddChild(new TestSceneNode(3, nullptr)).first;
+	REQUIRE(grandchild != nullptr);
+
+	// Scale up the parent by 10x, which means all children should have their local transforms
+	// scaled by 10x
+	parent->SetScale(glm::vec3(10.0f, 10.0f, 10.0f));
+	REQUIRE(parent->GetGlobalTransformation().GetScale() == glm::vec3(10.0f, 10.0f, 10.0f));
+
+	// Scale the child down by half, which when combined with its parents scale should
+	// result in a global scale of 5.0
+	child->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+	REQUIRE(child->GetGlobalTransformation().GetScale() == glm::vec3(5.0f, 5.0f, 5.0f));
+
+	// Scale the grand child down by another half, which should result in a global scale
+	// of 2.5
+	grandchild->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+
+	REQUIRE(parent->GetGlobalTransformation().GetScale() == glm::vec3(10.0f, 10.0f, 10.0f));
+	REQUIRE(child->GetGlobalTransformation().GetScale() == glm::vec3(5.0f, 5.0f, 5.0f));
+	REQUIRE(grandchild->GetGlobalTransformation().GetScale() == glm::vec3(2.5f, 2.5f, 2.5f));
+
+	grandchild->SetScale(glm::vec3(0.25f, 0.25f, 0.25f));
+	REQUIRE(grandchild->GetGlobalTransformation().GetScale() == glm::vec3(1.25f, 1.25f, 1.25f));
 }

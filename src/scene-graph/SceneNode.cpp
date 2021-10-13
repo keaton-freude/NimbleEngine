@@ -12,7 +12,7 @@ SceneNode::SceneNode(const std::string &name) : _node_name(name) {
 SceneNode::NodeIdRet SceneNode::AddChild(SceneNode *node) {
 	spdlog::debug("Adding node as child to scene graph");
 
-	node->_transform *= _transform;
+	node->_global_transform *= _global_transform;
 
 	_children.push_back(std::unique_ptr<SceneNode>(node));
 	return std::make_pair(_children.back().get(), _children.back()->GetID());
@@ -21,7 +21,7 @@ SceneNode::NodeIdRet SceneNode::AddChild(SceneNode *node) {
 SceneNode::NodeIdRet SceneNode::AddChild(std::unique_ptr<SceneNode> &&node) {
 	spdlog::debug("Adding node as child to scene graph");
 
-	node->_transform *= _transform;
+	node->_global_transform *= _global_transform;
 
 	_children.push_back(std::move(node));
 	return std::make_pair(_children.back().get(), _children.back()->GetID());
@@ -84,7 +84,7 @@ std::optional<SceneNode *> SceneNode::Find(size_t id) {
 }
 
 void SceneNode::PropagateTranslation(const glm::vec3 &translation) {
-	_transform.Translate(translation);
+	_global_transform.Translate(translation);
 
 	for(auto &child : _children) {
 		child->PropagateTranslation(translation);
@@ -92,7 +92,7 @@ void SceneNode::PropagateTranslation(const glm::vec3 &translation) {
 }
 
 void SceneNode::PropagateRotation(const glm::quat &rotation) {
-	_transform.Rotate(rotation);
+	_global_transform.Rotate(rotation);
 
 	for(auto &child : _children) {
 		child->PropagateRotation(rotation);
@@ -100,7 +100,7 @@ void SceneNode::PropagateRotation(const glm::quat &rotation) {
 }
 
 void SceneNode::PropagateScale(const glm::vec3 &scale) {
-	_transform.Scale(scale);
+	_global_transform.Scale(scale);
 
 	for(auto &child : _children) {
 		child->PropagateScale(scale);
@@ -120,34 +120,44 @@ void SceneNode::Scale(glm::vec3 scale) {
 }
 
 void SceneNode::SetTranslation(glm::vec3 translation) {
+	_local_transform.SetTranslation(translation);
 	// Hmm, probably should add a way to propagate a "set transform"
 	// series of calls, instead of this hack
 
 	// Undo existing translation
-	PropagateTranslation(-_transform.GetTranslation());
+	Translate(-_global_transform.GetTranslation());
 
 	// Now apply the requested translation
-	PropagateTranslation(translation);
+	Translate(translation);
 }
 
 void SceneNode::SetScale(glm::vec3 scale) {
-	glm::vec3 delta = scale / _transform.GetScale();
-	Scale(delta);
+	auto transform = scale / _local_transform.GetScale();
+	_local_transform.SetScale(scale);
+	/*glm::vec3 delta = glm::vec3(1.f) / _global_transform.GetScale();
+	Scale(delta);*/
+
+	Scale(transform);
 }
 
 void SceneNode::SetRotation(glm::quat rotation) {
-	Rotate(glm::inverse(_transform.GetRotation()));
+	_local_transform.SetRotation(rotation);
+	Rotate(glm::inverse(_global_transform.GetRotation()));
 	Rotate(rotation);
 }
 
 void SceneNode::ResetRotation() {
-	_transform.SetRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+	_global_transform.SetRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
 
 	for(auto &child : _children) {
 		child->ResetRotation();
 	}
 }
 
-const Transformation &SceneNode::GetTransformation() const {
-	return _transform;
+const Transformation &SceneNode::GetGlobalTransformation() const {
+	return _global_transform;
+}
+
+const Transformation &SceneNode::GetLocalTransformation() const {
+	return _local_transform;
 }

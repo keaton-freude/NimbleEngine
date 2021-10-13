@@ -49,7 +49,7 @@ void ShadowPass::Draw(SceneState &state, const SceneGraph &sceneGraph) {
 		drawable->GetVB().Bind();
 		drawable->GetIB().Bind();
 
-		auto transform = drawable->GetTransformation();
+		auto transform = drawable->GetGlobalTransformation();
 
 		_shader->Use();
 		_shader->SetUniform("model", transform.GetWorldMatrix());

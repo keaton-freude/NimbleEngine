@@ -62,7 +62,7 @@ public:
 	void DrawGuiElements() override {
 		bool rotationModified = false;
 
-		glm::vec3 translation = GetTransformation().GetTranslation();
+		glm::vec3 translation = GetLocalTransformation().GetTranslation();
 		if(ImGui::SliderFloat3("translation", &translation[0], -50.f, 50.f)) {
 			SetTranslation(translation);
 		}
@@ -83,7 +83,7 @@ public:
 			SetRotation(glm::angleAxis(glm::radians(_rotation_degrees), glm::normalize(_rotation_angle)));
 		}
 
-		glm::vec3 scale = GetTransformation().GetScale();
+		glm::vec3 scale = GetLocalTransformation().GetScale();
 		if(ImGui::SliderFloat3("scale", &scale[0], 0.001f, 10.f, nullptr, ImGuiSliderFlags_Logarithmic)) {
 			SetScale(scale);
 		}
