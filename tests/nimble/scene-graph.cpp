@@ -1,23 +1,14 @@
-#include <fmt/format.h>
-#include <glm/glm.hpp>
-#include <iostream>
-std::ostream &operator<<(std::ostream &os, glm::vec3 const &value) {
-	os << fmt::format("({}, {}, {})", value.x, value.y, value.z).c_str();
-	return os;
-}
-
 #define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include "catch-utils.h"
 
 #define NIMBLE_TESTING
-
-#include <vector>
-
-#include <glm/gtc/epsilon.hpp>
 
 #include "nimble/scene-graph/SceneGraph.h"
 #include "nimble/scene-graph/SceneNode.h"
 #include "nimble/scene-graph/Transformation.h"
+#include <glm/gtc/epsilon.hpp>
+#include <vector>
+
 
 using namespace Nimble;
 
@@ -48,7 +39,7 @@ public:
 		return SceneNodeType::UNKNOWN;
 	}
 
-	int GetValue() const {
+	[[nodiscard]] int GetValue() const {
 		return _value;
 	}
 };
@@ -68,7 +59,7 @@ public:
 };
 
 /**
-	Tests can utitize this shared state to ensure that traversal, insertion,
+	Tests can utilize this shared state to ensure that traversal, insertion,
 	deletion methods, etc are working as expected
 	Example: Do a breadth-first search on tree:
 			1
@@ -132,7 +123,7 @@ TEST_CASE("Traversal", "[scenenode]") {
 		The expected output is:
 		1,2,4,5,3,6,7,8,9
 
-		We may end up adding more traversal methods, or changing this one. For now
+//		We may end up adding more traversal methods, or changing this one. For now
 		we will see how far we can get with just pre-order traversal */
 
 	TestState state{};
@@ -279,7 +270,7 @@ TEST_CASE("Add Nodes to SceneGraph", "[scenegraph]") {
 }
 
 TEST_CASE("Apply Transformations", "[transform]") {
-	// Ensure we can multiple Transforms together in order to apply their attributes
+	// Ensure we can multiply Transforms together in order to apply their attributes
 
 	Transformation transform1;
 	Transformation transform2;
@@ -303,13 +294,13 @@ TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
 
 	// Build up the scene graph, using default transforms for each node. Then modify
 	// transforms throughout the graph ensuring transform changes are propagated
-	TestSceneNode *testNode1 = new TestSceneNode(1, &state);
-	TestSceneNode *testNode2 = new TestSceneNode(2, &state);
+	auto *testNode1 = new TestSceneNode(1, &state);
+	auto *testNode2 = new TestSceneNode(2, &state);
 
-	TestSceneNode *testNode3 = new TestSceneNode(3, &state);
-	TestSceneNode *testNode4 = new TestSceneNode(4, &state);
-	TestSceneNode *testNode5 = new TestSceneNode(5, &state);
-	TestSceneNode *testNode6 = new TestSceneNode(6, &state);
+	auto *testNode3 = new TestSceneNode(3, &state);
+	auto *testNode4 = new TestSceneNode(4, &state);
+	auto *testNode5 = new TestSceneNode(5, &state);
+	auto *testNode6 = new TestSceneNode(6, &state);
 
 	/*
 	 *                1
@@ -548,4 +539,53 @@ TEST_CASE("Parent Child Scaling", "[scenegraph]") {
 
 	grandchild->SetScale(glm::vec3(0.25f, 0.25f, 0.25f));
 	REQUIRE(grandchild->GetGlobalTransformation().GetScale() == glm::vec3(1.25f, 1.25f, 1.25f));
+}
+
+TEST_CASE("Parent Child Translation", "[scenegraph]") {
+	// Test a simple parent -> child -> grandchild graph with translations
+	// ensuring that children include the translations of their parents
+	// and that parents do not inherit their childrens translations
+	SceneGraph graph = SceneGraph(nullptr, nullptr);
+	auto parent = graph.AddChildToRoot(new TestSceneNode(1, nullptr)).first;
+	REQUIRE(parent != nullptr);
+	auto child = parent->AddChild(new TestSceneNode(2, nullptr)).first;
+	REQUIRE(child != nullptr);
+	auto grandchild = child->AddChild(new TestSceneNode(3, nullptr)).first;
+	REQUIRE(grandchild != nullptr);
+
+	parent->SetTranslation(glm::vec3(10.f, 10.f, 10.f));
+	REQUIRE(parent->GetGlobalTransformation().GetTranslation() == glm::vec3(10.f, 10.f, 10.f));
+	child->SetTranslation(glm::vec3(10.f, 10.f, 10.f));
+	REQUIRE(child->GetGlobalTransformation().GetTranslation() == glm::vec3(20.f, 20.f, 20.f));
+	grandchild->SetTranslation(glm::vec3(5.f, 5.f, 5.f));
+	REQUIRE(grandchild->GetGlobalTransformation().GetTranslation() == glm::vec3(25.f, 25.f, 25.f));
+
+	// Ensure parents were not incorrectly modified
+	REQUIRE(parent->GetGlobalTransformation().GetTranslation() == glm::vec3(10.f, 10.f, 10.f));
+	REQUIRE(child->GetGlobalTransformation().GetTranslation() == glm::vec3(20.f, 20.f, 20.f));
+
+	parent->SetTranslation(glm::vec3(2.f, 2.f, 2.f));
+	REQUIRE(parent->GetGlobalTransformation().GetTranslation() == glm::vec3(2.f, 2.f, 2.f));
+	REQUIRE(child->GetGlobalTransformation().GetTranslation() == glm::vec3(12.f, 12.f, 12.f));
+	REQUIRE(grandchild->GetGlobalTransformation().GetTranslation() == glm::vec3(17.f, 17.f, 17.f));
+}
+
+TEST_CASE("Parent Child Rotation", "[scenegraph]") {
+	// Test a simple parent -> child -> grandchild graph with rotations
+	// ensuring that children include the rotations of their parents
+	// and that parents do not inherit their childrens rotations
+	SceneGraph graph = SceneGraph(nullptr, nullptr);
+	auto parent = graph.AddChildToRoot(new TestSceneNode(1, nullptr)).first;
+	REQUIRE(parent != nullptr);
+	auto child = parent->AddChild(new TestSceneNode(2, nullptr)).first;
+	REQUIRE(child != nullptr);
+	auto grandchild = child->AddChild(new TestSceneNode(3, nullptr)).first;
+	REQUIRE(grandchild != nullptr);
+
+	// Rotate around x axis by 90 degrees
+	parent->SetRotation(glm::angleAxis(glm::radians(90.f), glm::normalize(glm::vec3(1.f, 1.f, 0.f))));
+	REQUIRE(glm::eulerAngles(parent->GetGlobalTransformation().GetRotation()) == glm::vec3(glm::radians(90.f), 0.f, 0.f));
+	child->SetRotation(glm::angleAxis(glm::radians(90.f), glm::normalize(glm::vec3(1.f, 1.f, 0.f))));
+	REQUIRE(glm_equal(glm::eulerAngles(child->GetGlobalTransformation().GetRotation()),
+					  glm::vec3(glm::radians(180.f), glm::radians(45.f), glm::radians(45.f))));
 }

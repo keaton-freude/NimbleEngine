@@ -120,12 +120,10 @@ void SceneNode::Scale(glm::vec3 scale) {
 }
 
 void SceneNode::SetTranslation(glm::vec3 translation) {
-	_local_transform.SetTranslation(translation);
-	// Hmm, probably should add a way to propagate a "set transform"
-	// series of calls, instead of this hack
-
 	// Undo existing translation
-	Translate(-_global_transform.GetTranslation());
+	Translate(-_local_transform.GetTranslation());
+
+	_local_transform.SetTranslation(translation);
 
 	// Now apply the requested translation
 	Translate(translation);
@@ -141,8 +139,8 @@ void SceneNode::SetScale(glm::vec3 scale) {
 }
 
 void SceneNode::SetRotation(glm::quat rotation) {
+	Rotate(glm::inverse(_local_transform.GetRotation()));
 	_local_transform.SetRotation(rotation);
-	Rotate(glm::inverse(_global_transform.GetRotation()));
 	Rotate(rotation);
 }
 

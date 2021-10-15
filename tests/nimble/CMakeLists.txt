@@ -10,6 +10,7 @@ add_executable(NimbleTests
 
 target_link_libraries(NimbleTests PRIVATE Catch2::Catch2 NimbleEngine)
 target_link_libraries(NimbleTests PUBLIC NimbleEngine)
+target_include_directories(NimbleTests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
 
 include(CTest)
 include(Catch)
