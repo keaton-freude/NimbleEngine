@@ -40,7 +40,6 @@ private:
 	std::string _node_name;
 
 	void PropagateTranslation(const glm::vec3 &translation);
-	void PropagateResetRotation();
 	void PropagateRotation(const glm::quat &rotation);
 	void PropagateScale(const glm::vec3 &scale);
 
@@ -116,10 +115,14 @@ public:
 	std::optional<SceneNode *> Find(size_t id);
 
 	void Translate(glm::vec3 translation);
-	void Rotate(const glm::quat &rotation);
-	void ResetRotation();
-
 	void Scale(glm::vec3 scale);
+	void Rotate(const glm::quat &rotation);
+
+	// Offer an easier way to translate/scale uniformly across all 3 axis
+	// with a single value. ex: Scale(10.0f) results in -> Scale(glm::vec3(10.0f, 10.0f, 10.0f))
+	void Translate(float amount);
+	void Scale(float amount);
+
 	void SetTranslation(glm::vec3 translation);
 	void SetScale(glm::vec3 scale);
 	void SetRotation(glm::quat rotation);

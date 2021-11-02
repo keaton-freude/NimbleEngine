@@ -1,16 +1,27 @@
 #define CATCH_CONFIG_MAIN
-#include "catch-utils.h"
 
 #define NIMBLE_TESTING
 
 #include "nimble/scene-graph/SceneGraph.h"
 #include "nimble/scene-graph/SceneNode.h"
 #include "nimble/scene-graph/Transformation.h"
+#include "nimble/utility/GlmUtility.h"
 #include <glm/gtc/epsilon.hpp>
 #include <vector>
 
+// The catch2 include must be after any of the provided ostream overloads
+// which come from GlmUtility.h
+#include <catch2/catch.hpp>
 
 using namespace Nimble;
+
+// a lax vec3 comparison, rotation rollbacks are lossy
+// which is fine for the purposes of the engine as the differences
+// are not noticeable
+bool operator==(const glm::vec3 &a, const glm::vec3 &b) {
+	static constexpr float EPS = 0.00001f;
+	return glm::all(glm::equal(a, b, EPS));
+}
 
 struct TestState {
 	std::vector<int> values;
@@ -276,10 +287,10 @@ TEST_CASE("Apply Transformations", "[transform]") {
 	Transformation transform2;
 
 	// Rotate along the x-axis 90 degrees...
-	transform1.SetRotation(glm::angleAxis(glm::radians(90.f), glm::vec3(1.0f, 0.0f, 0.0f)));
+	transform1.SetRotation(glm::angleAxis(90.0_d, glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	// Rotate the other along the y-axis 90 degrees..
-	transform2.SetRotation(glm::angleAxis(glm::radians(90.f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	transform2.SetRotation(glm::angleAxis(90.0_d, glm::vec3(0.0f, 1.0f, 0.0f)));
 
 	// Create a new transform from the result of applying transform2 to transform1
 	// Which should result in a rotation which is 90 degrees around the x-axis, and 90 degrees around the y-axis
@@ -355,18 +366,18 @@ TEST_CASE("Apply Transformations to Scene Nodes", "[scenegraph]") {
 	REQUIRE(testNode6->GetGlobalTransformation() == expectedTransform2);
 
 	testNode1->Scale(glm::vec3(0.5f, 0.5f, 0.5f));
-	testNode1->Rotate(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
+	testNode1->Rotate(glm::angleAxis(45.0_d, glm::vec3(1.0f, 1.0f, 0.0f)));
 	testNode1->Translate(glm::vec3(10.0f, 10.0f, 10.0f));
 
 	Transformation expectedTransform3 = expectedTransform1;
 	Transformation expectedTransform4 = expectedTransform2;
 
 	expectedTransform3.Scale(glm::vec3(0.5f, 0.5f, 0.5f));
-	expectedTransform3.Rotate(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
+	expectedTransform3.Rotate(glm::angleAxis(45.0_d, glm::vec3(1.0f, 1.0f, 0.0f)));
 	expectedTransform3.Translate(glm::vec3(10.0f, 10.0f, 10.0f));
 
 	expectedTransform4.Scale(glm::vec3(0.5f, 0.5f, 0.5f));
-	expectedTransform4.Rotate(glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.f)));
+	expectedTransform4.Rotate(glm::angleAxis(45.0_d, glm::vec3(1.0f, 1.0f, 0.f)));
 	expectedTransform4.Translate(glm::vec3(10.0f, 10.0f, 10.0f));
 
 	REQUIRE(testNode1->GetGlobalTransformation() == expectedTransform3);
@@ -582,10 +593,36 @@ TEST_CASE("Parent Child Rotation", "[scenegraph]") {
 	auto grandchild = child->AddChild(new TestSceneNode(3, nullptr)).first;
 	REQUIRE(grandchild != nullptr);
 
+	glm::quat expectedRotation = glm::angleAxis(90.0_d, glm::vec3(1.0f, 0.0f, 0.0f));
+
 	// Rotate around x axis by 90 degrees
-	parent->SetRotation(glm::angleAxis(glm::radians(90.f), glm::normalize(glm::vec3(1.f, 1.f, 0.f))));
-	REQUIRE(glm::eulerAngles(parent->GetGlobalTransformation().GetRotation()) == glm::vec3(glm::radians(90.f), 0.f, 0.f));
-	child->SetRotation(glm::angleAxis(glm::radians(90.f), glm::normalize(glm::vec3(1.f, 1.f, 0.f))));
-	REQUIRE(glm_equal(glm::eulerAngles(child->GetGlobalTransformation().GetRotation()),
-					  glm::vec3(glm::radians(180.f), glm::radians(45.f), glm::radians(45.f))));
+	parent->SetRotation(glm::angleAxis(90_d, glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f))));
+	REQUIRE(parent->GetGlobalTransformation().GetRotation() == expectedRotation);
+
+	// Rotate the child around the x-y axis by 90 degrees
+	child->SetRotation(glm::angleAxis(90.0_d, glm::normalize(glm::vec3(1.f, 1.f, 0.f))));
+	expectedRotation = glm::angleAxis(90.0_d, glm::normalize(glm::vec3(1.f, 1.f, 0.f))) * expectedRotation;
+	REQUIRE(child->GetGlobalTransformation().GetRotation() == expectedRotation);
+
+	// Rotate the grand child around the y-z axis by 90 degrees
+	grandchild->SetRotation(glm::angleAxis(90.0_d, glm::normalize(glm::vec3(0.f, 1.f, 1.f))));
+	expectedRotation = glm::angleAxis(90.0_d, glm::normalize(glm::vec3(0.f, 1.f, 1.f))) * expectedRotation;
+	REQUIRE(grandchild->GetGlobalTransformation().GetRotation() == expectedRotation);
+}
+
+TEST_CASE("Transformation single args", "[scenegraph]") {
+	// Just ensures the short-hand functions for translate/scale/rotate
+	// behave the same as the long version (which accept vectors)
+	SceneGraph graph = SceneGraph(nullptr, nullptr);
+	auto node1 = graph.AddChildToRoot(new TestSceneNode(1, nullptr)).first;
+	auto node2 = graph.AddChildToRoot(new TestSceneNode(1, nullptr)).first;
+	node1->Scale(10.f);
+	node2->Scale(glm::vec3(10.f, 10.f, 10.f));
+
+	REQUIRE(node1->GetGlobalTransformation().GetScale() == node2->GetGlobalTransformation().GetScale());
+
+	node1->Translate(10.f);
+	node2->Translate(glm::vec3(10.f, 10.f, 10.f));
+
+	REQUIRE(node1->GetGlobalTransformation().GetTranslation() == node2->GetGlobalTransformation().GetTranslation());
 }

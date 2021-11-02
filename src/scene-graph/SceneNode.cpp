@@ -119,6 +119,14 @@ void SceneNode::Scale(glm::vec3 scale) {
 	PropagateScale(scale);
 }
 
+void SceneNode::Translate(float amount) {
+	Translate(glm::vec3(amount));
+}
+
+void SceneNode::Scale(float amount) {
+	Scale(glm::vec3(amount));
+}
+
 void SceneNode::SetTranslation(glm::vec3 translation) {
 	// Undo existing translation
 	Translate(-_local_transform.GetTranslation());
@@ -132,8 +140,6 @@ void SceneNode::SetTranslation(glm::vec3 translation) {
 void SceneNode::SetScale(glm::vec3 scale) {
 	auto transform = scale / _local_transform.GetScale();
 	_local_transform.SetScale(scale);
-	/*glm::vec3 delta = glm::vec3(1.f) / _global_transform.GetScale();
-	Scale(delta);*/
 
 	Scale(transform);
 }
@@ -142,14 +148,6 @@ void SceneNode::SetRotation(glm::quat rotation) {
 	Rotate(glm::inverse(_local_transform.GetRotation()));
 	_local_transform.SetRotation(rotation);
 	Rotate(rotation);
-}
-
-void SceneNode::ResetRotation() {
-	_global_transform.SetRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
-
-	for(auto &child : _children) {
-		child->ResetRotation();
-	}
 }
 
 const Transformation &SceneNode::GetGlobalTransformation() const {
